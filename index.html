@@ -19,6 +19,41 @@
   </head>
 
   <body>
+    <div class="audio-player-fixed">
+      <audio
+        id="bgm-audio"
+        src="./assets/Wandering Through the Pines.mp3"
+        loop
+      ></audio>
+      <button
+        id="audio-toggle"
+        class="audio-toggle"
+        aria-label="음악 재생/일시정지"
+      >
+        <svg
+          id="audio-icon-play"
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+        >
+          <circle cx="16" cy="16" r="16" fill="#000" />
+          <polygon points="13,10 25,16 13,22" fill="#fff" />
+        </svg>
+        <svg
+          id="audio-icon-pause"
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          style="display: none"
+        >
+          <circle cx="16" cy="16" r="16" fill="#000" />
+          <rect x="12" y="10" width="3" height="12" fill="#fff" />
+          <rect x="17" y="10" width="3" height="12" fill="#fff" />
+        </svg>
+      </button>
+    </div>
     <header class="site-header">
       <div class="fixed-logo">
         <img src="./assets/logo_tit.png" alt="로고" />
@@ -36,8 +71,106 @@
             alt="main_under_obj"
             class="main_under_obj"
           />
+          <div class="inner">
+            <div class="sky">
+              <img
+                src="./assets/svg/main_obj/cloud_first.svg"
+                alt="m_cloud1"
+                class="m_cloud1"
+              />
+              <img
+                src="./assets/svg/main_obj/cloud_second.svg"
+                alt="m_cloud2"
+                class="m_cloud2"
+              />
+              <img
+                src="./assets/svg/main_obj/cloud_third.svg"
+                alt="m_cloud3"
+                class="m_cloud3"
+              />
+              <img
+                src="./assets/svg/main_obj/sky_bird.svg"
+                alt="sky_bird"
+                class="sky_bird"
+              />
+            </div>
+            <div>
+              <img
+                src="./assets/svg/main_obj/snall_leaf.svg"
+                alt="s_leaf"
+                class="s_leaf"
+              />
+              <img
+                src="./assets/svg/main_obj/tree_long.svg"
+                alt="long_tree"
+                class="long_tree"
+              />
+              <img
+                src="./assets/svg/main_obj/wood.svg"
+                alt="wood"
+                class="wood"
+              />
+              <img
+                src="./assets/svg/main_obj/rabbit.svg"
+                alt="rabbit"
+                class="rabbit"
+              />
+              <img
+                src="./assets/svg/main_obj/dototy_tree.svg"
+                alt="dototy_tree"
+                class="dototy_tree"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_a.svg"
+                alt="dotory_a"
+                class="dotory_a"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_b.svg"
+                alt="dotory_b"
+                class="dotory_b"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_c.png"
+                alt="dotory_c"
+                class="dotory_c"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_a-2.svg"
+                alt="dotory_a-2"
+                class="dotory_a-2"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_b-2.svg"
+                alt="dotory_b-2"
+                class="dotory_b-2"
+              />
+              <img
+                src="./assets/svg/main_obj/dotory_c-2.svg"
+                alt="dotory_c-2"
+                class="dotory_c-2"
+              />
+              <img
+                src="./assets/svg/main_obj/squirrel.svg"
+                alt="squirrel"
+                class="squirrel"
+              />
+              <div class="enter_about-me">
+                <a href="aboutme.html"></a>
+                <img
+                  src="./assets/svg/main_obj/about_me.svg"
+                  alt="about_me"
+                  class="about_me"
+                />
+                <img
+                  src="./assets/svg/main_obj/mycha.svg"
+                  alt="mycha"
+                  class="mycha"
+                />
+              </div>
+            </div>
+          </div>
         </section>
-
         <section class="panel uxui_page">
           <h2>섹션 2</h2>
           <img src="./assets/svg/floor.svg" alt="floor" class="floor-svg" />
@@ -46,8 +179,112 @@
             alt="main_under_obj2"
             class="main_under_obj"
           />
+          <div class="inner">
+            <div class="sky">
+              <img
+                src="./assets/svg/uxui-obj/cloud_first.svg"
+                alt="m_cloud1"
+                class="m_cloud1"
+              />
+              <img
+                src="./assets/svg/uxui-obj/cloud_second.svg"
+                alt="m_cloud2"
+                class="m_cloud2"
+              />
+            </div>
+            <img
+              src="./assets/svg/uxui-obj/r_long_tree.svg"
+              alt="r_long_tree"
+              class="r_long_tree"
+            />
+            <img
+              src="./assets/svg/uxui-obj/round_tree.svg"
+              alt="round_tree"
+              class="round_tree"
+            />
+            <img
+              src="./assets/svg/uxui-obj/wing_tree.svg"
+              alt="wing_tree"
+              class="wing_tree"
+            />
+            <img
+              src="./assets/svg/uxui-obj/regular_tree.svg"
+              alt="regular_tree"
+              class="regular_tree"
+            />
+            <img
+              src="./assets/svg/uxui-obj/two_flower.svg"
+              alt="two_flower"
+              class="two_flower"
+            />
+            <img
+              src="./assets/svg/uxui-obj/apple_a.svg"
+              alt="apple_a"
+              class="apple_a"
+            />
+            <img
+              src="./assets/svg/uxui-obj/apple_b.svg"
+              alt="apple_b"
+              class="apple_b"
+            />
+            <img
+              src="./assets/svg/uxui-obj/apple_c.svg"
+              alt="apple_c"
+              class="apple_c"
+            />
+            <div class="std_drg_web">
+              <img
+                src="./assets/svg/uxui-obj/sd_video.svg"
+                alt="sd_video"
+                class="sd_video"
+              />
+              <img
+                src="./assets/svg/uxui-obj/sd_head.svg"
+                alt="sd_head"
+                class="sd_head"
+              />
+              <img
+                src="./assets/svg/uxui-obj/sd_tail.svg"
+                alt="sd_tail"
+                class="sd_tail"
+              />
+              <img
+                src="./assets/svg/uxui-obj/sd_wing.svg"
+                alt="sd_wing"
+                class="sd_wing"
+              />
+            </div>
+            <div class="braedlee_app">
+              <img
+                src="./assets/svg/uxui-obj/bl_market.svg"
+                alt="bl_market"
+                class="bl_market"
+              />
+              <img
+                src="./assets/svg/uxui-obj/bl_cha.svg"
+                alt="bl_cha"
+                class="bl_cha"
+              />
+            </div>
+            <div class="gwm_web">
+              <img
+                src="./assets/svg/uxui-obj/gwm_head.svg"
+                alt="gwm_head"
+                class="gwm_head"
+              />
+              <img
+                src="./assets/svg/uxui-obj/gwm_stone.svg"
+                alt="gwm_stone"
+                class="gwm_stone"
+              />
+              <img
+                src="./assets/svg/uxui-obj/gwm_pramid.svg"
+                alt="gwm_pramid"
+                class="gwm_pramid"
+              />
+            </div>
+          </div>
         </section>
-
         <section class="panel promo_page">
           <h2>섹션 3</h2>
           <img src="./assets/svg/floor.svg" alt="floor" class="floor-svg" />
@@ -56,8 +293,21 @@
             alt="main_under_obj3"
             class="main_under_obj"
           />
+          <div class="inner">
+            <div class="sky">
+              <img
+                src="./assets/svg/promo_obj/cloud_first.svg"
+                alt="m_cloud1"
+                class="m_cloud1"
+              />
+              <img
+                src="./assets/svg/promo_obj/cloud_second.svg"
+                alt="m_cloud2"
+                class="m_cloud2"
+              />
+            </div>
+          </div>
         </section>
-
         <section class="panel visual_design_page">
           <h2>섹션 4</h2>
           <img src="./assets/svg/floor.svg" alt="floor" class="floor-svg" />
@@ -66,8 +316,26 @@
             alt="main_under_obj4"
             class="main_under_obj"
           />
+          <div class="inner">
+            <div class="sky">
+              <img
+                src="./assets/svg/bni_obj/cloud_first.svg"
+                alt="m_cloud1"
+                class="m_cloud1"
+              />
+              <img
+                src="./assets/svg/bni_obj/cloud_second.svg"
+                alt="m_cloud2"
+                class="m_cloud2"
+              />
+              <img
+                src="./assets/svg/bni_obj/cloud_thrid.svg"
+                alt="m_cloud3"
+                class="m_cloud3"
+              />
+            </div>
+          </div>
         </section>
-
         <section class="panel footer_page">
           <h2>섹션 5</h2>
           <img src="./assets/svg/floor.svg" alt="floor" class="floor-svg" />
@@ -76,6 +344,25 @@
             alt="main_under_obj5"
             class="main_under_obj"
           />
+          <div class="inner">
+            <div class="sky">
+              <img
+                src="./assets/svg/footer_obj/cloud_first.svg"
+                alt="m_cloud1"
+                class="m_cloud1"
+              />
+              <img
+                src="./assets/svg/footer_obj/cloud_second.svg"
+                alt="m_cloud2"
+                class="m_cloud2"
+              />
+              <img
+                src="./assets/svg/footer_obj/cloud_third.svg"
+                alt="m_cloud3"
+                class="m_cloud3"
+              />
+            </div>
+          </div>
         </section>
       </div>
     </main>

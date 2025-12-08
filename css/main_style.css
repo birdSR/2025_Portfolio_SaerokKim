@@ -103,3 +103,33 @@ header {
   object-fit: contain;
   pointer-events: none;
 }
+
+.inner {
+  z-index: 99;
+}
+
+.audio-player-fixed {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+}
+
+.audio-toggle {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audio-toggle svg {
+  display: block;
+}

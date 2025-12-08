@@ -33,4 +33,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(raf);
   }
+
+  const audio = document.getElementById('bgm-audio');
+  const toggleBtn = document.getElementById('audio-toggle');
+  const iconPlay = document.getElementById('audio-icon-play');
+  const iconPause = document.getElementById('audio-icon-pause');
+
+  let isPlaying = false;
+
+  function updateIcon() {
+    if (isPlaying) {
+      iconPlay.style.display = 'none';
+      iconPause.style.display = 'block';
+    } else {
+      iconPlay.style.display = 'block';
+      iconPause.style.display = 'none';
+    }
+  }
+
+  // 자동 재생 시도 (유저 상호작용 없이)
+  function tryAutoPlay() {
+    audio.play().then(() => {
+      isPlaying = true;
+      updateIcon();
+    }).catch(() => {
+      // 브라우저 정책상 실패 시, 유저 상호작용 후 재생
+      document.body.addEventListener('click', autoPlayOnUser);
+    });
+  }
+
+  function autoPlayOnUser() {
+    if (audio.paused) {
+      audio.play().catch(()=>{});
+      isPlaying = true;
+      updateIcon();
+    }
+    document.body.removeEventListener('click', autoPlayOnUser);
+  }
+
+  toggleBtn.addEventListener('click', function () {
+    if (audio.paused) {
+      audio.play();
+      isPlaying = true;
+    } else {
+      audio.pause();
+      isPlaying = false;
+    }
+    updateIcon();
+  });
+
+  tryAutoPlay();
+  updateIcon();
 });
