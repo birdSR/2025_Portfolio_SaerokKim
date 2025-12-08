@@ -53,15 +53,15 @@ body {
 }
 
 /* 데모용 배경색 */
-.panel-1 {
+.uxui_page {
   background: #ff6f61;
 }
-.panel-2 {
+.promo_page {
   background: #ffcc5c;
 }
-.panel-3 {
+.visual_design_page {
   background: #88d8b0;
 }
-.panel-4 {
+.footer_page {
   background: #6c5ce7;
 }
