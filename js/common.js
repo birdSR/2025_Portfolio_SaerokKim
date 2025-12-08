@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 가로 스크롤을 휠로 동작하게 하는 스크립트
   const horizontalWrapper = document.querySelector('.horizontal-wrapper');
-  horizontalWrapper.addEventListener('wheel', function(e) {
+  horizontalWrapper.addEventListener('wheel', function (e) {
     if (e.deltaY !== 0) {
       e.preventDefault();
       horizontalWrapper.scrollLeft += e.deltaY;
