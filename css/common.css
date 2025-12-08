@@ -32,6 +32,8 @@ body {
 /* 패널 한 장 */
 .panel {
   flex: 0 0 100vw; /* 항상 화면 한 장 크기 */
+  width: 1920px;
+  margin: 0;
   height: 100%;
   scroll-snap-align: start; /* 화면의 시작점에 딱 맞게 */
   display: flex;
