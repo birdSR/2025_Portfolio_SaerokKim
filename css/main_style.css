@@ -64,7 +64,6 @@ header {
   width: 1920px;
   height: 100vh;
   flex-shrink: 0;
-  /* 필요시 추가 스타일 */
 }
 
 .main_page,
@@ -73,8 +72,10 @@ header {
 .visual_design_page,
 .footer_page {
   position: relative;
+}
 
-  /* 기존 스타일 유지 */
+.top {
+  z-index: 7;
 }
 
 .main_page .top {
@@ -82,9 +83,17 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 570px;
+  bottom: 640px;
   background-image: url(../assets/png/main_top_bg.png);
+  background-repeat: no-repeat;
   z-index: 7;
+}
+
+.main_page .sky {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .bottom {
@@ -147,6 +156,9 @@ header {
   width: 100%;
   height: 312px;
   display: flex;
+  position: relative;
+  top: -30px;
+  left: 0;
   /* z-index: 0; */
 }
 
@@ -158,11 +170,12 @@ header {
 
 .uxui_page .bottom {
   background-image: url(../assets/svg/uxui-obj/under_obj2.svg);
+
   overflow: visible;
 }
 
 /* main_page */
-.main_page > .top .sky .m_cloud1 {
+.main_page > .sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -170,7 +183,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .top .sky .m_cloud2 {
+.main_page > .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -178,7 +191,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .top .sky .m_cloud3 {
+.main_page > .sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -194,9 +207,9 @@ header {
 
 .main_page .long_tree {
   position: absolute;
-  top: 94px;
+  top: -40px;
   left: 94px;
-  z-index: 4;
+  z-index: 30;
 }
 
 .main_page .s_leaf {
@@ -208,16 +221,17 @@ header {
 
 .main_page .wood {
   position: absolute;
-  top: 420px;
-  left: 500px;
-  z-index: 4;
+  top: 360px;
+  left: 430px;
+  z-index: 30;
 }
 
 .main_page .rabbit {
   position: absolute;
   top: 324px;
   left: 244px;
-  z-index: 4;
+  z-index: 30;
+  animation: rabbitMoveFlip 3.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
 }
 
 .main_page .watering_can {
@@ -229,9 +243,9 @@ header {
 
 .main_page .dotory_tree_a {
   position: absolute;
-  top: 272px;
-  left: 1492px;
-  z-index: 4;
+  top: 314px;
+  right: 244px;
+  z-index: 30;
 }
 
 /* uxui_page */
@@ -585,4 +599,22 @@ header {
   top: 172px;
   right: 188px;
   z-index: 1;
+}
+
+@keyframes rabbitMoveFlip {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg) scaleX(1);
+  }
+  20% {
+    transform: translateX(74px) translateY(-4px) rotate(7deg) scaleX(1);
+  }
+  50% {
+    transform: translateX(0) translateY(0) rotate(0deg) scaleX(1);
+  }
+  70% {
+    transform: translateX(-74px) translateY(4px) rotate(-7deg) scaleX(-1);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) scaleX(1);
+  }
 }
