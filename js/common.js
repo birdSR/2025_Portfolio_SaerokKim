@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function autoPlayOnUser() {
     if (audio.paused) {
-      audio.play().catch(()=>{});
+      audio.play().catch(() => { });
       isPlaying = true;
       updateIcon();
     }
@@ -84,13 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tryAutoPlay();
   updateIcon();
+  document.querySelector('.about-me .enter_about-me').addEventListener('click', () => {
 
-window.addEventListener('DOMContentLoaded', () => {
-  const mycha = document.querySelector('.about-me .enter_about-me .mycha');
-  if (mycha) {
-    // 이미지 손 위치에 맞게 transform-origin 보정 (CSS와 동일하게)
-    mycha.style.transformOrigin = '120px 60px';
-    // 필요시 clip-path 등 추가 스타일도 JS에서 제어 가능
-  }
-});
+  })
+
 });

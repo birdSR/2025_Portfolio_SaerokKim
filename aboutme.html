@@ -1,1 +1,33 @@
-ㅋ
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        #target {
+            width: 100%;
+            height: 5000px;
+            background-image: url(./assets/aa.png);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="target">
+
+    </div>
+    <script>
+        const el = document.getElementById("target");
+        const bottom = el.offsetTop + el.offsetHeight;
+
+        window.scrollTo({
+            top: bottom,
+            behavior: "smooth"
+        });
+    </script>
+</body>
+
+</html>
