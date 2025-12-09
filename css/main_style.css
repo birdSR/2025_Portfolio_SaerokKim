@@ -74,7 +74,8 @@ header {
   width: 1920px;
 }
 
-.top {}
+.top {
+}
 
 .main_page .top {
   width: 100%;
@@ -170,7 +171,7 @@ header {
 }
 
 /* main_page */
-.main_page>.sky .m_cloud1 {
+.main_page > .sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -178,7 +179,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page>.sky .m_cloud2 {
+.main_page > .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -186,7 +187,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page>.sky .m_cloud3 {
+.main_page > .sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -202,8 +203,8 @@ header {
 
 .main_page .long_tree {
   position: absolute;
-  top: -40px;
-  left: 94px;
+  top: 24px;
+  left: 80px;
   z-index: 30;
 }
 
@@ -216,23 +217,24 @@ header {
 
 .main_page .wood {
   position: absolute;
-  top: 360px;
-  left: 430px;
+  top: 480px;
+  left: 320px;
   z-index: 30;
 }
 
 .main_page .rabbit {
   position: absolute;
-  top: 324px;
-  left: 244px;
+  top: 280px;
+  left: 520px;
   z-index: 30;
-  animation: rabbitMoveFlip 3.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
+  animation: rabbitJump 4s ease-in-out infinite;
+  transform-origin: left bottom;
 }
 
 .main_page .watering_can {
   position: absolute;
-  top: 668px;
-  left: 1108px;
+  top: 620px;
+  right: 720px;
   z-index: 4;
 }
 
@@ -243,33 +245,90 @@ header {
   z-index: 30;
 }
 
+.main_page .snall_leaf {
+  position: absolute;
+  top: 286px;
+  right: 520px;
+}
+
+.main_page .tree_y {
+  position: absolute;
+  bottom: -60px;
+  left: 170px;
+}
+
+.main_page .big_leaf {
+  position: absolute;
+  bottom: 0;
+  right: 120px;
+}
+
+.main_page .f_tulip_p_a {
+  position: absolute;
+  top: 560px;
+  left: 100px;
+}
+
+.main_page .F_tulip_p_b {
+  position: absolute;
+  top: 620px;
+  right: 572px;
+}
+
+.main_page .f_gen_p {
+  position: absolute;
+  top: 220px;
+  left: 360px;
+}
+
+.main_page .f_gen_y_b {
+  position: absolute;
+  top: 230px;
+  right: 200px;
+}
+
 /* uxui_page */
 .uxui_page .sky .m_cloud1 {
   position: absolute;
   top: 140px;
   left: 228px;
-  width: 96px;
 }
 
 .uxui_page .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1584px;
-  width: 108px;
 }
 
+.uxui_page > .uxuiobj .std_drg_web {
+  position: absolute;
+  top: 400px;
+  left: 230px;
+}
+
+.uxui_page > .uxuiobj .braedlee_app {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+}
+
+.uxui_page > .uxuiobj .gwm_web {
+  position: absolute;
+  top: 400px;
+  right: 400px;
+}
+
+/* promo_page */
 .promo_page .sky .m_cloud1 {
   position: absolute;
   top: 100px;
   left: 130px;
-  width: 120px;
 }
 
 .promo_page .sky .m_cloud2 {
   position: absolute;
   top: 64px;
   left: 1458px;
-  width: 248px;
 }
 
 /* visual_design_page */
@@ -495,7 +554,7 @@ header {
   position: absolute;
   top: 34px;
   left: 80px;
-  animation: shakeAndDrop 6s ease-in-out;
+  animation: shakeAndDrop 1s ease-in-out;
   animation-delay: 0.3s;
   animation-iteration-count: infinite;
   animation-duration: 16s;
@@ -540,6 +599,12 @@ header {
   z-index: 3;
   cursor: pointer;
   z-index: 99;
+  transform-origin: bottom center;
+  transition: transform 0.2s;
+}
+
+.about-me .enter_about-me:hover {
+  animation: aboutMeHover 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
 @keyframes mychaWaveHand {
@@ -627,4 +692,30 @@ header {
   100% {
     transform: translateX(0) translateY(0) rotate(0deg) scaleX(1);
   }
+}
+
+@keyframes rabbitJump {
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  20% {
+    transform: translateY(-12px) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0);
+  }
+  70% {
+    transform: translateY(12px) rotate(-10deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+}
+
+.main_page .about-me .enter_about-me a .about_me {
+  transform-origin: bottom center;
+}
+
+.main_page .about-me .enter_about-me a:hover .about_me {
+  animation: treeGrow 1.2s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
