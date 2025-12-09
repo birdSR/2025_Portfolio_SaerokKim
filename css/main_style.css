@@ -77,13 +77,14 @@ header {
   /* 기존 스타일 유지 */
 }
 
-.top {
+.main_page .top {
   width: 1920px;
-  height: 265px;
-  background-image: url(../assets/png/main_top_bg.png);
+  height: 294px;
   position: absolute;
   left: 0;
-  bottom: 680px;
+  bottom: 570px;
+  background-image: url(../assets/png/main_top_bg.png);
+  z-index: 7;
 }
 
 .bottom {
@@ -92,6 +93,7 @@ header {
   position: absolute;
   left: 0;
   bottom: 0;
+  border-top: 4px solid #000;
   background: #13a381;
   background-position: bottom center;
   background-repeat: no-repeat;
@@ -149,11 +151,18 @@ header {
 }
 
 .main_page .bottom {
-  background-image: url(../assets/svg/main_obj/under_obj.svg);
+  background-image: url(../assets/png/main_under_obj.png);
+  z-index: 5;
+  overflow: visible;
+}
+
+.uxui_page .bottom {
+  background-image: url(../assets/svg/uxui-obj/under_obj2.svg);
+  overflow: visible;
 }
 
 /* main_page */
-.main_page .sky .m_cloud1 {
+.main_page > .top .sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -161,7 +170,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page .sky .m_cloud2 {
+.main_page > .top .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -169,7 +178,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page .sky .m_cloud3 {
+.main_page > .top .sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -452,6 +461,11 @@ header {
     transform: translateY(0) rotate(0deg);
   }
 
+  80% {
+    transform: translateY(140px) rotate(40deg);
+    opacity: 1;
+  }
+
   100% {
     transform: translateY(140px) rotate(40deg);
     opacity: 1;
@@ -523,54 +537,52 @@ header {
   0% {
     transform: rotate(0deg) translateY(0);
   }
-
   10% {
-    transform: rotate(-12deg) translateY(-2px);
-  }
-
-  20% {
-    transform: rotate(18deg) translateY(2px);
-  }
-
-  30% {
-    transform: rotate(-16deg) translateY(-3px);
-  }
-
-  40% {
-    transform: rotate(14deg) translateY(3px);
-  }
-
-  50% {
-    transform: rotate(-10deg) translateY(-2px);
-  }
-
-  60% {
-    transform: rotate(8deg) translateY(2px);
-  }
-
-  70% {
     transform: rotate(-6deg) translateY(-1px);
   }
-
+  20% {
+    transform: rotate(10deg) translateY(1px);
+  }
+  30% {
+    transform: rotate(-8deg) translateY(-1px);
+  }
+  40% {
+    transform: rotate(8deg) translateY(1px);
+  }
+  50% {
+    transform: rotate(-6deg) translateY(-1px);
+  }
+  60% {
+    transform: rotate(6deg) translateY(1px);
+  }
+  70% {
+    transform: rotate(-4deg) translateY(-1px);
+  }
   80% {
     transform: rotate(4deg) translateY(1px);
   }
-
   90% {
     transform: rotate(-2deg) translateY(0);
   }
-
   100% {
     transform: rotate(0deg) translateY(0);
   }
 }
 
 .about-me .enter_about-me .mycha {
-  animation: mychaWaveHand 2.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
-  transform-origin: 120px 60px; /* 손 위치에 맞게 조정 */
-  transition: clip-path 0.5s ease-in-out;
-  clip-path: circle(100% at 50% 50%);
   position: absolute;
   top: 200px;
   left: -220px;
+  z-index: 6;
+}
+
+.about-me .enter_about-me .mycha_arm {
+  animation: mychaWaveHand 3.5s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
+  transform-origin: 20% 80%; /* 손 위치에 맞게 조정 */
+  transition: clip-path 0.5s ease-in-out;
+  clip-path: circle(100% at 50% 50%);
+  position: absolute;
+  top: 172px;
+  right: 188px;
+  z-index: 1;
 }
