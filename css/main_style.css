@@ -25,7 +25,8 @@ header {
 .fixed-logo {
   position: fixed;
   top: 24px;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
   width: 180px;
   margin: 0 auto;
@@ -480,7 +481,7 @@ header {
 .about-me .enter_about-me {
   position: absolute;
   top: 50%;
-  left: 42%;
+  left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
   cursor: pointer;
@@ -524,7 +525,10 @@ header {
 }
 .about-me .enter_about-me .mycha {
   animation: mychaWaveHand 2.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
-  transform-origin: 120px 60px; /* 손 위치에 맞게 조정 */
+  transform-origin: 50% 50%; /* 손 위치에 맞게 조정 */
   transition: clip-path 0.5s ease-in-out;
   clip-path: circle(100% at 50% 50%);
+  position: absolute;
+  top: 200px;
+  left: -220px;
 }
