@@ -7,7 +7,8 @@
 html,
 body {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
   /* overflow-x: hidden; */
   /* 세로 기준 사이트라 가로 바는 숨겨두기 */
   font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
@@ -60,12 +61,9 @@ header {
 .panel {
   position: relative;
   min-width: 100vw;
+  width: 1920px;
   height: 100vh;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
   /* 필요시 추가 스타일 */
 }
 
@@ -74,21 +72,32 @@ header {
 .promo_page,
 .visual_design_page,
 .footer_page {
+  position: relative;
+
   /* 기존 스타일 유지 */
 }
 
-.floor-svg {
+.top {
+  width: 1920px;
+  height: 265px;
+  background-image: url(../assets/png/main_top_bg.png);
+  position: absolute;
+  left: 0;
+  bottom: 680px;
+}
+
+.bottom {
+  width: 1920px;
+  height: 704px;
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 1920px;
-  height: 74%;
-  object-fit: cover;
-  z-index: 2;
-  pointer-events: none;
+  background: #13a381;
+  background-position: bottom center;
+  background-repeat: no-repeat;
 }
 
-.main_under_obj {
+/* .main_under_obj {
   position: absolute;
   left: 50%;
   bottom: 0;
@@ -98,15 +107,8 @@ header {
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-}
-
-.inner {
-  width: 1920px;
-  height: 960px;
-  overflow: hidden;
-  margin: 0 auto;
-  z-index: 99;
-}
+  
+} */
 
 .audio-player-fixed {
   position: fixed;
@@ -134,90 +136,89 @@ header {
   width: 100%;
   height: auto;
 }
+
 .audio-toggle svg {
   display: block;
-}
-
-.inner {
-  width: 1920px;
-  height: 960px;
-  overflow: hidden;
 }
 
 .sky {
   width: 100%;
   height: 312px;
   display: flex;
-  z-index: 0;
+  /* z-index: 0; */
+}
+
+.main_page .bottom {
+  background-image: url(../assets/svg/main_obj/under_obj.svg);
 }
 
 /* main_page */
-.main_page > .inner .sky .m_cloud1 {
+.main_page .sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
   width: 160px;
-  z-index: 0;
+  /* z-index: 0; */
 }
 
-.main_page > .inner .sky .m_cloud2 {
+.main_page .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
   width: 92px;
-  z-index: 0;
+  /* z-index: 0; */
 }
 
-.main_page > .inner .sky .m_cloud3 {
+.main_page .sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
   width: 144px;
 }
 
-.main_page > .inner .sky .sky_bird {
+.main_page .sky .sky_bird {
   position: absolute;
   top: 50px;
   left: 1210px;
   width: 146px;
 }
 
-.main_page > .inner .long_tree {
+.main_page .long_tree {
   position: absolute;
   top: 94px;
   left: 94px;
   z-index: 4;
 }
 
-.main_page > .inner .s_leaf {
+.main_page .s_leaf {
   position: absolute;
   top: 420px;
   left: 1166px;
   z-index: 4;
 }
 
-.main_page > .inner .wood {
+.main_page .wood {
   position: absolute;
   top: 420px;
   left: 500px;
   z-index: 4;
 }
 
-.main_page > .inner .rabbit {
+.main_page .rabbit {
   position: absolute;
   top: 324px;
   left: 244px;
   z-index: 4;
 }
 
-.main_page > .inner .watering_can {
+.main_page .watering_can {
   position: absolute;
   top: 668px;
   left: 1108px;
   z-index: 4;
 }
 
-.main_page > .inner .dotory_tree_a {
+.main_page .dotory_tree_a {
   position: absolute;
   top: 272px;
   left: 1492px;
@@ -225,28 +226,28 @@ header {
 }
 
 /* uxui_page */
-.uxui_page > .inner .sky .m_cloud1 {
+.uxui_page .sky .m_cloud1 {
   position: absolute;
   top: 140px;
   left: 228px;
   width: 96px;
 }
 
-.uxui_page > .inner .sky .m_cloud2 {
+.uxui_page .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1584px;
   width: 108px;
 }
 
-.promo_page > .inner .sky .m_cloud1 {
+.promo_page .sky .m_cloud1 {
   position: absolute;
   top: 100px;
   left: 130px;
   width: 120px;
 }
 
-.promo_page > .inner .sky .m_cloud2 {
+.promo_page .sky .m_cloud2 {
   position: absolute;
   top: 64px;
   left: 1458px;
@@ -254,21 +255,21 @@ header {
 }
 
 /* visual_design_page */
-.visual_design_page > .inner .sky .m_cloud1 {
+.visual_design_page .sky .m_cloud1 {
   position: absolute;
   top: 194px;
   left: 106px;
   width: 154px;
 }
 
-.visual_design_page > .inner .sky .m_cloud2 {
+.visual_design_page .sky .m_cloud2 {
   position: absolute;
   top: 108px;
   left: 372px;
   width: 96px;
 }
 
-.visual_design_page > .inner .sky .m_cloud3 {
+.visual_design_page .sky .m_cloud3 {
   position: absolute;
   top: 76px;
   left: 1644px;
@@ -276,21 +277,21 @@ header {
 }
 
 /* footer_page */
-.footer_page > .inner .sky .m_cloud1 {
+.footer_page .sky .m_cloud1 {
   position: absolute;
   top: 108px;
   left: 84px;
   width: 84px;
 }
 
-.footer_page > .inner .sky .m_cloud2 {
+.footer_page .sky .m_cloud2 {
   position: absolute;
   top: 114px;
   left: 344px;
   width: 132px;
 }
 
-.footer_page > .inner .sky .m_cloud3 {
+.footer_page .sky .m_cloud3 {
   position: absolute;
   top: 74px;
   left: 1634px;
@@ -301,70 +302,81 @@ header {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-18px);
   }
+
   100% {
     transform: translateY(0);
   }
 }
+
 @keyframes floatCloud2 {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(12px);
   }
+
   100% {
     transform: translateY(0);
   }
 }
+
 @keyframes floatCloud3 {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
+
   100% {
     transform: translateY(0);
   }
 }
+
 @keyframes rotateBird {
   0% {
     transform: rotate(0deg);
   }
+
   50% {
     transform: rotate(8deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
 }
 
-.main_page > .inner .sky .m_cloud1,
-.uxui_page > .inner .sky .m_cloud1,
-.promo_page > .inner .sky .m_cloud1,
-.visual_design_page > .inner .sky .m_cloud1,
-.footer_page > .inner .sky .m_cloud1 {
+.main_page .sky .m_cloud1,
+.uxui_page .sky .m_cloud1,
+.promo_page .sky .m_cloud1,
+.visual_design_page .sky .m_cloud1,
+.footer_page .sky .m_cloud1 {
   animation: floatCloud1 5.5s ease-in-out infinite;
 }
 
-.main_page > .inner .sky .m_cloud2,
-.uxui_page > .inner .sky .m_cloud2,
-.promo_page > .inner .sky .m_cloud2,
-.visual_design_page > .inner .sky .m_cloud2,
-.footer_page > .inner .sky .m_cloud2 {
+.main_page .sky .m_cloud2,
+.uxui_page .sky .m_cloud2,
+.promo_page .sky .m_cloud2,
+.visual_design_page .sky .m_cloud2,
+.footer_page .sky .m_cloud2 {
   animation: floatCloud2 7s ease-in-out infinite;
 }
 
-.main_page > .inner .sky .m_cloud3,
-.visual_design_page > .inner .sky .m_cloud3,
-.footer_page > .inner .sky .m_cloud3 {
+.main_page .sky .m_cloud3,
+.visual_design_page .sky .m_cloud3,
+.footer_page .sky .m_cloud3 {
   animation: floatCloud3 6.2s ease-in-out infinite;
 }
 
-.main_page > .inner .sky .sky_bird {
+.main_page .sky .sky_bird {
   animation: rotateBird 2.8s ease-in-out infinite;
 }
 
@@ -372,27 +384,35 @@ header {
   0% {
     transform: translateY(0) rotate(0deg);
   }
+
   10% {
     transform: translateY(-8px) rotate(-10deg);
   }
+
   20% {
     transform: translateY(8px) rotate(10deg);
   }
+
   30% {
     transform: translateY(-6px) rotate(-8deg);
   }
+
   40% {
     transform: translateY(6px) rotate(8deg);
   }
+
   50% {
     transform: translateY(-4px) rotate(-6deg);
   }
+
   60% {
     transform: translateY(4px) rotate(6deg);
   }
+
   70% {
     transform: translateY(0) rotate(0deg);
   }
+
   100% {
     transform: translateY(220px) rotate(40deg);
     opacity: 1;
@@ -403,27 +423,35 @@ header {
   0% {
     transform: translateY(0) rotate(0deg);
   }
+
   10% {
     transform: translateY(-8px) rotate(-10deg);
   }
+
   20% {
     transform: translateY(8px) rotate(10deg);
   }
+
   30% {
     transform: translateY(-6px) rotate(-8deg);
   }
+
   40% {
     transform: translateY(6px) rotate(8deg);
   }
+
   50% {
     transform: translateY(-4px) rotate(-6deg);
   }
+
   60% {
     transform: translateY(4px) rotate(6deg);
   }
+
   70% {
     transform: translateY(0) rotate(0deg);
   }
+
   100% {
     transform: translateY(140px) rotate(40deg);
     opacity: 1;
@@ -439,6 +467,7 @@ header {
   animation-iteration-count: infinite;
   animation-duration: 16s;
 }
+
 .dotory_tree_a .dotory_b {
   position: absolute;
   top: 34px;
@@ -470,9 +499,11 @@ header {
   0% {
     transform: rotate(0deg);
   }
+
   50% {
     transform: rotate(8deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
@@ -492,40 +523,51 @@ header {
   0% {
     transform: rotate(0deg) translateY(0);
   }
+
   10% {
     transform: rotate(-12deg) translateY(-2px);
   }
+
   20% {
     transform: rotate(18deg) translateY(2px);
   }
+
   30% {
     transform: rotate(-16deg) translateY(-3px);
   }
+
   40% {
     transform: rotate(14deg) translateY(3px);
   }
+
   50% {
     transform: rotate(-10deg) translateY(-2px);
   }
+
   60% {
     transform: rotate(8deg) translateY(2px);
   }
+
   70% {
     transform: rotate(-6deg) translateY(-1px);
   }
+
   80% {
     transform: rotate(4deg) translateY(1px);
   }
+
   90% {
     transform: rotate(-2deg) translateY(0);
   }
+
   100% {
     transform: rotate(0deg) translateY(0);
   }
 }
+
 .about-me .enter_about-me .mycha {
   animation: mychaWaveHand 2.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
-  transform-origin: 50% 50%; /* 손 위치에 맞게 조정 */
+  transform-origin: 120px 60px; /* 손 위치에 맞게 조정 */
   transition: clip-path 0.5s ease-in-out;
   clip-path: circle(100% at 50% 50%);
   position: absolute;
