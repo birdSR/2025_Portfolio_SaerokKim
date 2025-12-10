@@ -587,22 +587,26 @@ position: absolute;
   right: 260px;
 }
 
+
+/* samsung_promo */
 .promo_page > .promoobj .samsung_promo {
   position: absolute;
-  top: 320px;
-  left: Z0px;
+  top: 160px;
+  left: 120px;
 }
 
+/* vfun_login */
 .promo_page > .promoobj .vfun_login {
   position: absolute;
-  top: 120px;
-  right: 600px;
+  top:50%;
+  left:372px;
 }
 
+/* lg_plal */
 .promo_page > .promoobj .lg_plal {
   position: absolute;
-  top: 200px;
-  right: 140px;
+  top: 160px;
+  right: 154px;
 }
 
 /* visual_design_page */
