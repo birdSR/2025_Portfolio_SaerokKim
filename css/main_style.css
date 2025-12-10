@@ -667,12 +667,15 @@ position: absolute;
   right: 140px;
 }
 
+
+/* bn */
 .visual_design_page .bniobj .bn {
   position: absolute;
   bottom: 300px;
   right: 500px;
 }
 
+/* illust */
 .visual_design_page .bniobj .illust {
   position: absolute;
   top: 280px;
