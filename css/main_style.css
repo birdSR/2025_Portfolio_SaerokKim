@@ -14,6 +14,11 @@ body {
   font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
     sans-serif;
   background: var(--pink, #ffd0e1);
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 header {
@@ -47,14 +52,16 @@ header {
   height: 100vh;
   overflow-x: auto;
   overflow-y: hidden;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   background: #ffd0e1;
 }
 
 .horizontal-scroll {
   display: flex;
   width: max-content;
-  height: 100%;
+  height: 100vh;
 }
 
 .panel {
@@ -63,6 +70,7 @@ header {
   width: 1920px;
   height: 100vh;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .main_page,
@@ -74,8 +82,6 @@ header {
   width: 1920px;
 }
 
-.top {
-}
 
 .main_page .top {
   width: 100%;
@@ -98,7 +104,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 640px;
+  bottom: 617px;
   background-image: url(../assets/png/uxui_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -108,7 +114,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 640px;
+  bottom: 616px;
   background-image: url(../assets/png/promo_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -118,8 +124,18 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 640px;
+  bottom: 589px;
   background-image: url(../assets/png/bni_top_bg.png);
+  background-repeat: no-repeat;
+}
+
+.footer_page .top {
+  width: 100%;
+  height: 294px;
+  position: absolute;
+  left: 0;
+  bottom: 579px;
+  background-image: url(../assets/png/footer_top_bg.png);
   background-repeat: no-repeat;
 }
 
@@ -375,69 +391,69 @@ header {
   left: 1458px;
 }
 
-.promo_page > .uxuiobj .triamgle_tree {
+.promo_page > .promoobj .triamgle_tree {
   position: absolute;
   top: 220px;
   left: 240px;
 }
 
-.promo_page > .uxuiobj .round_tree {
+.promo_page > .promoobj .round_tree {
   position: absolute;
-  bottom: 120px;
+  bottom: 300px;
   left: 600px;
 }
 
-.promo_page > .uxuiobj .wing_tree {
+.promo_page > .promoobj .wing_tree {
   position: absolute;
-  bottom: 100px;
+  bottom: 300px;
   right: 400px;
 }
 
-.promo_page > .uxuiobj .regular_tree {
+.promo_page > .promoobj .regular_tree {
   position: absolute;
   top: 180px;
   right: 240px;
 }
 
-.promo_page > .uxuiobj .two_flower {
+.promo_page > .promoobj .two_flower {
   position: absolute;
-  bottom: 140px;
+  bottom: 400px;
   left: 1000px;
 }
 
-.promo_page > .uxuiobj .apple_a {
+.promo_page > .promoobj .apple_a {
   position: absolute;
-  bottom: 80px;
+  bottom: 600px;
   right: 140px;
 }
 
-.promo_page > .uxuiobj .apple_b {
+.promo_page > .promoobj .apple_b {
   position: absolute;
-  bottom: 40px;
+  bottom: 300px;
   right: 200px;
 }
 
-.promo_page > .uxuiobj .apple_c {
+.promo_page > .promoobj .apple_c {
   position: absolute;
-  bottom: 100px;
+  bottom: 500px;
   right: 260px;
 }
 
-.promo_page > .uxuiobj .samsung_promo {
+.promo_page > .promoobj .samsung_promo {
   position: absolute;
   top: 320px;
-  left: 1200px;
+  left: Z0px;
 }
 
-.promo_page > .uxuiobj .vfun_login {
+.promo_page > .promoobj .vfun_login {
   position: absolute;
-  top: 360px;
+  top: 120px;
   right: 600px;
 }
 
-.promo_page > .uxuiobj .lg_plal {
+.promo_page > .promoobj .lg_plal {
   position: absolute;
-  top: 400px;
+  top: 200px;
   right: 140px;
 }
 
@@ -463,6 +479,54 @@ header {
   width: 166px;
 }
 
+.visual_design_page .bniobj .two_circle_tree {
+  position: absolute;
+  top: 320px;
+  left: 240px;
+}
+
+.visual_design_page .bniobj .two_flower_y-b {
+  position: absolute;
+  bottom: 140px;
+  left: 600px;
+}
+
+.visual_design_page .bniobj .duncul_4 {
+  position: absolute;
+  bottom: 100px;
+  right: 400px;
+}
+
+.visual_design_page .bniobj .apple_4-a {
+  position: absolute;
+  bottom: 80px;
+  right: 140px;
+}
+
+.visual_design_page .bniobj .apple_4-b {
+  position: absolute;
+  bottom: 80px;
+  right: 140px;
+}
+
+.visual_design_page .bniobj .apple_4-c {
+  position: absolute;
+  bottom: 80px;
+  right: 140px;
+}
+
+.visual_design_page .bniobj .bn {
+  position: absolute;
+  bottom: 300px;
+  right: 500px;
+}
+
+.visual_design_page .bniobj .illust {
+  position: absolute;
+  top: 280px;
+  right: 140px;
+}
+
 /* footer_page */
 .footer_page .sky .m_cloud1 {
   position: absolute;
@@ -484,6 +548,44 @@ header {
   left: 1634px;
   width: 204px;
 }
+
+.footer_page .footerobj .round_tree_z {
+  position: absolute;
+  bottom: 0;
+  left: 240px;
+}
+
+.footer_page .footerobj .pongpong_tree {
+  position: absolute;
+  bottom: 0;
+  left: 720px;
+}
+
+.footer_page .footerobj .bertterfly_y {
+  position: absolute;
+  bottom: 200px;
+  right: 240px;
+}
+
+.footer_page .footerobj .my-cha_footer {
+  position: absolute;
+  bottom: 220px;
+  right: 480px;
+}
+
+.footer_page .footerobj .home-house {
+  position: absolute;
+  bottom: 220px;
+  right: 480px;
+}
+
+.footer_page .footerobj .e-mail_post {
+  position: absolute;
+  bottom: 220px;
+  right: 200px;
+}
+
+
 
 @keyframes floatCloud1 {
   0% {
