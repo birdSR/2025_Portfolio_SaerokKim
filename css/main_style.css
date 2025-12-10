@@ -87,10 +87,40 @@ header {
   background-repeat: no-repeat;
 }
 
-.main_page .sky {
+.sky {
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+.uxui_page .top {
+  width: 100%;
+  height: 294px;
+  position: absolute;
+  left: 0;
+  bottom: 640px;
+  background-image: url(../assets/png/uxui_top_bg.png);
+  background-repeat: no-repeat;
+}
+
+.promo_page .top {
+  width: 100%;
+  height: 294px;
+  position: absolute;
+  left: 0;
+  bottom: 640px;
+  background-image: url(../assets/png/promo_top_bg.png);
+  background-repeat: no-repeat;
+}
+
+.visual_design_page .top {
+  width: 100%;
+  height: 294px;
+  position: absolute;
+  left: 0;
+  bottom: 640px;
+  background-image: url(../assets/png/bni_top_bg.png);
+  background-repeat: no-repeat;
 }
 
 .bottom {
@@ -165,8 +195,22 @@ header {
 }
 
 .uxui_page .bottom {
-  background-image: url(../assets/svg/uxui-obj/under_obj2.svg);
+  background-image: url(../assets/png/uxui_under_obj.png);
+  overflow: visible;
+}
 
+.promo_page .bottom {
+  background-image: url(../assets/png/promo_under_obj.png);
+  overflow: visible;
+}
+
+.visual_design_page .bottom {
+  background-image: url(../assets/png/bni_under_obj.png);
+  overflow: visible;
+}
+
+.footer_page .bottom {
+  background-image: url(../assets/png/footer_under_obj.png);
   overflow: visible;
 }
 
@@ -329,6 +373,72 @@ header {
   position: absolute;
   top: 64px;
   left: 1458px;
+}
+
+.promo_page > .uxuiobj .triamgle_tree {
+  position: absolute;
+  top: 220px;
+  left: 240px;
+}
+
+.promo_page > .uxuiobj .round_tree {
+  position: absolute;
+  bottom: 120px;
+  left: 600px;
+}
+
+.promo_page > .uxuiobj .wing_tree {
+  position: absolute;
+  bottom: 100px;
+  right: 400px;
+}
+
+.promo_page > .uxuiobj .regular_tree {
+  position: absolute;
+  top: 180px;
+  right: 240px;
+}
+
+.promo_page > .uxuiobj .two_flower {
+  position: absolute;
+  bottom: 140px;
+  left: 1000px;
+}
+
+.promo_page > .uxuiobj .apple_a {
+  position: absolute;
+  bottom: 80px;
+  right: 140px;
+}
+
+.promo_page > .uxuiobj .apple_b {
+  position: absolute;
+  bottom: 40px;
+  right: 200px;
+}
+
+.promo_page > .uxuiobj .apple_c {
+  position: absolute;
+  bottom: 100px;
+  right: 260px;
+}
+
+.promo_page > .uxuiobj .samsung_promo {
+  position: absolute;
+  top: 320px;
+  left: 1200px;
+}
+
+.promo_page > .uxuiobj .vfun_login {
+  position: absolute;
+  top: 360px;
+  right: 600px;
+}
+
+.promo_page > .uxuiobj .lg_plal {
+  position: absolute;
+  top: 400px;
+  right: 140px;
 }
 
 /* visual_design_page */
