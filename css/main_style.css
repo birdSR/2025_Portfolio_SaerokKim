@@ -384,6 +384,7 @@ header {
 }
 
 /* .std_drg_web */
+
 .uxui_page > .uxuiobj .std_drg_web {
   position: absolute;
   top: 200px;
@@ -392,6 +393,7 @@ header {
 }
 
 .uxui_page > .uxuiobj .std_drg_web .sd_video {
+  position: relative;
   z-index: 10;
   transition: transform 300ms ease, box-shadow 260ms ease;
 }
