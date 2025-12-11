@@ -587,9 +587,34 @@ header {
 
 /* samsung_promo */
 .promo_page > .promoobj .samsung_promo {
+  /* border: 1px solid #ffffff; */
   position: absolute;
   top: 160px;
   left: 120px;
+  transform-origin: center center;
+}
+
+.promo_page > .promoobj .samsung_promo img {
+  display: block;
+  margin: 0 auto;
+  transform-origin: 50% 50%;
+}
+
+/* samsung_promo hover shrink-grow animation */
+@keyframes samsungPromoShrinkGrow {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.promo_page > .promoobj .samsung_promo:hover {
+  animation: samsungPromoShrinkGrow 0.5s ease-in-out;
 }
 
 /* vfun_login */
@@ -637,6 +662,56 @@ header {
   position: absolute;
   top: 144px;
   right: 154px;
+}
+
+.promo_page > .promoobj .lg_plal .lg_plal_body {
+  position: absolute;
+  top: 144px;
+  right: 154px;
+}
+
+.promo_page > .promoobj .lg_plal:hover .lg_plal_body {
+  animation: lgPlalBodyRotate 2.2s infinite;
+}
+
+/* lg_plal hover animation */
+@keyframes lgPlalBodyRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.promo_page > .promoobj .lg_plal .twinkle_m {
+  position: absolute;
+  top: 120px;
+  right: 120px;
+}
+
+.promo_page > .promoobj .lg_plal:hover .twinkle_m {
+  animation: twinkleBlink 0.9s linear infinite;
+}
+
+.promo_page > .promoobj .lg_plal .twinkle_s {
+  position: absolute;
+  top: 270px;
+  right: 280px;
+}
+
+.promo_page > .promoobj .lg_plal:hover .twinkle_s {
+  animation: twinkleBlink 0.9s linear infinite;
+  animation-delay: 0.45s;
 }
 
 /* visual_design_page */
@@ -701,17 +776,89 @@ header {
 .visual_design_page .bniobj .bn {
   position: absolute;
   bottom: 300px;
-  right: 500px;
+  left: 260px;
+}
+
+.visual_design_page .bniobj .bn .bn_phone {
+  position: absolute;
+  bottom: 0px;
+  left: 260px;
+}
+
+.visual_design_page .bniobj .bn .bn_cube_a {
+  position: absolute;
+  bottom: 120px;
+  left: 154px;
+}
+
+.visual_design_page .bniobj .bn .bn_cube_b {
+  position: absolute;
+  bottom: 40px;
+  left: 410px;
+}
+
+.visual_design_page .bniobj .bn .bn_heart {
+  position: absolute;
+  bottom: 288px;
+  left: 210px;
 }
 
 /* illust */
 .visual_design_page .bniobj .illust {
   position: absolute;
-  top: 280px;
-  right: 140px;
+  top: 400px;
+  right: 260px;
 }
 
-/* footer_page */
+.visual_design_page .bniobj .illust .illust_sketchbook {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.visual_design_page .bniobj .illust .illust_crayon-r {
+  position: absolute;
+  top: 120px;
+  right: -80px;
+}
+
+.visual_design_page .bniobj .illust .illust_crayon-y {
+  position: absolute;
+  top: 160px;
+  right: -30px;
+}
+
+/* illust_crayon-y 그리기 애니메이션 */
+@keyframes illustCrayonYDraw {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  15% {
+    transform: translate(60px, -300pxx) rotate(-8deg);
+  }
+  30% {
+    transform: translate(18px, 16px) rotate(10deg);
+  }
+  45% {
+    transform: translate(-24px, 24px) rotate(-12deg);
+  }
+  60% {
+    transform: translate(28px, 32px) rotate(12deg);
+  }
+  75% {
+    transform: translate(-10px, 12px) rotate(-6deg);
+  }
+  90% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+.visual_design_page .bniobj .illust:hover .illust_crayon-y {
+  animation: illustCrayonYDraw 2.1s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
+}
+
 .footer_page .sky .m_cloud1 {
   position: absolute;
   top: 108px;
@@ -751,22 +898,71 @@ header {
   right: 240px;
 }
 
+/* cha_footer */
 .footer_page .footerobj .my-cha_footer {
   position: absolute;
-  bottom: 220px;
-  right: 480px;
+  bottom: 140px;
+  left: 160px;
 }
 
+/* home-house */
 .footer_page .footerobj .home-house {
   position: absolute;
   bottom: 220px;
-  right: 480px;
+  right: 600px;
+  cursor: pointer;
 }
 
+.footer_page .footerobj .home-house .home {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.footer_page .footerobj .home-house .home_door {
+  position: absolute;
+  bottom: 24px;
+  right: 408px;
+  transform: rotate(9deg);
+  transform-origin: 2% 49%;
+  transition: 2s ease-in-out;
+  cursor: pointer;
+}
+.footer_page .footerobj .home-house:hover .home_door {
+  transform-style: preserve-3d; /* 자식 요소를 3D로 유지 */
+  transform: rotateY(180deg);
+  cursor: pointer;
+}
+
+/* e-mail_post */
 .footer_page .footerobj .e-mail_post {
   position: absolute;
-  bottom: 220px;
-  right: 200px;
+  bottom: 238px;
+  left: 650px;
+}
+
+.footer_page .footerobj .e-mail_post .post_box {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.footer_page .footerobj .e-mail_post .post_door {
+  position: absolute;
+  bottom: 144px;
+  right: 0px;
+  transform-origin: 50% 0%;
+  transition: 2s ease-in-out;
+  cursor: pointer;
+}
+
+.footer_page .footerobj .e-mail_post .post {
+  position: absolute;
+  bottom: 88px;
+  right: 48px;
+  transform-origin: 50% 0%;
+  transition: 2s ease-in-out;
+  cursor: pointer;
 }
 
 @keyframes floatCloud1 {
@@ -1121,4 +1317,63 @@ header {
   100% {
     transform: rotate(24deg);
   }
+}
+
+@keyframes twinkleBlink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* bn hover animation */
+.visual_design_page .bniobj .bn:hover .bn_phone {
+  transform: scale(1.04);
+  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+.visual_design_page .bniobj .bn:hover .bn_cube_a {
+  transform: translateY(-10px);
+  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+.visual_design_page .bniobj .bn:hover .bn_cube_b {
+  transform: translateY(10px);
+  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+.visual_design_page .bniobj .bn .bn_heart {
+  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2),
+    transform-origin 0s;
+}
+.visual_design_page .bniobj .bn:hover .bn_heart {
+  transform-origin: bottom right;
+  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
+    alternate;
+}
+@keyframes bnHeartRotateLoop {
+  0% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(8deg);
+  }
+}
+.visual_design_page .bniobj .illust:hover .illust_sketchbook {
+  transform: scale(1.04);
+  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+
+/* transition 추가된 부분 */
+.visual_design_page .bniobj .bn .bn_phone,
+.visual_design_page .bniobj .bn .bn_cube_a,
+.visual_design_page .bniobj .bn .bn_cube_b,
+.visual_design_page .bniobj .bn .bn_heart {
+  transition: transform 0.5s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+.visual_design_page .bniobj .illust .illust_sketchbook,
+.visual_design_page .bniobj .illust .illust_crayon-y {
+  transition: transform 0.5s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
