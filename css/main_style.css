@@ -425,6 +425,7 @@ header {
   transform: translateY(12px) scale(0.98);
   transition: opacity 320ms ease 120ms,
     transform 420ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  z-index: 1;
   pointer-events: none;
 }
 
