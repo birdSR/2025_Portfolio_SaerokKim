@@ -230,7 +230,7 @@ header {
 }
 
 /* main_page */
-.main_page > .sky .m_cloud1 {
+.main_page>.sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -238,7 +238,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .sky .m_cloud2 {
+.main_page>.sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -246,7 +246,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .sky .m_cloud3 {
+.main_page>.sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -359,31 +359,31 @@ header {
   left: 1584px;
 }
 
-.uxui_page > .uxuiobj .std_drg_web {
+.uxui_page>.uxuiobj .std_drg_web {
   position: absolute;
   top: 160px;
   left: 200px;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_video {
+.uxui_page>.uxuiobj .std_drg_web .sd_video {
   z-index: 7;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_head {
+.uxui_page>.uxuiobj .std_drg_web .sd_head {
   position: absolute;
   top: 30px;
   left: 50px;
   z-index: 2;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_tail {
+.uxui_page>.uxuiobj .std_drg_web .sd_tail {
   position: absolute;
   top: 42px;
   left: 40px;
   z-index: 2;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_wing {
+.uxui_page>.uxuiobj .std_drg_web .sd_wing {
   position: absolute;
   top: 40px;
   left: 40px;
@@ -391,20 +391,22 @@ header {
 }
 
 /* .std_drg_web */
-.uxui_page > .uxuiobj .std_drg_web {
+.uxui_page>.uxuiobj .std_drg_web {
   position: relative;
   top: -540px;
   left: 240px;
   cursor: pointer;
 }
-.uxui_page > .uxuiobj .std_drg_web .sd_video {
+
+.uxui_page>.uxuiobj .std_drg_web .sd_video {
   position: relative;
   z-index: 10;
   transition: transform 300ms ease, box-shadow 260ms ease;
 }
-.uxui_page > .uxuiobj .std_drg_web .sd_head,
-.uxui_page > .uxuiobj .std_drg_web .sd_tail,
-.uxui_page > .uxuiobj .std_drg_web .sd_wing {
+
+.uxui_page>.uxuiobj .std_drg_web .sd_head,
+.uxui_page>.uxuiobj .std_drg_web .sd_tail,
+.uxui_page>.uxuiobj .std_drg_web .sd_wing {
   opacity: 0;
   transform: translateY(12px) scale(0.98);
   transition: opacity 320ms ease 120ms,
@@ -412,52 +414,56 @@ header {
   z-index: 5;
   pointer-events: none;
 }
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_video {
+
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_video {
   transform: scale(0.985);
 }
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_head {
+
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_head {
   opacity: 1;
   transform: translate(-28px, -8px) scale(1);
   z-index: 9;
 }
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_tail {
+
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_tail {
   opacity: 1;
   transform: translate(28px, 8px) scale(1);
   z-index: 9;
 }
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_wing {
+
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_wing {
   opacity: 1;
   transform: translate(0, -38px) scale(1);
   z-index: 9;
 }
 
 /* .braedlee_app */
-.uxui_page > .uxuiobj .braedlee_app {
+.uxui_page>.uxuiobj .braedlee_app {
   position: absolute;
   bottom: 160px;
   left: 730px;
   cursor: pointer;
 }
 
-.uxui_page > .uxuiobj .braedlee_app .bl_market {
+.uxui_page>.uxuiobj .braedlee_app .bl_market {
   position: absolute;
   bottom: 0px;
   left: 0px;
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .braedlee_app .bl_cha {
+.uxui_page>.uxuiobj .braedlee_app .bl_cha {
   position: absolute;
   bottom: -40px;
   left: -100px;
 }
 
 /* Hover animations for .braedlee_app */
-.uxui_page > .uxuiobj .braedlee_app:hover .bl_market {
+.uxui_page>.uxuiobj .braedlee_app:hover .bl_market {
   transform: scale(1.04);
 }
 
-.uxui_page > .uxuiobj .braedlee_app:hover .bl_cha {
+.uxui_page>.uxuiobj .braedlee_app:hover .bl_cha {
   animation: bl_chaWiggle 0.6s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
 }
 
@@ -465,22 +471,26 @@ header {
   0% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(10deg);
   }
+
   50% {
     transform: rotate(0deg);
   }
+
   75% {
     transform: rotate(-10deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
 }
 
 /* gwm_web */
-.uxui_page > .uxuiobj .gwm_web {
+.uxui_page>.uxuiobj .gwm_web {
   position: absolute;
   top: 180px;
   right: 400px;
@@ -488,14 +498,14 @@ header {
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_head {
+.uxui_page>.uxuiobj .gwm_web .gwm_head {
   display: flex;
   justify-content: center;
   position: relative;
   z-index: 5;
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_stone {
+.uxui_page>.uxuiobj .gwm_web .gwm_stone {
   position: absolute;
   bottom: 0px;
   left: -70px;
@@ -503,7 +513,7 @@ header {
   transition: transform 320ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_pramid {
+.uxui_page>.uxuiobj .gwm_web .gwm_pramid {
   position: absolute;
   bottom: 0px;
   right: -180px;
@@ -512,15 +522,15 @@ header {
 }
 
 /* Hover animations for .gwm_web */
-.uxui_page > .uxuiobj .gwm_web:hover {
+.uxui_page>.uxuiobj .gwm_web:hover {
   transform: scale(0.96);
 }
 
-.uxui_page > .uxuiobj .gwm_web:hover .gwm_stone {
+.uxui_page>.uxuiobj .gwm_web:hover .gwm_stone {
   transform: translate(-10px, -10px);
 }
 
-.uxui_page > .uxuiobj .gwm_web:hover .gwm_pramid {
+.uxui_page>.uxuiobj .gwm_web:hover .gwm_pramid {
   transform: translate(10px, -10px);
 }
 
@@ -537,56 +547,56 @@ header {
   left: 1458px;
 }
 
-.promo_page > .promoobj .triamgle_tree {
+.promo_page>.promoobj .triamgle_tree {
   position: absolute;
   top: 220px;
   left: 240px;
 }
 
-.promo_page > .promoobj .round_tree {
+.promo_page>.promoobj .round_tree {
   position: absolute;
   bottom: 300px;
   left: 600px;
 }
 
-.promo_page > .promoobj .wing_tree {
+.promo_page>.promoobj .wing_tree {
   position: absolute;
   bottom: 300px;
   right: 400px;
 }
 
-.promo_page > .promoobj .regular_tree {
+.promo_page>.promoobj .regular_tree {
   position: absolute;
   top: 180px;
   right: 240px;
 }
 
-.promo_page > .promoobj .two_flower {
+.promo_page>.promoobj .two_flower {
   position: absolute;
   bottom: 400px;
   left: 1000px;
 }
 
-.promo_page > .promoobj .apple_a {
+.promo_page>.promoobj .apple_a {
   position: absolute;
   bottom: 600px;
   right: 140px;
 }
 
-.promo_page > .promoobj .apple_b {
+.promo_page>.promoobj .apple_b {
   position: absolute;
   bottom: 300px;
   right: 200px;
 }
 
-.promo_page > .promoobj .apple_c {
+.promo_page>.promoobj .apple_c {
   position: absolute;
   bottom: 500px;
   right: 260px;
 }
 
 /* samsung_promo */
-.promo_page > .promoobj .samsung_promo {
+.promo_page>.promoobj .samsung_promo {
   /* border: 1px solid #ffffff; */
   position: absolute;
   top: 160px;
@@ -594,7 +604,7 @@ header {
   transform-origin: center center;
 }
 
-.promo_page > .promoobj .samsung_promo img {
+.promo_page>.promoobj .samsung_promo img {
   display: block;
   margin: 0 auto;
   transform-origin: 50% 50%;
@@ -605,15 +615,17 @@ header {
   0% {
     transform: scale(1);
   }
+
   30% {
     transform: scale(0.8);
   }
+
   100% {
     transform: scale(1);
   }
 }
 
-.promo_page > .promoobj .samsung_promo:hover {
+.promo_page>.promoobj .samsung_promo:hover {
   animation: samsungPromoShrinkGrow 0.5s ease-in-out;
 }
 
@@ -625,22 +637,21 @@ header {
 
 .promo_page .promoobj .vfun_login:hover .funny_arm,
 .promo_page .promoobj .vfun_login:hover .game_controller {
-  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
-    alternate;
+  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
 }
 
-.promo_page > .promoobj .vfun_login {
+.promo_page>.promoobj .vfun_login {
   position: absolute;
   top: 50%;
   left: 820px;
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.promo_page > .promoobj .vfun_login:hover {
+.promo_page>.promoobj .vfun_login:hover {
   transform: scale(1.04);
 }
 
-.promo_page > .promoobj .vfun_login .funny_arm {
+.promo_page>.promoobj .vfun_login .funny_arm {
   position: relative;
   z-index: 1;
   /* funny_body 뒤, game_controller보다 뒤 */
@@ -649,7 +660,7 @@ header {
   left: 29px;
 }
 
-.promo_page > .promoobj .vfun_login .game_controller {
+.promo_page>.promoobj .vfun_login .game_controller {
   position: relative;
   z-index: 3;
   transform-origin: right top;
@@ -658,19 +669,19 @@ header {
 }
 
 /* lg_plal */
-.promo_page > .promoobj .lg_plal {
+.promo_page>.promoobj .lg_plal {
   position: absolute;
   top: 144px;
   right: 154px;
 }
 
-.promo_page > .promoobj .lg_plal .lg_plal_body {
+.promo_page>.promoobj .lg_plal .lg_plal_body {
   position: absolute;
   top: 144px;
   right: 154px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .lg_plal_body {
+.promo_page>.promoobj .lg_plal:hover .lg_plal_body {
   animation: lgPlalBodyRotate 2.2s infinite;
 }
 
@@ -679,37 +690,41 @@ header {
   0% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(10deg);
   }
+
   50% {
     transform: rotate(-10deg);
   }
+
   75% {
     transform: rotate(10deg);
   }
+
   100% {
     transform: rotate(0deg);
   }
 }
 
-.promo_page > .promoobj .lg_plal .twinkle_m {
+.promo_page>.promoobj .lg_plal .twinkle_m {
   position: absolute;
   top: 120px;
   right: 120px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .twinkle_m {
+.promo_page>.promoobj .lg_plal:hover .twinkle_m {
   animation: twinkleBlink 0.9s linear infinite;
 }
 
-.promo_page > .promoobj .lg_plal .twinkle_s {
+.promo_page>.promoobj .lg_plal .twinkle_s {
   position: absolute;
   top: 270px;
   right: 280px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .twinkle_s {
+.promo_page>.promoobj .lg_plal:hover .twinkle_s {
   animation: twinkleBlink 0.9s linear infinite;
   animation-delay: 0.45s;
 }
@@ -833,28 +848,36 @@ header {
   0% {
     transform: translate(0, 0) rotate(0deg);
   }
+
   15% {
     transform: translate(60px, -300pxx) rotate(-8deg);
   }
+
   30% {
     transform: translate(18px, 16px) rotate(10deg);
   }
+
   45% {
     transform: translate(-24px, 24px) rotate(-12deg);
   }
+
   60% {
     transform: translate(28px, 32px) rotate(12deg);
   }
+
   75% {
     transform: translate(-10px, 12px) rotate(-6deg);
   }
+
   90% {
     transform: translate(0, 0) rotate(0deg);
   }
+
   100% {
     transform: translate(0, 0) rotate(0deg);
   }
 }
+
 .visual_design_page .bniobj .illust:hover .illust_crayon-y {
   animation: illustCrayonYDraw 2.1s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
 }
@@ -930,8 +953,10 @@ header {
   transition: 2s ease-in-out;
   cursor: pointer;
 }
+
 .footer_page .footerobj .home-house:hover .home_door {
-  transform-style: preserve-3d; /* 자식 요소를 3D로 유지 */
+  transform-style: preserve-3d;
+  /* 자식 요소를 3D로 유지 */
   transform: rotateY(180deg);
   cursor: pointer;
 }
@@ -965,6 +990,7 @@ header {
   transform: rotateX(0deg);
   transition: transform 0.7s;
 }
+
 .footer_page .footerobj .e-mail_post:hover .post_door {
   transform: rotateX(-116deg) matrix(1, 0, -0.2, 1, 0, 0);
 }
@@ -979,6 +1005,7 @@ header {
   opacity: 0;
   z-index: 50;
 }
+
 .footer_page .footerobj .e-mail_post:hover .post_area .post {
   transform: translateX(40px) scale(1.08);
   opacity: 1;
@@ -1376,15 +1403,19 @@ header {
   0% {
     transform: translateY(0) rotate(0);
   }
+
   20% {
     transform: translateY(-12px) rotate(-10deg);
   }
+
   50% {
     transform: translateY(0) rotate(0);
   }
+
   70% {
     transform: translateY(12px) rotate(-10deg);
   }
+
   100% {
     transform: translateY(0) rotate(0);
   }
@@ -1395,13 +1426,14 @@ header {
 }
 
 .main_page .about-me .enter_about-me a:hover .about_me {
-  animation: treeGrow 1.2s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  animation: funnyRotate 1.2s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
 @keyframes funnyRotate {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(24deg);
   }
@@ -1411,9 +1443,11 @@ header {
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -1424,31 +1458,37 @@ header {
   transform: scale(1.04);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
+
 .visual_design_page .bniobj .bn:hover .bn_cube_a {
   transform: translateY(-10px);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
+
 .visual_design_page .bniobj .bn:hover .bn_cube_b {
   transform: translateY(10px);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
+
 .visual_design_page .bniobj .bn .bn_heart {
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     transform-origin 0s;
 }
+
 .visual_design_page .bniobj .bn:hover .bn_heart {
   transform-origin: bottom right;
-  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
-    alternate;
+  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
 }
+
 @keyframes bnHeartRotateLoop {
   0% {
     transform: rotate(-8deg);
   }
+
   100% {
     transform: rotate(8deg);
   }
 }
+
 .visual_design_page .bniobj .illust:hover .illust_sketchbook {
   transform: scale(1.04);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
@@ -1461,6 +1501,7 @@ header {
 .visual_design_page .bniobj .bn .bn_heart {
   transition: transform 0.5s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
+
 .visual_design_page .bniobj .illust .illust_sketchbook,
 .visual_design_page .bniobj .illust .illust_crayon-y {
   transition: transform 0.5s cubic-bezier(0.4, 0.7, 0.4, 1.2);
