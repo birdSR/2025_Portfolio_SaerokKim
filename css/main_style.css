@@ -602,13 +602,14 @@ header {
   top: 160px;
   left: 120px;
   transform-origin: center center;
+  background: #ccc;
 }
 
-.promo_page>.promoobj .samsung_promo img {
-  display: block;
-  margin: 0 auto;
-  transform-origin: 50% 50%;
+.promo_page>.promoobj .samsung_promo:hover {
+  animation: samsungPromoShrinkGrow 0.5s ease-in-out;
 }
+
+.promo_page>.promoobj .samsung_promo img {}
 
 /* samsung_promo hover shrink-grow animation */
 @keyframes samsungPromoShrinkGrow {
@@ -625,9 +626,7 @@ header {
   }
 }
 
-.promo_page>.promoobj .samsung_promo:hover {
-  animation: samsungPromoShrinkGrow 0.5s ease-in-out;
-}
+
 
 /* vfun_login */
 .promo_page .promoobj .vfun_login .funny_body {
