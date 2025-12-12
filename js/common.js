@@ -99,4 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('aside .close-btn').addEventListener('click', () => {
     document.querySelector('aside').style.display = 'none';
   });
+
+  // aside 내 .direct_plan, .direct_output 버튼 hover 효과 JS로 보장
+  const directBtns = document.querySelectorAll('.direct_plan, .direct_output');
+  directBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      btn.classList.add('is-hover');
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.classList.remove('is-hover');
+    });
+    // 키보드 접근성: 포커스 시에도 hover 효과
+    btn.addEventListener('focus', () => {
+      btn.classList.add('is-hover');
+    });
+    btn.addEventListener('blur', () => {
+      btn.classList.remove('is-hover');
+    });
+  });
 });
