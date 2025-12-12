@@ -1426,6 +1426,12 @@ header {
   gap: 10px;
 }
 
+.home_g_btn:nth-child(2) {
+  position: absolute;
+  right: 460px;
+  bottom: 280px;
+}
+
 .home_g_btn__pre {
   font-size: 14px;
   color: #ffffff;
