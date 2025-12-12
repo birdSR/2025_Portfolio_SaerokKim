@@ -1,4 +1,6 @@
 <svg width="257" height="359" viewBox="0 0 257 359" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M81.47 132.14H128.92V145.92C128.92 154.07 122.3 160.68 114.16 160.68H96.24C88.09 160.68 81.48 154.06 81.48 145.92V132.14H81.47Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
+<path d="M112.15 160.68H98.24V225.97H112.15V160.68Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M136.86 31.61H67.55V67.47H136.86V31.61Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M36.2001 117.95C35.8601 110.05 35.5001 101.19 35.1801 93.14C34.6201 79.04 45.3801 67.06 59.4601 66.09L147.09 60.09C162.16 59.06 174.95 71 174.95 86.11V123.23C174.95 138.39 162.07 150.36 146.95 149.24L60.3301 142.84C47.1401 141.86 36.7701 131.17 36.2001 117.95Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M67.0537 5.64672C83.3547 4.51828 97.5094 16.8402 98.6379 33.1412L100.683 62.6805L71.1434 64.7253C54.8425 65.8538 40.6877 53.5319 39.5593 37.2309C38.4308 20.9299 50.7527 6.77516 67.0537 5.64672Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
@@ -24,8 +26,6 @@
 <path d="M2.00003 121.26H4.03003L4.03003 87.66H2.00003L2.00003 121.26Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M125.06 118.95H129.63V89.94H125.06V118.95Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M29.8999 96.16H23.3999V112.72H29.8999V96.16Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
-<path d="M81.47 132.14H128.92V145.92C128.92 154.07 122.3 160.68 114.16 160.68H96.24C88.09 160.68 81.48 154.06 81.48 145.92V132.14H81.47Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
-<path d="M112.15 160.68H98.24V225.97H112.15V160.68Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M112.15 233.1H98.24V258.1H112.15V233.1Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M115.56 225.97H94.8201V233.1H115.56V225.97Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
 <path d="M115.56 258.1H94.8201V265.23H115.56V258.1Z" fill="#636363" stroke="black" stroke-width="4" stroke-miterlimit="10"/>
