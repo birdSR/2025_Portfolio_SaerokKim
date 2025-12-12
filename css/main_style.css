@@ -21,6 +21,40 @@ body {
   left: 0;
 }
 
+.click::after {
+  position: absolute;
+  content: "project click ↓";
+  display: block;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  color: #13a381;
+  backdrop-filter: blur(4px);
+  left: 50%;
+  transform: translateX(-50%);
+  top: -140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 50%;
+  animation: afterAni 1s linear infinite;
+}
+
+@keyframes afterAni {
+  0% {
+    top: -140px;
+  }
+
+  50% {
+    top: -130px;
+  }
+
+  100% {
+    top: -140px;
+  }
+}
+
 header {
   position: fixed;
   left: 0;
@@ -230,7 +264,7 @@ header {
 }
 
 /* main_page */
-.main_page > .sky .m_cloud1 {
+.main_page>.sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -238,7 +272,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .sky .m_cloud2 {
+.main_page>.sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -246,7 +280,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page > .sky .m_cloud3 {
+.main_page>.sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -359,31 +393,31 @@ header {
   left: 1584px;
 }
 
-.uxui_page > .uxuiobj .r_long_tree {
+.uxui_page>.uxuiobj .r_long_tree {
   position: absolute;
   top: 60px;
   left: 120px;
 }
 
-.uxui_page > .uxuiobj .regular_tree {
+.uxui_page>.uxuiobj .regular_tree {
   position: absolute;
   top: 170px;
   left: 540px;
 }
 
-.uxui_page > .uxuiobj .round_tree {
+.uxui_page>.uxuiobj .round_tree {
   position: absolute;
   bottom: -6px;
   left: 220px;
 }
 
-.uxui_page > .uxuiobj .wing_tree {
+.uxui_page>.uxuiobj .wing_tree {
   position: absolute;
   bottom: 82px;
   right: 200px;
 }
 
-.uxui_page > .uxuiobj .two_flower {
+.uxui_page>.uxuiobj .two_flower {
   position: absolute;
   bottom: 124px;
   right: 500px;
@@ -416,31 +450,31 @@ header {
   }
 }
 
-.uxui_page > .uxuiobj .apple_a {
+.uxui_page>.uxuiobj .apple_a {
   position: absolute;
   top: 300px;
   left: 850px;
 }
 
-.uxui_page > .uxuiobj .apple_b {
+.uxui_page>.uxuiobj .apple_b {
   position: absolute;
   top: 450px;
   left: 124px;
 }
 
-.uxui_page > .uxuiobj .apple_c {
+.uxui_page>.uxuiobj .apple_c {
   position: absolute;
   bottom: 240px;
   right: 630px;
 }
 
-.uxui_page > .uxuiobj .f_tulip_p_a {
+.uxui_page>.uxuiobj .f_tulip_p_a {
   position: absolute;
   bottom: 240px;
   left: 80px;
 }
 
-.uxui_page > .uxuiobj .f_gen_y {
+.uxui_page>.uxuiobj .f_gen_y {
   position: absolute;
   top: 380px;
   left: 640px;
@@ -448,55 +482,55 @@ header {
 
 /* .std_drg_web */
 
-.uxui_page > .uxuiobj .std_drg_web {
+.uxui_page>.uxuiobj .std_drg_web {
   position: absolute;
   top: 200px;
   left: 250px;
   cursor: pointer;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_video {
+.uxui_page>.uxuiobj .std_drg_web .sd_video {
   position: relative;
   z-index: 10;
   transition: transform 300ms ease, box-shadow 260ms ease;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_head {
+.uxui_page>.uxuiobj .std_drg_web .sd_head {
   position: absolute;
   top: 30px;
   left: 50px;
   z-index: 0;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_tail {
+.uxui_page>.uxuiobj .std_drg_web .sd_tail {
   position: absolute;
   top: 42px;
   left: 40px;
   z-index: 0;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_wing {
+.uxui_page>.uxuiobj .std_drg_web .sd_wing {
   position: absolute;
   top: 40px;
   left: 40px;
   z-index: 0;
 }
 
-.uxui_page > .uxuiobj .std_drg_web .sd_head,
-.uxui_page > .uxuiobj .std_drg_web .sd_tail,
-.uxui_page > .uxuiobj .std_drg_web .sd_wing {
+.uxui_page>.uxuiobj .std_drg_web .sd_head,
+.uxui_page>.uxuiobj .std_drg_web .sd_tail,
+.uxui_page>.uxuiobj .std_drg_web .sd_wing {
   opacity: 0;
   transform: translateY(12px) scale(0.98);
   z-index: 0;
 }
 
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_video {
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_video {
   transform: scale(0.985);
   z-index: 10;
 }
 
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_head {
-  animation: sd-head-Ani 2s ease-in-out;
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_head {
+  animation: sd-head-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
   position: absolute;
@@ -518,8 +552,8 @@ header {
   }
 }
 
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_tail {
-  animation: sd-tail-Ani 2s ease-in-out;
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_tail {
+  animation: sd-tail-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
   position: absolute;
@@ -541,8 +575,8 @@ header {
   }
 }
 
-.uxui_page > .uxuiobj .std_drg_web:hover .sd_wing {
-  animation: sd-wing-Ani 2s ease-in-out;
+.uxui_page>.uxuiobj .std_drg_web:hover .sd_wing {
+  animation: sd-wing-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
   position: absolute;
@@ -565,32 +599,32 @@ header {
 }
 
 /* .braedlee_app */
-.uxui_page > .uxuiobj .braedlee_app {
+.uxui_page>.uxuiobj .braedlee_app {
   position: absolute;
   bottom: 160px;
   left: 730px;
   cursor: pointer;
 }
 
-.uxui_page > .uxuiobj .braedlee_app .bl_market {
+.uxui_page>.uxuiobj .braedlee_app .bl_market {
   position: absolute;
   bottom: 0px;
   left: 0px;
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .braedlee_app .bl_cha {
+.uxui_page>.uxuiobj .braedlee_app .bl_cha {
   position: absolute;
   bottom: -40px;
   left: -100px;
 }
 
 /* Hover animations for .braedlee_app */
-.uxui_page > .uxuiobj .braedlee_app:hover .bl_market {
+.uxui_page>.uxuiobj .braedlee_app:hover .bl_market {
   transform: scale(1.04);
 }
 
-.uxui_page > .uxuiobj .braedlee_app:hover .bl_cha {
+.uxui_page>.uxuiobj .braedlee_app:hover .bl_cha {
   animation: bl_chaWiggle 0.6s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
 }
 
@@ -617,7 +651,7 @@ header {
 }
 
 /* gwm_web */
-.uxui_page > .uxuiobj .gwm_web {
+.uxui_page>.uxuiobj .gwm_web {
   position: absolute;
   top: 180px;
   right: 400px;
@@ -625,14 +659,14 @@ header {
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_head {
+.uxui_page>.uxuiobj .gwm_web .gwm_head {
   display: flex;
   justify-content: center;
   position: relative;
   z-index: 5;
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_stone {
+.uxui_page>.uxuiobj .gwm_web .gwm_stone {
   position: absolute;
   bottom: 0px;
   left: -70px;
@@ -640,7 +674,7 @@ header {
   transition: transform 320ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page > .uxuiobj .gwm_web .gwm_pramid {
+.uxui_page>.uxuiobj .gwm_web .gwm_pramid {
   position: absolute;
   bottom: 0px;
   right: -180px;
@@ -649,15 +683,15 @@ header {
 }
 
 /* Hover animations for .gwm_web */
-.uxui_page > .uxuiobj .gwm_web:hover {
+.uxui_page>.uxuiobj .gwm_web:hover {
   transform: scale(0.96);
 }
 
-.uxui_page > .uxuiobj .gwm_web:hover .gwm_stone {
+.uxui_page>.uxuiobj .gwm_web:hover .gwm_stone {
   transform: translate(-10px, -10px);
 }
 
-.uxui_page > .uxuiobj .gwm_web:hover .gwm_pramid {
+.uxui_page>.uxuiobj .gwm_web:hover .gwm_pramid {
   transform: translate(10px, -10px);
 }
 
@@ -674,109 +708,109 @@ header {
   left: 1458px;
 }
 
-.promo_page > .promoobj .triamgle_tree {
+.promo_page>.promoobj .triamgle_tree {
   position: absolute;
   top: 220px;
   left: 240px;
 }
 
-.promo_page > .promoobj .round_tree {
+.promo_page>.promoobj .round_tree {
   position: absolute;
   bottom: 300px;
   left: 600px;
 }
 
-.promo_page > .promoobj .wing_tree {
+.promo_page>.promoobj .wing_tree {
   position: absolute;
   bottom: 300px;
   right: 400px;
 }
 
-.promo_page > .promoobj .regular_tree {
+.promo_page>.promoobj .regular_tree {
   position: absolute;
   top: 180px;
   right: 240px;
 }
 
-.promo_page > .promoobj .two_flower {
+.promo_page>.promoobj .two_flower {
   position: absolute;
   bottom: 400px;
   left: 1000px;
 }
 
-.promo_page > .promoobj .apple_a {
+.promo_page>.promoobj .apple_a {
   position: absolute;
   bottom: 600px;
   right: 140px;
 }
 
-.promo_page > .promoobj .apple_b {
+.promo_page>.promoobj .apple_b {
   position: absolute;
   bottom: 300px;
   right: 200px;
 }
 
-.promo_page > .promoobj .apple_c {
+.promo_page>.promoobj .apple_c {
   position: absolute;
   bottom: 500px;
   right: 260px;
 }
 
-.promo_page > .promoobj .triangle_tree {
+.promo_page>.promoobj .triangle_tree {
   position: absolute;
   top: 100px;
   right: 540px;
 }
 
-.promo_page > .promoobj .triangle_tree {
+.promo_page>.promoobj .triangle_tree {
   position: absolute;
   top: 100px;
   right: 540px;
 }
 
-.promo_page > .promoobj .tree_y-b {
+.promo_page>.promoobj .tree_y-b {
   position: absolute;
   bottom: -50px;
   right: 200px;
 }
 
-.promo_page > .promoobj .duncul_r {
+.promo_page>.promoobj .duncul_r {
   position: absolute;
   bottom: -4px;
   left: 160px;
 }
 
-.promo_page > .promoobj .duncul_s {
+.promo_page>.promoobj .duncul_s {
   position: absolute;
   bottom: -4px;
   left: 390px;
 }
 
-.promo_page > .promoobj .duncul_xs {
+.promo_page>.promoobj .duncul_xs {
   position: absolute;
   bottom: 210px;
   right: 40px;
 }
 
-.promo_page > .promoobj .apple_3-a {
+.promo_page>.promoobj .apple_3-a {
   position: absolute;
   bottom: 80px;
   right: 670px;
 }
 
-.promo_page > .promoobj .apple_3-b {
+.promo_page>.promoobj .apple_3-b {
   position: absolute;
   top: 510px;
   right: 140px;
 }
 
-.promo_page > .promoobj .apple_3-c {
+.promo_page>.promoobj .apple_3-c {
   position: absolute;
   bottom: 48px;
   left: 400px;
 }
 
-.promo_page > .promoobj .bertterfly_b {
+.promo_page>.promoobj .bertterfly_b {
   position: absolute;
   top: 380px;
   right: 780px;
@@ -784,7 +818,7 @@ header {
   transform-origin: center center;
 }
 
-.promo_page > .promoobj .f_gen_big_p {
+.promo_page>.promoobj .f_gen_big_p {
   position: absolute;
   bottom: 140px;
   left: 150px;
@@ -793,20 +827,20 @@ header {
   /* 바닥 기준으로 쫀득 */
 }
 
-.promo_page > .promoobj .F_tulip_y {
+.promo_page>.promoobj .F_tulip_y {
   position: absolute;
   top: 480px;
   right: 600px;
 }
 
-.promo_page > .promoobj .F_gen_y {
+.promo_page>.promoobj .F_gen_y {
   position: absolute;
   top: 220px;
   left: 500px;
 }
 
 /* samsung_promo */
-.promo_page > .promoobj .samsung_promo {
+.promo_page>.promoobj .samsung_promo {
   /* border: 1px solid #ffffff; */
   position: absolute;
   top: 320px;
@@ -814,7 +848,7 @@ header {
   transform-origin: center center;
 }
 
-.promo_page > .promoobj .samsung_promo:hover {
+.promo_page>.promoobj .samsung_promo:hover {
   animation: samsungPromoShrinkGrow 0.5s ease-in-out;
 }
 
@@ -841,22 +875,21 @@ header {
 
 .promo_page .promoobj .vfun_login:hover .funny_arm,
 .promo_page .promoobj .vfun_login:hover .game_controller {
-  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
-    alternate;
+  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
 }
 
-.promo_page > .promoobj .vfun_login {
+.promo_page>.promoobj .vfun_login {
   position: absolute;
   top: 50%;
   left: 820px;
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.promo_page > .promoobj .vfun_login:hover {
+.promo_page>.promoobj .vfun_login:hover {
   transform: scale(1.04);
 }
 
-.promo_page > .promoobj .vfun_login .funny_arm {
+.promo_page>.promoobj .vfun_login .funny_arm {
   position: relative;
   z-index: 1;
   /* funny_body 뒤, game_controller보다 뒤 */
@@ -865,7 +898,7 @@ header {
   left: 29px;
 }
 
-.promo_page > .promoobj .vfun_login .game_controller {
+.promo_page>.promoobj .vfun_login .game_controller {
   position: relative;
   z-index: 3;
   transform-origin: right top;
@@ -874,19 +907,19 @@ header {
 }
 
 /* lg_plal */
-.promo_page > .promoobj .lg_plal {
+.promo_page>.promoobj .lg_plal {
   position: absolute;
   top: 144px;
   right: 154px;
 }
 
-.promo_page > .promoobj .lg_plal .lg_plal_body {
+.promo_page>.promoobj .lg_plal .lg_plal_body {
   position: absolute;
   top: 144px;
   right: 154px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .lg_plal_body {
+.promo_page>.promoobj .lg_plal:hover .lg_plal_body {
   animation: lgPlalBodyRotate 2.2s infinite;
 }
 
@@ -913,23 +946,23 @@ header {
   }
 }
 
-.promo_page > .promoobj .lg_plal .twinkle_m {
+.promo_page>.promoobj .lg_plal .twinkle_m {
   position: absolute;
   top: 120px;
   right: 120px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .twinkle_m {
+.promo_page>.promoobj .lg_plal:hover .twinkle_m {
   animation: twinkleBlink 0.9s linear infinite;
 }
 
-.promo_page > .promoobj .lg_plal .twinkle_s {
+.promo_page>.promoobj .lg_plal .twinkle_s {
   position: absolute;
   top: 270px;
   right: 280px;
 }
 
-.promo_page > .promoobj .lg_plal:hover .twinkle_s {
+.promo_page>.promoobj .lg_plal:hover .twinkle_s {
   animation: twinkleBlink 0.9s linear infinite;
   animation-delay: 0.45s;
 }
@@ -1197,24 +1230,31 @@ header {
   0% {
     transform: translateY(0) translateX(0) rotate(0deg) scale(1);
   }
+
   15% {
     transform: translateY(-22px) translateX(18px) rotate(-10deg) scale(1.05);
   }
+
   30% {
     transform: translateY(-38px) translateX(-20px) rotate(12deg) scale(0.97);
   }
+
   45% {
     transform: translateY(-18px) translateX(22px) rotate(-14deg) scale(1.03);
   }
+
   60% {
     transform: translateY(0) translateX(-14px) rotate(10deg) scale(1.01);
   }
+
   75% {
     transform: translateY(16px) translateX(14px) rotate(-8deg) scale(1.04);
   }
+
   90% {
     transform: translateY(0) translateX(0) rotate(0deg) scale(1);
   }
+
   100% {
     transform: translateY(0) translateX(0) rotate(0deg) scale(1);
   }
@@ -1786,8 +1826,7 @@ header {
 
 .visual_design_page .bniobj .bn:hover .bn_heart {
   transform-origin: bottom right;
-  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
-    alternate;
+  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
 }
 
 @keyframes bnHeartRotateLoop {
@@ -1850,4 +1889,45 @@ header {
   100% {
     transform: translateY(0) translateX(0) rotate(0deg) scale(1);
   }
+}
+
+
+aside {
+  width: 80vw;
+  height: 80vh;
+  background: #fff;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border-radius: 50px;
+  overflow: hidden;
+  display: none;
+}
+
+aside ul li {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: tan;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+aside ul li.on {
+  opacity: 1;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2rem;
+  cursor: pointer;
 }

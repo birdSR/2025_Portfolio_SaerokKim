@@ -1,749 +1,281 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="김새록's Portfolio" />
-    <meta
-      name="keywords"
-      content="포트폴리오, 웹 디자인, 김새록, Portfolio, Web Design, Saerok Kim"
-    />
-    <meta name="author" content="100SJ" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saerok Saerok My little forest</title>
-    <link rel="stylesheet" href="./css/reset.css" />
-    <!-- <link rel="stylesheet" href="./css/common.css" /> -->
-    <link rel="stylesheet" href="./css/main_style.css" />
-    <link rel="stylesheet" href="./css/media.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
-    <script src="./js/common.js"></script>
-  </head>
 
-  <body>
-    <div class="audio-player-fixed">
-      <audio
-        id="bgm-audio"
-        src="./assets/Wandering Through the Pines.mp3"
-        loop
-      ></audio>
-      <button
-        id="audio-toggle"
-        class="audio-toggle"
-        aria-label="음악 재생/일시정지"
-      >
-        <svg
-          id="audio-icon-play"
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          fill="none"
-        >
-          <circle cx="16" cy="16" r="16" fill="#000" />
-          <polygon points="13,10 25,16 13,22" fill="#fff" />
-        </svg>
-        <svg
-          id="audio-icon-pause"
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          fill="none"
-          style="display: none"
-        >
-          <circle cx="16" cy="16" r="16" fill="#000" />
-          <rect x="12" y="10" width="3" height="12" fill="#fff" />
-          <rect x="17" y="10" width="3" height="12" fill="#fff" />
-        </svg>
-      </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="김새록's Portfolio" />
+  <meta name="keywords" content="포트폴리오, 웹 디자인, 김새록, Portfolio, Web Design, Saerok Kim" />
+  <meta name="author" content="100SJ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saerok Saerok My little forest</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <!-- <link rel="stylesheet" href="./css/common.css" /> -->
+  <link rel="stylesheet" href="./css/main_style.css" />
+  <link rel="stylesheet" href="./css/media.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
+  <script src="./js/common.js"></script>
+</head>
+
+<body>
+  <div class="audio-player-fixed">
+    <audio id="bgm-audio" src="./assets/Wandering Through the Pines.mp3" loop></audio>
+    <button id="audio-toggle" class="audio-toggle" aria-label="음악 재생/일시정지">
+      <svg id="audio-icon-play" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#000" />
+        <polygon points="13,10 25,16 13,22" fill="#fff" />
+      </svg>
+      <svg id="audio-icon-pause" width="32" height="32" viewBox="0 0 32 32" fill="none" style="display: none">
+        <circle cx="16" cy="16" r="16" fill="#000" />
+        <rect x="12" y="10" width="3" height="12" fill="#fff" />
+        <rect x="17" y="10" width="3" height="12" fill="#fff" />
+      </svg>
+    </button>
+  </div>
+
+  <header class="site-header">
+    <div class="fixed-logo">
+      <img src="./assets/logo_tit.png" alt="로고" />
     </div>
+  </header>
 
-    <header class="site-header">
-      <div class="fixed-logo">
-        <img src="./assets/logo_tit.png" alt="로고" />
-      </div>
-    </header>
-
-    <!-- 가로로 스크롤되는 메인 영역 -->
-    <main class="horizontal-wrapper">
-      <div class="horizontal-scroll">
-        <section class="panel main_page">
-          <h2>섹션 1</h2>
-          <div class="bottom"></div>
-          <div class="sky">
-            <img
-              src="./assets/svg/main_obj/cloud_first.svg"
-              alt="m_cloud1"
-              class="m_cloud1"
-            />
-            <img
-              src="./assets/svg/main_obj/cloud_second.svg"
-              alt="m_cloud2"
-              class="m_cloud2"
-            />
-            <img
-              src="./assets/svg/main_obj/cloud_third.svg"
-              alt="m_cloud3"
-              class="m_cloud3"
-            />
-            <img
-              src="./assets/svg/main_obj/sky_bird.svg"
-              alt="sky_bird"
-              class="sky_bird"
-            />
+  <!-- 가로로 스크롤되는 메인 영역 -->
+  <main class="horizontal-wrapper">
+    <div class="horizontal-scroll">
+      <section class="panel main_page">
+        <h2>섹션 1</h2>
+        <div class="bottom"></div>
+        <div class="sky">
+          <img src="./assets/svg/main_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+          <img src="./assets/svg/main_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+          <img src="./assets/svg/main_obj/cloud_third.svg" alt="m_cloud3" class="m_cloud3" />
+          <img src="./assets/svg/main_obj/sky_bird.svg" alt="sky_bird" class="sky_bird" />
+        </div>
+        <!-- sky -->
+        <div class="top"></div>
+        <article class="mainobj">
+          <img src="./assets/svg/main_obj/tree_y.svg" alt="tree_y" class="tree_y" />
+          <img src="./assets/svg/main_obj/big_leaf.svg" alt="big_leaf" class="big_leaf" />
+          <img src="./assets/svg/main_obj/snall_leaf.svg" alt="snall_leaf" class="snall_leaf" />
+          <img src="./assets/svg/main_obj/tree_long.svg" alt="long_tree" class="long_tree" />
+          <img src="./assets/svg/main_obj/wood.svg" alt="wood" class="wood" />
+          <img src="./assets/svg/main_obj/rabbit.svg" alt="rabbit" class="rabbit" />
+          <img src="./assets/svg/main_obj/watering_can.svg" alt="watering_can" class="watering_can" />
+          <img src="./assets/png/f_tulip_p_a.png" alt="f_tulip_p_a" class="f_tulip_p_a" />
+          <img src="./assets/png/F_tulip_p_b.png" alt="F_tulip_p_b" class="F_tulip_p_b" />
+          <img src="./assets/png/f_gen_p.png" alt="f_gen_p" class="f_gen_p" />
+          <img src="./assets/png/f_gen_y_b.png" alt="f_gen_y_b" class="f_gen_y_b" />
+          <div class="dotory_tree_a">
+            <img src="./assets/svg/main_obj/dototy_tree.svg" alt="dototy_tree" class="dototy_tree" />
+            <img src="./assets/svg/main_obj/dotory_a.svg" alt="dotory_a" class="dotory_a" />
+            <img src="./assets/svg/main_obj/dotory_b.svg" alt="dotory_b" class="dotory_b" />
+            <img src="./assets/svg/main_obj/dotory_c.png" alt="dotory_c" class="dotory_c" />
+            <img src="./assets/svg/main_obj/squirrel.svg" alt="squirrel" class="squirrel" />
           </div>
-          <!-- sky -->
-          <div class="top"></div>
-          <article class="mainobj">
-            <img
-              src="./assets/svg/main_obj/tree_y.svg"
-              alt="tree_y"
-              class="tree_y"
-            />
-            <img
-              src="./assets/svg/main_obj/big_leaf.svg"
-              alt="big_leaf"
-              class="big_leaf"
-            />
-            <img
-              src="./assets/svg/main_obj/snall_leaf.svg"
-              alt="snall_leaf"
-              class="snall_leaf"
-            />
-            <img
-              src="./assets/svg/main_obj/tree_long.svg"
-              alt="long_tree"
-              class="long_tree"
-            />
-            <img src="./assets/svg/main_obj/wood.svg" alt="wood" class="wood" />
-            <img
-              src="./assets/svg/main_obj/rabbit.svg"
-              alt="rabbit"
-              class="rabbit"
-            />
-            <img
-              src="./assets/svg/main_obj/watering_can.svg"
-              alt="watering_can"
-              class="watering_can"
-            />
-            <img
-              src="./assets/png/f_tulip_p_a.png"
-              alt="f_tulip_p_a"
-              class="f_tulip_p_a"
-            />
-            <img
-              src="./assets/png/F_tulip_p_b.png"
-              alt="F_tulip_p_b"
-              class="F_tulip_p_b"
-            />
-            <img src="./assets/png/f_gen_p.png" alt="f_gen_p" class="f_gen_p" />
-            <img
-              src="./assets/png/f_gen_y_b.png"
-              alt="f_gen_y_b"
-              class="f_gen_y_b"
-            />
-            <div class="dotory_tree_a">
-              <img
-                src="./assets/svg/main_obj/dototy_tree.svg"
-                alt="dototy_tree"
-                class="dototy_tree"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_a.svg"
-                alt="dotory_a"
-                class="dotory_a"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_b.svg"
-                alt="dotory_b"
-                class="dotory_b"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_c.png"
-                alt="dotory_c"
-                class="dotory_c"
-              />
-              <img
-                src="./assets/svg/main_obj/squirrel.svg"
-                alt="squirrel"
-                class="squirrel"
-              />
+          <div class="about-me">
+            <div class="enter_about-me">
+              <a href="aboutme.html" target="_blank">
+                <img src="./assets/svg/main_obj/about_me.svg" alt="about_me" class="about_me" />
+                <div class="mychar_ani">
+                  <img src="./assets/svg/main_obj/mycha_arm.svg" alt="mycha_arm" class="mycha_arm" />
+                </div>
+                <img src="./assets/svg/main_obj/mycha_body.svg" alt="mycha" class="mycha" />
+              </a>
             </div>
-            <div class="about-me">
-              <div class="enter_about-me">
-                <a href="aboutme.html" target="_blank">
-                  <img
-                    src="./assets/svg/main_obj/about_me.svg"
-                    alt="about_me"
-                    class="about_me"
-                  />
-                  <div class="mychar_ani">
-                    <img
-                      src="./assets/svg/main_obj/mycha_arm.svg"
-                      alt="mycha_arm"
-                      class="mycha_arm"
-                    />
-                  </div>
-                  <img
-                    src="./assets/svg/main_obj/mycha_body.svg"
-                    alt="mycha"
-                    class="mycha"
-                  />
-                </a>
-              </div>
-            </div>
-          </article>
-        </section>
-        <!-- main_page -->
-        <section class="panel uxui_page">
-          <h2>섹션 2</h2>
-          <div class="bottom"></div>
-          <div class="sky">
-            <img
-              src="./assets/svg/uxui-obj/cloud_first.svg"
-              alt="m_cloud1"
-              class="m_cloud1"
-            />
-            <img
-              src="./assets/svg/uxui-obj/cloud_second.svg"
-              alt="m_cloud2"
-              class="m_cloud2"
-            />
           </div>
-          <!-- sky -->
-          <div class="top"></div>
-          <article class="uxuiobj">
-            <img
-              src="./assets/png/f_tulip_p_a.png"
-              alt="f_tulip_p_a"
-              class="f_tulip_p_a"
-            />
-            <img
-              src="./assets/png/f_gen_y_b.png"
-              alt="f_gen_y"
-              class="f_gen_y"
-            />
-            <img
-              src="./assets/svg/uxui-obj/r_long_tree.svg"
-              alt="r_long_tree"
-              class="r_long_tree"
-            />
-            <img
-              src="./assets/svg/uxui-obj/round_tree.svg"
-              alt="round_tree"
-              class="round_tree"
-            />
-            <img
-              src="./assets/svg/uxui-obj/wing_tree.svg"
-              alt="wing_tree"
-              class="wing_tree"
-            />
-            <img
-              src="./assets/svg/uxui-obj/regular_tree.svg"
-              alt="regular_tree"
-              class="regular_tree"
-            />
-            <img
-              src="./assets/svg/uxui-obj/two_flower.svg"
-              alt="two_flower"
-              class="two_flower"
-            />
-            <img
-              src="./assets/svg/uxui-obj/apple_a.svg"
-              alt="apple_a"
-              class="apple_a"
-            />
-            <img
-              src="./assets/svg/uxui-obj/apple_b.svg"
-              alt="apple_b"
-              class="apple_b"
-            />
-            <img
-              src="./assets/svg/uxui-obj/apple_c.svg"
-              alt="apple_c"
-              class="apple_c"
-            />
+        </article>
+      </section>
+      <!-- main_page -->
+      <section class="panel uxui_page">
+        <h2>섹션 2</h2>
+        <div class="bottom"></div>
+        <div class="sky">
+          <img src="./assets/svg/uxui-obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+          <img src="./assets/svg/uxui-obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+        </div>
+        <!-- sky -->
+        <div class="top"></div>
+        <article class="uxuiobj">
+          <img src="./assets/png/f_tulip_p_a.png" alt="f_tulip_p_a" class="f_tulip_p_a" />
+          <img src="./assets/png/f_gen_y_b.png" alt="f_gen_y" class="f_gen_y" />
+          <img src="./assets/svg/uxui-obj/r_long_tree.svg" alt="r_long_tree" class="r_long_tree" />
+          <img src="./assets/svg/uxui-obj/round_tree.svg" alt="round_tree" class="round_tree" />
+          <img src="./assets/svg/uxui-obj/wing_tree.svg" alt="wing_tree" class="wing_tree" />
+          <img src="./assets/svg/uxui-obj/regular_tree.svg" alt="regular_tree" class="regular_tree" />
+          <img src="./assets/svg/uxui-obj/two_flower.svg" alt="two_flower" class="two_flower" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
 
-            <div class="std_drg_web">
-              <img
-                src="./assets/svg/uxui-obj/sd_head.svg"
-                alt="sd_head"
-                class="sd_head"
-              />
-              <img
-                src="./assets/svg/uxui-obj/sd_tail.svg"
-                alt="sd_tail"
-                class="sd_tail"
-              />
-              <img
-                src="./assets/svg/uxui-obj/sd_wing.svg"
-                alt="sd_wing"
-                class="sd_wing"
-              />
-              <img
-                src="./assets/svg/uxui-obj/sd_video.svg"
-                alt="sd_video"
-                class="sd_video"
-              />
-            </div>
-
-            <div class="braedlee_app">
-              <img
-                src="./assets/svg/uxui-obj/bl_market.svg"
-                alt="bl_market"
-                class="bl_market"
-              />
-              <img
-                src="./assets/svg/uxui-obj/bl_cha.svg"
-                alt="bl_cha"
-                class="bl_cha"
-              />
-            </div>
-
-            <div class="gwm_web">
-              <img
-                src="./assets/svg/uxui-obj/gwm_stone.svg"
-                alt="gwm_stone"
-                class="gwm_stone"
-              />
-              <img
-                src="./assets/svg/uxui-obj/gwm_pramid.svg"
-                alt="gwm_pramid"
-                class="gwm_pramid"
-              />
-              <img
-                src="./assets/svg/uxui-obj/gwm_head.svg"
-                alt="gwm_head"
-                class="gwm_head"
-              />
-            </div>
-          </article>
-        </section>
-        <!-- uxui_page -->
-        <section class="panel promo_page">
-          <h2>섹션 3</h2>
-          <div class="bottom"></div>
-          <div class="sky">
-            <img
-              src="./assets/svg/promo_obj/cloud_first.svg"
-              alt="m_cloud1"
-              class="m_cloud1"
-            />
-            <img
-              src="./assets/svg/promo_obj/cloud_second.svg"
-              alt="m_cloud2"
-              class="m_cloud2"
-            />
+          <div class="std_drg_web click">
+            <img src="./assets/svg/uxui-obj/sd_head.svg" alt="sd_head" class="sd_head" />
+            <img src="./assets/svg/uxui-obj/sd_tail.svg" alt="sd_tail" class="sd_tail" />
+            <img src="./assets/svg/uxui-obj/sd_wing.svg" alt="sd_wing" class="sd_wing" />
+            <img src="./assets/svg/uxui-obj/sd_video.svg" alt="sd_video" class="sd_video" />
           </div>
-          <div class="top"></div>
-          <article class="promoobj">
-            <img
-              src="./assets/svg/promo_obj/F_tulip_y.svg"
-              alt="F_tulip_y"
-              class="F_tulip_y"
-            />
-            <img
-              src="./assets/svg/promo_obj/F_gen_y.svg"
-              alt="F_gen_y"
-              class="F_gen_y"
-            />
-            <img
-              src="./assets/svg/promo_obj/triangle_tree.svg"
-              alt="triangle_tree"
-              class="triangle_tree"
-            />
-            <img
-              src="./assets/svg/promo_obj/tree_y-b.svg"
-              alt="tree_y-b"
-              class="tree_y-b"
-            />
-            <img
-              src="./assets/svg/promo_obj/apple_3-a.svg"
-              alt="apple_3-a"
-              class="apple_3-a"
-            />
-            <img
-              src="./assets/svg/promo_obj/apple_3-b.svg"
-              alt="apple_3-b"
-              class="apple_3-b"
-            />
-            <img
-              src="./assets/svg/promo_obj/apple_3-c.svg"
-              alt="apple_3-c"
-              class="apple_3-c"
-            />
-            <img
-              src="./assets/svg/promo_obj/duncul_r.svg"
-              alt="duncul_r"
-              class="duncul_r"
-            />
-            <img
-              src="./assets/svg/promo_obj/duncul_s.svg"
-              alt="duncul_s"
-              class="duncul_s"
-            />
-            <img
-              src="./assets/svg/promo_obj/duncul_xs.svg"
-              alt="duncul_xs"
-              class="duncul_xs"
-            />
-            <img
-              src="./assets/svg/promo_obj/bertterfly_b.svg"
-              alt="bertterfly_b"
-              class="bertterfly_b"
-            />
-            <img
-              src="./assets/svg/promo_obj/f_gen_big_p.svg"
-              alt="f_gen_big_p"
-              class="f_gen_big_p"
-            />
 
-            <div class="samsung_promo">
-              <img
-                src="./assets/svg/promo_obj/sansung_promo.svg"
-                alt="samsung_promo"
-                class=""
-              />
-            </div>
-            <div class="vfun_login">
-              <img
-                src="./assets/svg/promo_obj/funny_arm.svg"
-                alt="funny_arm"
-                class="funny_arm"
-              />
-              <img
-                src="./assets/svg/promo_obj/funny_body.svg"
-                alt="funny_body"
-                class="funny_body"
-              />
-              <img
-                src="./assets/svg/promo_obj/game_controller.svg"
-                alt="game_controller"
-                class="game_controller"
-              />
-            </div>
-            <div class="lg_plal">
-              <img
-                src="./assets/svg/promo_obj/lg_plal.svg"
-                alt="lg_plal_body"
-                class="lg_plal_body"
-              />
-              <img
-                src="./assets/svg/promo_obj/twinkle_m.svg"
-                alt="twinkle_m"
-                class="twinkle_m"
-              />
-              <img
-                src="./assets/svg/promo_obj/twinkle_s.svg"
-                alt="twinkle_s"
-                class="twinkle_s"
-              />
-              <img
-                src="./assets/svg/promo_obj/twinkle_m.svg"
-                alt="twinkle_m"
-                class="twinkle_m"
-              />
-            </div>
-          </article>
-        </section>
-        <!-- promo_page -->
-        <section class="panel visual_design_page">
-          <h2>섹션 4</h2>
-          <div class="bottom"></div>
-          <div class="sky">
-            <img
-              src="./assets/svg/bni_obj/cloud_first.svg"
-              alt="m_cloud1"
-              class="m_cloud1"
-            />
-            <img
-              src="./assets/svg/bni_obj/cloud_second.svg"
-              alt="m_cloud2"
-              class="m_cloud2"
-            />
-            <img
-              src="./assets/svg/bni_obj/cloud_thrid.svg"
-              alt="m_cloud3"
-              class="m_cloud3"
-            />
+          <div class="braedlee_app click">
+            <img src="./assets/svg/uxui-obj/bl_market.svg" alt="bl_market" class="bl_market" />
+            <img src="./assets/svg/uxui-obj/bl_cha.svg" alt="bl_cha" class="bl_cha" />
           </div>
-          <div class="top"></div>
-          <article class="bniobj">
-            <img
-              src="./assets/svg/bni_obj/two_cir_tree.svg"
-              alt="two_cir_tree"
-              class="two_cir_tree"
-            />
-            <img
-              src="./assets/svg/bni_obj/two_flower_y-b.svg"
-              alt="two_flower_y-b"
-              class="two_flower_y-b"
-            />
-            <img
-              src="./assets/svg/bni_obj/apple_4-a.svg"
-              alt="apple_4-a"
-              class="apple_4-a"
-            />
-            <img
-              src="./assets/svg/bni_obj/apple_4-b.svg"
-              alt="apple_4-b"
-              class="apple_4-b"
-            />
-            <img
-              src="./assets/svg/bni_obj/apple_4-c.svg"
-              alt="apple_4-c"
-              class="apple_4-c"
-            />
-            <img
-              src="./assets/png/f_tulip_p_a.png"
-              alt="f_tulip_p_a"
-              class="f_tulip_p_a"
-            />
-            <img src="./assets/png/f_gen_p.png" alt="f_gen_p" class="f_gen_p" />
-            <img
-              src="./assets/png/f_tulip_y.png"
-              alt="f_tulip_y"
-              class="f_tulip_y"
-            />
-            <img
-              src="./assets/png/f_gen_p_leaf.png"
-              alt="f_gen_p_leaf"
-              class="f_gen_p_leaf"
-            />
-            <img
-              src="./assets/svg/bni_obj/duncul_4.svg"
-              alt="duncul_4"
-              class="duncul_4"
-            />
 
-            <div class="bn">
-              <img
-                src="./assets/svg/bni_obj/bn_cube_a.svg"
-                alt="bn_cube_a"
-                class="bn_cube_a"
-              />
-              <img
-                src="./assets/svg/bni_obj/bn_cube_b.svg"
-                alt="bn_cube_b"
-                class="bn_cube_b"
-              />
-              <img
-                src="./assets/svg/bni_obj/bn_heart.svg"
-                alt="bn_heart"
-                class="bn_heart"
-              />
-              <img
-                src="./assets/svg/bni_obj/bn_phone.svg"
-                alt="bn_phone"
-                class="bn_phone"
-              />
-            </div>
-
-            <div class="illust">
-              <img
-                src="./assets/svg/bni_obj/illust_sketchbook.svg"
-                alt="illust_sketchbook"
-                class="illust_sketchbook"
-              />
-              <img
-                src="./assets/svg/bni_obj/illust_crayon-r.svg"
-                alt="illust_crayon-r"
-                class="illust_crayon-r"
-              />
-              <img
-                src="./assets/svg/bni_obj/illust_crayon-y.svg"
-                alt="illust_crayon-y"
-                class="illust_crayon-y"
-              />
-            </div>
-          </article>
-        </section>
-        <!-- visual_design_page -->
-        <section class="panel footer_page">
-          <h2>섹션 5</h2>
-          <div class="bottom"></div>
-          <div class="sky">
-            <img
-              src="./assets/svg/footer_obj/cloud_first.svg"
-              alt="m_cloud1"
-              class="m_cloud1"
-            />
-            <img
-              src="./assets/svg/footer_obj/cloud_second.svg"
-              alt="m_cloud2"
-              class="m_cloud2"
-            />
-            <img
-              src="./assets/svg/footer_obj/cloud_third.svg"
-              alt="m_cloud3"
-              class="m_cloud3"
-            />
+          <div class="gwm_web click">
+            <img src="./assets/svg/uxui-obj/gwm_stone.svg" alt="gwm_stone" class="gwm_stone" />
+            <img src="./assets/svg/uxui-obj/gwm_pramid.svg" alt="gwm_pramid" class="gwm_pramid" />
+            <img src="./assets/svg/uxui-obj/gwm_head.svg" alt="gwm_head" class="gwm_head" />
           </div>
-          <div class="top"></div>
-          <article class="footerobj">
-            <img
-              src="./assets/svg/main_obj/dotory_a-2.svg"
-              alt="dotory_a-2"
-              class="dotory_a-2"
-            />
-            <img
-              src="./assets/svg/main_obj/dotory_b-2.svg"
-              alt="dotory_b-2"
-              class="dotory_b-2"
-            />
-            <img
-              src="./assets/svg/main_obj/dotory_c-2.svg"
-              alt="dotory_c-2"
-              class="dotory_c-2"
-            />
-            <img
-              src="./assets/png/f_tulip_p_a.png"
-              alt="f_tulip_p_Footer"
-              class="f_tulip_p_Footer"
-            />
-            <img
-              src="./assets/png/f_gen_p.png"
-              alt="f_gen_p_Footer"
-              class="f_gen_p_Footer"
-            />
-            <img
-              src="./assets/svg/footer_obj/pongpong_tree.svg"
-              alt="pongpong_tree"
-              class="pongpong_tree"
-            />
-            <img
-              src="./assets/svg/footer_obj/bertterfly_y.svg"
-              alt="bertterfly_y"
-              class="bertterfly_y"
-            />
-            <img
-              src="./assets/svg/footer_obj/three_apples.svg"
-              alt="three_apples"
-              class="three_apples"
-            />
-            <img
-              src="./assets/svg/footer_obj/round_tree_z.svg"
-              alt="round_tree_z"
-              class="round_tree_z"
-            />
-            <div class="dotory_tree_z">
-              <img
-                src="./assets/svg/main_obj/dototy_tree.svg"
-                alt="dototy_tree"
-                class="dototy_tree"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_a.svg"
-                alt="dotory_a"
-                class="dotory_a"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_b.svg"
-                alt="dotory_b"
-                class="dotory_b"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_c.png"
-                alt="dotory_c"
-                class="dotory_c"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_a-2.svg"
-                alt="dotory_a-2"
-                class="dotory_a-2"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_b-2.svg"
-                alt="dotory_b-2"
-                class="dotory_b-2"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_c-2.svg"
-                alt="dotory_c-2"
-                class="dotory_c-2"
-              />
-              <img
-                src="./assets/svg/main_obj/squirrel.svg"
-                alt="squirrel"
-                class="squirrel"
-              />
-            </div>
+        </article>
+      </section>
+      <!-- uxui_page -->
+      <section class="panel promo_page">
+        <h2>섹션 3</h2>
+        <div class="bottom"></div>
+        <div class="sky">
+          <img src="./assets/svg/promo_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+          <img src="./assets/svg/promo_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+        </div>
+        <div class="top"></div>
+        <article class="promoobj">
+          <img src="./assets/svg/promo_obj/F_tulip_y.svg" alt="F_tulip_y" class="F_tulip_y" />
+          <img src="./assets/svg/promo_obj/F_gen_y.svg" alt="F_gen_y" class="F_gen_y" />
+          <img src="./assets/svg/promo_obj/triangle_tree.svg" alt="triangle_tree" class="triangle_tree" />
+          <img src="./assets/svg/promo_obj/tree_y-b.svg" alt="tree_y-b" class="tree_y-b" />
+          <img src="./assets/svg/promo_obj/apple_3-a.svg" alt="apple_3-a" class="apple_3-a" />
+          <img src="./assets/svg/promo_obj/apple_3-b.svg" alt="apple_3-b" class="apple_3-b" />
+          <img src="./assets/svg/promo_obj/apple_3-c.svg" alt="apple_3-c" class="apple_3-c" />
+          <img src="./assets/svg/promo_obj/duncul_r.svg" alt="duncul_r" class="duncul_r" />
+          <img src="./assets/svg/promo_obj/duncul_s.svg" alt="duncul_s" class="duncul_s" />
+          <img src="./assets/svg/promo_obj/duncul_xs.svg" alt="duncul_xs" class="duncul_xs" />
+          <img src="./assets/svg/promo_obj/bertterfly_b.svg" alt="bertterfly_b" class="bertterfly_b" />
+          <img src="./assets/svg/promo_obj/f_gen_big_p.svg" alt="f_gen_big_p" class="f_gen_big_p" />
 
-            <div class="my-cha_footer">
-              <div class="mychar_ani">
-                <img
-                  src="./assets/svg/main_obj/mycha_arm_a-none.svg"
-                  alt="mycha_arm_a-none"
-                  class="mycha_arm_a-none"
-                />
-              </div>
-              <img
-                src="./assets/svg/main_obj/mycha_body.svg"
-                alt="mycha"
-                class="mycha"
-              />
-            </div>
+          <div class="samsung_promo click">
+            <img src="./assets/svg/promo_obj/sansung_promo.svg" alt="samsung_promo" class="" />
+          </div>
+          <div class="vfun_login click">
+            <img src="./assets/svg/promo_obj/funny_arm.svg" alt="funny_arm" class="funny_arm" />
+            <img src="./assets/svg/promo_obj/funny_body.svg" alt="funny_body" class="funny_body" />
+            <img src="./assets/svg/promo_obj/game_controller.svg" alt="game_controller" class="game_controller" />
+          </div>
+          <div class="lg_plal click">
+            <img src="./assets/svg/promo_obj/lg_plal.svg" alt="lg_plal_body" class="lg_plal_body" />
+            <img src="./assets/svg/promo_obj/twinkle_m.svg" alt="twinkle_m" class="twinkle_m" />
+            <img src="./assets/svg/promo_obj/twinkle_s.svg" alt="twinkle_s" class="twinkle_s" />
+            <img src="./assets/svg/promo_obj/twinkle_m.svg" alt="twinkle_m" class="twinkle_m" />
+          </div>
+        </article>
+      </section>
+      <!-- promo_page -->
+      <section class="panel visual_design_page">
+        <h2>섹션 4</h2>
+        <div class="bottom"></div>
+        <div class="sky">
+          <img src="./assets/svg/bni_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+          <img src="./assets/svg/bni_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+          <img src="./assets/svg/bni_obj/cloud_thrid.svg" alt="m_cloud3" class="m_cloud3" />
+        </div>
+        <div class="top"></div>
+        <article class="bniobj">
+          <img src="./assets/svg/bni_obj/two_cir_tree.svg" alt="two_cir_tree" class="two_cir_tree" />
+          <img src="./assets/svg/bni_obj/two_flower_y-b.svg" alt="two_flower_y-b" class="two_flower_y-b" />
+          <img src="./assets/svg/bni_obj/apple_4-a.svg" alt="apple_4-a" class="apple_4-a" />
+          <img src="./assets/svg/bni_obj/apple_4-b.svg" alt="apple_4-b" class="apple_4-b" />
+          <img src="./assets/svg/bni_obj/apple_4-c.svg" alt="apple_4-c" class="apple_4-c" />
+          <img src="./assets/png/f_tulip_p_a.png" alt="f_tulip_p_a" class="f_tulip_p_a" />
+          <img src="./assets/png/f_gen_p.png" alt="f_gen_p" class="f_gen_p" />
+          <img src="./assets/png/f_tulip_y.png" alt="f_tulip_y" class="f_tulip_y" />
+          <img src="./assets/png/f_gen_p_leaf.png" alt="f_gen_p_leaf" class="f_gen_p_leaf" />
+          <img src="./assets/svg/bni_obj/duncul_4.svg" alt="duncul_4" class="duncul_4" />
 
-            <div class="home-house">
-              <img
-                src="./assets/svg/footer_obj/home.svg"
-                alt="home"
-                class="home"
-              />
-              <img
-                src="./assets/svg/footer_obj/home_door.svg"
-                alt="home_door"
-                class="home_door"
-              />
-            </div>
+          <div class="bn click">
+            <img src="./assets/svg/bni_obj/bn_cube_a.svg" alt="bn_cube_a" class="bn_cube_a" />
+            <img src="./assets/svg/bni_obj/bn_cube_b.svg" alt="bn_cube_b" class="bn_cube_b" />
+            <img src="./assets/svg/bni_obj/bn_heart.svg" alt="bn_heart" class="bn_heart" />
+            <img src="./assets/svg/bni_obj/bn_phone.svg" alt="bn_phone" class="bn_phone" />
+          </div>
 
-            <div class="e-mail_post">
-              <img
-                src="./assets/svg/footer_obj/post_box.svg"
-                alt="post_box"
-                class="post_box"
-              />
-              <img
-                src="./assets/svg/footer_obj/post_door.svg"
-                alt="post_door"
-                class="post_door"
-              />
-              <div class="post_area">
-                <img
-                  src="./assets/svg/footer_obj/post.svg"
-                  alt="post"
-                  class="post"
-                />
-              </div>
+          <div class="illust click">
+            <img src="./assets/svg/bni_obj/illust_sketchbook.svg" alt="illust_sketchbook" class="illust_sketchbook" />
+            <img src="./assets/svg/bni_obj/illust_crayon-r.svg" alt="illust_crayon-r" class="illust_crayon-r" />
+            <img src="./assets/svg/bni_obj/illust_crayon-y.svg" alt="illust_crayon-y" class="illust_crayon-y" />
+          </div>
+        </article>
+      </section>
+      <!-- visual_design_page -->
+      <section class="panel footer_page">
+        <h2>섹션 5</h2>
+        <div class="bottom"></div>
+        <div class="sky">
+          <img src="./assets/svg/footer_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+          <img src="./assets/svg/footer_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+          <img src="./assets/svg/footer_obj/cloud_third.svg" alt="m_cloud3" class="m_cloud3" />
+        </div>
+        <div class="top"></div>
+        <article class="footerobj">
+          <img src="./assets/svg/main_obj/dotory_a-2.svg" alt="dotory_a-2" class="dotory_a-2" />
+          <img src="./assets/svg/main_obj/dotory_b-2.svg" alt="dotory_b-2" class="dotory_b-2" />
+          <img src="./assets/svg/main_obj/dotory_c-2.svg" alt="dotory_c-2" class="dotory_c-2" />
+          <img src="./assets/png/f_tulip_p_a.png" alt="f_tulip_p_Footer" class="f_tulip_p_Footer" />
+          <img src="./assets/png/f_gen_p.png" alt="f_gen_p_Footer" class="f_gen_p_Footer" />
+          <img src="./assets/svg/footer_obj/pongpong_tree.svg" alt="pongpong_tree" class="pongpong_tree" />
+          <img src="./assets/svg/footer_obj/bertterfly_y.svg" alt="bertterfly_y" class="bertterfly_y" />
+          <img src="./assets/svg/footer_obj/three_apples.svg" alt="three_apples" class="three_apples" />
+          <img src="./assets/svg/footer_obj/round_tree_z.svg" alt="round_tree_z" class="round_tree_z" />
+          <div class="dotory_tree_z">
+            <img src="./assets/svg/main_obj/dototy_tree.svg" alt="dototy_tree" class="dototy_tree" />
+            <img src="./assets/svg/main_obj/dotory_a.svg" alt="dotory_a" class="dotory_a" />
+            <img src="./assets/svg/main_obj/dotory_b.svg" alt="dotory_b" class="dotory_b" />
+            <img src="./assets/svg/main_obj/dotory_c.png" alt="dotory_c" class="dotory_c" />
+            <img src="./assets/svg/main_obj/dotory_a-2.svg" alt="dotory_a-2" class="dotory_a-2" />
+            <img src="./assets/svg/main_obj/dotory_b-2.svg" alt="dotory_b-2" class="dotory_b-2" />
+            <img src="./assets/svg/main_obj/dotory_c-2.svg" alt="dotory_c-2" class="dotory_c-2" />
+            <img src="./assets/svg/main_obj/squirrel.svg" alt="squirrel" class="squirrel" />
+          </div>
+
+          <div class="my-cha_footer">
+            <div class="mychar_ani">
+              <img src="./assets/svg/main_obj/mycha_arm_a-none.svg" alt="mycha_arm_a-none" class="mycha_arm_a-none" />
             </div>
-            <div class="dotory_tree_b">
-              <img
-                src="./assets/svg/main_obj/dototy_tree.svg"
-                alt="dototy_tree"
-                class="dototy_tree"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_a.svg"
-                alt="dotory_a"
-                class="dotory_a"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_b.svg"
-                alt="dotory_b"
-                class="dotory_b"
-              />
-              <img
-                src="./assets/svg/main_obj/dotory_c.png"
-                alt="dotory_c"
-                class="dotory_c"
-              />
-              <img
-                src="./assets/svg/main_obj/squirrel.svg"
-                alt="squirrel"
-                class="squirrel"
-              />
+            <img src="./assets/svg/main_obj/mycha_body.svg" alt="mycha" class="mycha" />
+          </div>
+
+          <div class="home-house">
+            <img src="./assets/svg/footer_obj/home.svg" alt="home" class="home" />
+            <img src="./assets/svg/footer_obj/home_door.svg" alt="home_door" class="home_door" />
+          </div>
+
+          <div class="e-mail_post">
+            <img src="./assets/svg/footer_obj/post_box.svg" alt="post_box" class="post_box" />
+            <img src="./assets/svg/footer_obj/post_door.svg" alt="post_door" class="post_door" />
+            <div class="post_area">
+              <img src="./assets/svg/footer_obj/post.svg" alt="post" class="post" />
             </div>
-          </article>
-        </section>
-        <!-- footer_page -->
-      </div>
-    </main>
-  </body>
+          </div>
+          <div class="dotory_tree_b">
+            <img src="./assets/svg/main_obj/dototy_tree.svg" alt="dototy_tree" class="dototy_tree" />
+            <img src="./assets/svg/main_obj/dotory_a.svg" alt="dotory_a" class="dotory_a" />
+            <img src="./assets/svg/main_obj/dotory_b.svg" alt="dotory_b" class="dotory_b" />
+            <img src="./assets/svg/main_obj/dotory_c.png" alt="dotory_c" class="dotory_c" />
+            <img src="./assets/svg/main_obj/squirrel.svg" alt="squirrel" class="squirrel" />
+          </div>
+        </article>
+      </section>
+      <!-- footer_page -->
+    </div>
+  </main>
+
+  <aside>
+    <ul>
+      <li>프로젝트1</li>
+      <li>프로젝트2</li>
+      <li>프로젝트3</li>
+      <li>프로젝트4</li>
+      <li>프로젝트5</li>
+      <li>프로젝트6</li>
+      <li>프로젝트7</li>
+      <li>프로젝트8</li>
+    </ul>
+    <button class="close-btn">닫기</button>
+  </aside>
+</body>
+
 </html>

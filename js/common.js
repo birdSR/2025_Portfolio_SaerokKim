@@ -88,4 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   })
 
+  let clickables = document.querySelectorAll('.click');
+  clickables.forEach((clickable, index) => {
+    clickable.addEventListener('click', () => {
+      document.querySelector('aside').style.display = 'block';
+      document.querySelector('aside ul li').classList.remove('on');
+      document.querySelector('aside ul li:nth-child(' + (index + 1) + ')').classList.add('on');
+    });
+  });
+  document.querySelector('aside .close-btn').addEventListener('click', () => {
+    document.querySelector('aside').style.display = 'none';
+  });
 });
