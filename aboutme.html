@@ -2,32 +2,110 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/reset.css">
-    <style>
-        #target {
-            width: 100%;
-            height: 5000px;
-            background-image: url(./assets/aa.png);
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="description" content="김새록's Portfolio" />
+    <meta name="keywords" content="포트폴리오, 웹 디자인, 김새록, Portfolio, Web Design, Saerok Kim" />
+    <meta name="author" content="100SJ" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saerok Saerok My little forest</title>
+    <link rel="stylesheet" href="./css/reset.css" />
+    <!-- <link rel="stylesheet" href="./css/common.css" /> -->
+    <link rel="stylesheet" href="./css/aboutme.css" />
+    <link rel="stylesheet" href="./css/media.css" />
+    <script src="https://kit.fontawesome.com/8766c31511.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
+    <script src="./js/aboutme.js"></script>
 </head>
 
 <body>
     <div id="target">
-
+        <header>
+            <div class="fixed-logo">
+                <a href="index.html"><img src="./assets/logo_tit.png" alt="로고" /></a>
+            </div>
+        </header>
+        <main>
+            <div class="bottom"></div>
+            <section class="intro">
+                <div class="under_tree">
+                    <img src="../assets/svg/about_me_page/tall_tree.svg" alt="tall_tree" class="tall_tree" />
+                </div>
+                <article class="introduce">
+                    <img src="./assets/svg/about_me_page/big_apple_basket.svg" alt="big_apple_basket"
+                        class="big_apple_basket">
+                    <img src="./assets/svg/about_me_page/about_char_onehup.svg" alt="about_char_onehup"
+                        class="about_char_onehup">
+                    <aside class="about_first">
+                        <div class="context-box">
+                            <div class="context-txt">
+                                <div class="txt">
+                                    <span>
+                                        <span class="txt-span">안녕하세요.</span>
+                                        <span class="txt-span2">
+                                            UX 관점에서 시각적인 <br />
+                                            문제를 해결하는 디자이너
+                                        </span>
+                                        <span class="txt-span3">김새록</span>
+                                        <span class="txt-span2">입니다.</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="shape"></div>
+                        </div>
+                    </aside>
+                </article>
+                <article class="awords">
+                    <img src="./assets/svg/about_me_page/about_char_readbook.svg" alt="about_char_readbook"
+                        class="about_char_readbook">
+                    <aside class="about_second">
+                        <div class="context-txt">
+                            <div class="tit">
+                                <div class="tit_context">수상내역 입니다.</div>
+                            </div>
+                            <div class="list">
+                                <div class="tropy">
+                                    <div class="con_awords1">
+                                        <span>
+                                            <span class="con-span">
+                                                한국청소년디자인공모전
+                                                <br />
+                                            </span>
+                                            <span class="con-span2">패키지디자인 입선</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="tropy">
+                                    <div class="con_awords2">
+                                        <span>
+                                            <span class="con-span">
+                                                G-Design Fair
+                                                <br />
+                                            </span>
+                                            <span class="con-span2">캐릭터디자인 특선</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="tropy">
+                                    <div class="con_awords3">
+                                        <span>
+                                            <span class="con-span">
+                                                청소년상업경진대회
+                                                <br />
+                                            </span>
+                                            <span class="con-span2">디자인부분 장려</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shape"></div>
     </div>
-    <script>
-        const el = document.getElementById("target");
-        const bottom = el.offsetTop + el.offsetHeight;
+    </aside>
+    </article>
+    </section>
+    </main>
+    </div>
 
-        window.scrollTo({
-            top: bottom,
-            behavior: "smooth"
-        });
-    </script>
 </body>
 
 </html>
