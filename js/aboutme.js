@@ -3,32 +3,66 @@ document.addEventListener("DOMContentLoaded", () => {
     const el = document.getElementById("target");
     if (!el) return;
 
-    // el의 아래(footer 시작) 지점을 뷰포트 상단으로 오도록 스크롤 목표 계산
-    // 목표 = el.offsetTop + el.offsetHeight - window.innerHeight
-    const targetBottom = el.offsetTop + el.offsetHeight - window.innerHeight;
+    // helper: 보텀 요소가 문서 맨 아래에 붙도록 #target min-height 조정
+    function fixBottomGap() {
+        const bottomEl = el.querySelector('.bottom');
+        if (!bottomEl) return;
 
-    // 음수 방지 (작은 컨텐츠일 때)
-    const scrollTo = Math.max(0, Math.round(targetBottom));
+        // bottomEl의 문서 상단 기준 하단 좌표
+        const rect = bottomEl.getBoundingClientRect();
+        const bottomDocBottom = window.scrollY + rect.top + rect.height;
 
-    // 부드러운 스크롤 호환성: 브라우저가 native smooth를 지원하지 않을 경우 폴리필
-    try {
-        window.scrollTo({ top: scrollTo, behavior: 'smooth' });
-    } catch (e) {
-        // fallback: 간단한 requestAnimationFrame 애니메이션
-        const start = window.scrollY || window.pageYOffset;
-        const distance = scrollTo - start;
-        const duration = 500;
-        let startTime = null;
-
-        function step(timestamp) {
-            if (!startTime) startTime = timestamp;
-            const time = timestamp - startTime;
-            const progress = Math.min(time / duration, 1);
-            const ease = 1 - Math.pow(1 - progress, 3);
-            window.scrollTo(0, start + distance * ease);
-            if (time < duration) requestAnimationFrame(step);
+        // 문서 전체 높이와 비교
+        const docHeight = document.documentElement.scrollHeight;
+        if (bottomDocBottom < docHeight) {
+            // 현재 문서가 더 길면 별도 처리 불필요
+        } else if (bottomDocBottom > docHeight) {
+            // 문서가 짧아 .bottom 아래에 여백이 생길 때
+            const requiredExtra = bottomDocBottom - docHeight;
+            // #target 높이를 늘려서 여백 제거
+            const prevMin = parseInt(window.getComputedStyle(el).minHeight) || 0;
+            el.style.minHeight = (el.offsetHeight + requiredExtra) + 'px';
         }
-
-        requestAnimationFrame(step);
     }
+
+    // 스크롤해서 .bottom의 시작 지점(또는 .bottom 위쪽)이 뷰포트 상단으로 오게 함
+    function scrollToBottomStart() {
+        const bottomEl = el.querySelector('.bottom');
+        if (!bottomEl) return;
+        // .bottom의 상단을 뷰포트 바닥에 맞추려면 문서에서의 위치를 계산
+        const bottomRect = bottomEl.getBoundingClientRect();
+        const bottomTopDoc = window.scrollY + bottomRect.top;
+        const targetScrollTop = Math.max(0, Math.round(bottomTopDoc - (window.innerHeight - bottomRect.height)));
+
+        try {
+            window.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+        } catch (e) {
+            const start = window.scrollY || window.pageYOffset;
+            const distance = targetScrollTop - start;
+            const duration = 500;
+            let startTime = null;
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const time = timestamp - startTime;
+                const progress = Math.min(time / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3);
+                window.scrollTo(0, start + distance * ease);
+                if (time < duration) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+    }
+
+    // 초기 보정 및 스크롤
+    fixBottomGap();
+    // 보정 이후 재계산이 필요할 수 있어 짧은 지연 후 스크롤 시도
+    setTimeout(scrollToBottomStart, 80);
+
+    // 창 크기 변화에 대응: 보정 후 재스크롤
+    window.addEventListener('resize', () => {
+        fixBottomGap();
+        // debounce
+        clearTimeout(window._aboutme_scroll_timeout);
+        window._aboutme_scroll_timeout = setTimeout(scrollToBottomStart, 120);
+    });
 });
