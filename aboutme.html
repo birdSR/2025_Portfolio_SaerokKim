@@ -7,7 +7,7 @@
   <meta name="keywords" content="포트폴리오, 웹 디자인, 김새록, Portfolio, Web Design, Saerok Kim" />
   <meta name="author" content="100SJ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saerok Saerok My little forest</title>
+  <title>About me</title>
   <link rel="stylesheet" href="./css/reset.css" />
   <!-- <link rel="stylesheet" href="./css/common.css" /> -->
   <link rel="stylesheet" href="./css/aboutme.css" />
@@ -18,7 +18,27 @@
 </head>
 
 <body>
+      <div class="audio-player-fixed">
+    <audio id="bgm-audio" src="./assets/Wandering Through the Pines.mp3" loop></audio>
+    <button id="audio-toggle" class="audio-toggle" aria-label="음악 재생/일시정지">
+      <svg id="audio-icon-play" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#000" />
+        <polygon points="13,10 25,16 13,22" fill="#fff" />
+      </svg>
+      <svg id="audio-icon-pause" width="32" height="32" viewBox="0 0 32 32" fill="none" style="display: none">
+        <circle cx="16" cy="16" r="16" fill="#000" />
+        <rect x="12" y="10" width="3" height="12" fill="#fff" />
+        <rect x="17" y="10" width="3" height="12" fill="#fff" />
+      </svg>
+    </button>
+  </div>
+
   <div id="target">
+      <div class="scroll_guide">
+        <img src="./assets/svg/about_me_page/arrow.svg" alt="arrow" class="arrow" />
+    <img src="./assets/svg/about_me_page/mouse.svg" alt="mouse" class="mouse" />
+    
+  </div>
     <header>
       <div class="fixed-logo">
         <a href="index.html"><img src="./assets/logo_tit.png" alt="로고" /></a>
@@ -160,7 +180,7 @@
                 </div>
                 <div class="list">
                   <div class="one">
-                    <div class="cont-box">
+                    <div class="tropy cont-box">
                       <img class="hand" src="./assets/svg/about_me_page/hand.svg" />
                       <div class="cont">
                         <span>
@@ -172,7 +192,7 @@
                         </span>
                       </div>
                     </div>
-                    <div class="cont-box">
+                    <div class="tropy cont-box">
                       <img class="magic" src="./assets/svg/about_me_page/magic.svg" />
                       <div class="cont">
                         <span>
@@ -181,7 +201,7 @@
                         </span>
                       </div>
                     </div>
-                    <div class="cont-box">
+                    <div class="tropy cont-box">
                       <img class="painting" src="./assets/svg/about_me_page/painting.svg" />
                       <div class="cont">
                         <span>
@@ -195,7 +215,7 @@
                     </div>
                   </div>
                   <div class="two">
-                    <div class="cont-box">
+                    <div class="tropy cont-box">
                       <img class="smaile" src="./assets/svg/about_me_page/smaile.svg" />
                       <div class="cont">
                         <span>
@@ -207,7 +227,7 @@
                         </span>
                       </div>
                     </div>
-                    <div class="cont-box">
+                    <div class="tropy cont-box">
                       <img class="fire" src="./assets/svg/about_me_page/fire.svg" />
                       <div class="cont">
                         <span>

@@ -12,26 +12,40 @@ body {
   overflow-x: hidden;
 }
 
-/* remove browser default margins so .bottom sits flush */
-html,
-body {
-  /*   margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 3750px;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; */
+.scroll_guide {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
-main {
-  /*   width: 1920px;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%); */
+.scroll_guide::after {
+  content: "Scroll";
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.scroll_guide .arrow {
+  animation: scollGuideAni 1.5s infinite;
+}
+
+@keyframes scollGuideAni {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 #target {
@@ -45,10 +59,32 @@ main {
   /* .bottom이 #target 내부 하단에 위치하도록 */
 }
 
+.audio-player-fixed {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+}
+
+.audio-toggle {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 header {
   position: fixed;
-  left: 0;
-  top: 0;
+  left: 40px;
+  top: 40px;
   z-index: 100;
 }
 
@@ -67,6 +103,7 @@ header img {
   background: #13a381;
   background-position: bottom center;
   background-repeat: no-repeat;
+  background-image: url(../assets/svg/about_me_page/floor_bg.png);
 }
 
 /* .intro {
@@ -499,6 +536,61 @@ header img {
   left: -900px;
 }
 
+.top_bird .list .tropy {
+  opacity: 0;
+  transform: rotate(-10deg);
+  transition: opacity 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2),
+    transform 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+}
+
+.top_bird.visible .list .tropy {
+  /* 순차 애니메이션을 위해 각 항목에 딜레이 부여 */
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.tropy:hover {
+  animation: tropyAni 1s reverse;
+}
+
+@keyframes tropyAni {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.top_bird.visible .list .b_one {
+  transition-delay: 0.1s;
+}
+.top_bird.visible .list .b_two {
+  transition-delay: 0.3s;
+}
+.top_bird.visible .list .b_three {
+  transition-delay: 0.5s;
+}
+.top_bird.visible .list .b_four {
+  transition-delay: 0.7s;
+}
+.top_bird.visible .list .b_five {
+  transition-delay: 0.9s;
+}
+.top_bird.visible .list .b_six {
+  transition-delay: 1.1s;
+}
+
+.top_bird .list .tropy {
+  /* 트리거 해제시 딜레이 없이 바로 사라지게 */
+  transition-delay: 0s;
+}
+
 .context-box {
   position: relative;
   left: -30px;
@@ -654,7 +746,8 @@ header img {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 20px 40px 20px 40px;
+  text-align: center;
+  /* padding: 20px 40px 20px 40px; */
   z-index: 10;
 }
 
@@ -736,13 +829,6 @@ header img {
 .top_end_item {
   opacity: 0;
   transform: scale(0);
-  /*   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: visible; */
 }
 
 .top_end_item.spread {
@@ -751,30 +837,11 @@ header img {
   transition: opacity 0.8s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     transform 0.8s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
-
-.top_end_item .cong_ribbon {
-  /*   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-origin: center;
-  animation: 2s ease-in-out forwards;
-  transform: scaleX(0px);
-  opacity: 0; */
-}
-
-.top_end_item.spread .cong_ribbon {
-  /*   transform: scaleX(100%);
-  opacity: 1; */
-}
-
-.top_end_item.spread .cong_ribbon.right {
-  /*   transform: scale(1.1);
-  opacity: 1; */
+.top_bird .list .con-span {
+  padding: 20px 40px 20px 40px;
 }
 
 .top_bird .list .tropy::after {
-  /* background: #343535; */
-  /* overflow-y: visible; */
   content: "";
   position: absolute;
   bottom: -14px;

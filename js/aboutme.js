@@ -86,6 +86,44 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // top_bird 등장 효과 클래스 부여
+  const topBird = document.querySelector('.top_bird');
+  if (topBird) {
+    topBird.classList.add('aboutme-fade');
+    // Intersection Observer로 등장 트리거
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          topBird.classList.add('visible');
+        } else {
+          topBird.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(topBird);
+  }
+
+  // introduce, awords, qualifications, strength, skill, also_do_it, break_time, specialty 트리거 (top_bird 제외)
+  const triggerArticles = [
+    'introduce', 'awords', 'qualifications', 'strength', 'skill', 'also_do_it', 'break_time', 'specialty'
+  ];
+  triggerArticles.forEach(cls => {
+    const article = document.querySelector(`article.${cls}`);
+    if (article) {
+      article.classList.add('aboutme-fade');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            article.classList.add('visible');
+          } else {
+            article.classList.remove('visible');
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(article);
+    }
+  });
+
   // 모든 context-box, 캐릭터 이미지 초기화 함수
   function resetAllTriggers() {
     document.querySelectorAll('.context-box').forEach(box => {
@@ -157,4 +195,65 @@ document.addEventListener("DOMContentLoaded", () => {
     // 초기 상태도 체크
     checkTopEndSpread();
   })();
+
+  // .top_bird 안의 .tropy 중 홀수(1,3,5)만 블랙 배경/화이트 텍스트 적용
+  const topBirdTropies = document.querySelectorAll('.top_bird .list .tropy');
+  topBirdTropies.forEach((tropy, idx) => {
+    // b_one~b_six은 모두 .tropy에 붙어 있으므로, 홀수 idx만 적용 (0,2,4)
+    if (idx % 2 === 0) {
+      const conSpan = tropy.querySelector('.con-span');
+      if (conSpan) {
+        conSpan.classList.add('black-bg-white-txt');
+      }
+    }
+  });
+
+  // .top_bird 제외, 나머지 .tropy > .con-span 홀수만 블랙 배경/화이트 텍스트 적용 (배경은 .tropy에) - 롤백
+  // (아무 동작 없음)
+
+  /* ==================================================
+      5. 오디오 컨트롤
+  ================================================== */
+  const audio = document.getElementById("bgm-audio");
+  const toggleBtn = document.getElementById("audio-toggle");
+  const iconPlay = document.getElementById("audio-icon-play");
+  const iconPause = document.getElementById("audio-icon-pause");
+
+  let isPlaying = false;
+
+  function updateIcon() {
+    iconPlay.style.display = isPlaying ? "none" : "block";
+    iconPause.style.display = isPlaying ? "block" : "none";
+  }
+
+  function tryAutoPlay() {
+    audio.play().then(() => {
+      isPlaying = true;
+      updateIcon();
+    }).catch(() => {
+      document.body.addEventListener("click", autoPlayOnUser);
+    });
+  }
+
+  function autoPlayOnUser() {
+    audio.play().catch(() => { });
+    isPlaying = true;
+    updateIcon();
+    document.body.removeEventListener("click", autoPlayOnUser);
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    if (audio.paused) {
+      audio.play();
+      isPlaying = true;
+    } else {
+      audio.pause();
+      isPlaying = false;
+    }
+    updateIcon();
+  });
+
+  tryAutoPlay();
+  updateIcon();
+
 });
