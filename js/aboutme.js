@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // --- top_end_item spread 애니메이션 트리거 (고정/최하단에서만 해제) ---
+    // --- top_end_item spread 애니메이션 트리거 (최상단에서만 고정, 최하단에서만 해제) ---
     (function(){
       const topEnd = document.querySelector('.top_end_item');
       if (!topEnd) return;
@@ -145,19 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const docHeight = document.documentElement.scrollHeight;
         const winHeight = window.innerHeight;
         const atBottom = (window.scrollY + winHeight) >= (docHeight - 2); // 2px 오차 허용
-        if (scrollY <= 0) {
-          topEnd.classList.add('spread');
-          spreadFixed = true;
-        } else if (atBottom) {
+        if (atBottom) {
           topEnd.classList.remove('spread');
           spreadFixed = false;
-        } else if (spreadFixed) {
+        } else if (scrollY <= 0 || spreadFixed) {
           topEnd.classList.add('spread');
+          spreadFixed = true;
         }
       }
-      window.addEventListener('scroll', () => {
-        window.requestAnimationFrame(checkTopEndSpread);
-      });
+      window.addEventListener('scroll', checkTopEndSpread);
       // 초기 상태도 체크
       checkTopEndSpread();
     })();
