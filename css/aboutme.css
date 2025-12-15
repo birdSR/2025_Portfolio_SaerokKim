@@ -93,6 +93,66 @@ header img {
   height: auto;
 }
 
+.sky .m_cloud1 {
+  position: absolute;
+  top: 140px;
+  left: 200px;
+  width: 160px;
+  /* z-index: 0; */
+  animation: floatCloud1 5.5s ease-in-out infinite;
+}
+
+.sky .m_cloud2 {
+  position: absolute;
+  top: 50px;
+  right: 400px;
+  width: 92px;
+  /* z-index: 0; */
+  animation: floatCloud2 7s ease-in-out infinite;
+}
+
+.sky .m_cloud3 {
+  position: absolute;
+  top: 300px;
+  right: 100px;
+  width: 144px;
+  animation: floatCloud3 6.2s ease-in-out infinite;
+}
+
+@keyframes floatCloud1 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes floatCloud2 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes floatCloud3 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 .bottom {
   width: 100%;
   height: 320px;

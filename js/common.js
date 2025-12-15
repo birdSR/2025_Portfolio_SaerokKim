@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ==================================================
       6. 클릭 요소 (aside / home 복귀)
   ================================================== */
-  document.querySelector(".about-me .enter_about-me")
+  document.querySelector(".about-me .enter_about_me")
     ?.addEventListener("click", () => { });
 
   const clickables = document.querySelectorAll(".click");

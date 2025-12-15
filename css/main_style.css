@@ -1676,30 +1676,11 @@ header {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   z-index: 3;
   cursor: pointer;
   z-index: 99;
   transform-origin: bottom center;
   transition: transform 0.2s;
-}
-
-@keyframes aboutme-Ani {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  30% {
-    transform: rotate(2deg);
-  }
-
-  60% {
-    transform: rotate(-2deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
 }
 
 @keyframes mychaWaveHand {
@@ -1836,12 +1817,36 @@ header {
   }
 }
 
-.main_page .about-me .enter_about-me a .about_me {
-  transform-origin: bottom center;
+.about-me .enter_about-me {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 위치 고정은 여기 */
+  z-index: 99;
 }
 
-.main_page .about-me .enter_about_me:hover .about_me {
-  animation: aboutme-Ani 1.2s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
+.aboutme-rotator {
+  transform-origin: bottom center; /* 회전 기준 */
+}
+
+.enter_about-me:hover .aboutme-rotator,
+.enter_about-me:focus-within .aboutme-rotator {
+  animation: aboutme-Ani 1.2s infinite;
+}
+
+@keyframes aboutme-Ani {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(2deg);
+  }
+  60% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @keyframes funnyRotate {
