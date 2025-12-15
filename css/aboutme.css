@@ -1,396 +1,567 @@
 @import url("https://cdn.jsdelivr.net/gh/ProjectNoonnu/noonfonts_2104@1.1/fonts/pretendard.css");
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
-        sans-serif;
-    background: var(--pink, #ffd0e1);
-
+  font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  background: var(--pink, #ffd0e1);
 }
 
 /* remove browser default margins so .bottom sits flush */
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 3750px;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 3750px;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 main {
-    width: 1920px;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+  width: 1920px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #target {
-    width: 100%;
-    /* keep original intended page length but ensure at least viewport height
+  width: 100%;
+  /* keep original intended page length but ensure at least viewport height
          so .bottom can sit flush at the document bottom */
-    min-height: max(3750px, 100vh);
-    /* keep intended page length while avoiding forced fixed height */
-    position: relative;
-    /* .bottom이 #target 내부 하단에 위치하도록 */
+  min-height: max(3750px, 100vh);
+  /* keep intended page length while avoiding forced fixed height */
+  position: relative;
+  /* .bottom이 #target 내부 하단에 위치하도록 */
 }
 
 header {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 100;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
 }
 
 header img {
-    width: 154px;
-    height: auto;
+  width: 154px;
+  height: auto;
 }
 
 .bottom {
-    width: 1920px;
-    height: 320px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    border-top: 4px solid #000;
-    background: #13a381;
-    background-position: bottom center;
-    background-repeat: no-repeat;
+  width: 1920px;
+  height: 320px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  border-top: 4px solid #000;
+  background: #13a381;
+  background-position: bottom center;
+  background-repeat: no-repeat;
 }
 
 .intro {
-    position: relative;
-    bottom: 360px;
-    left: 0;
+  position: relative;
+  bottom: 360px;
+  left: 0;
 }
 
 .under_tree {
-    width: 1639px;
-    height: 100%;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -880px;
+  width: 1639px;
+  height: 100%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -880px;
 }
 
 .under_tree .tall_tree {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .article {
-    background-color: #13a381;
+  background-color: #13a381;
 }
 
-
 .introduce {
-    position: relative;
-    bottom: -860px;
-    left: 260px;
-    width: 800px;
+  position: relative;
+  bottom: -860px;
+  left: 260px;
+  width: 800px;
 }
 
 .introduce .big_apple_basket {
-    position: relative;
-    left: 64px;
-    bottom: -240px;
+  position: relative;
+  left: 64px;
+  bottom: -240px;
 }
 
 .awords {
-    width: 200px;
-    position: relative;
-    right: -1230px;
-    bottom: 320px;
-    width: 700px;
+  width: 200px;
+  position: relative;
+  right: -1230px;
+  bottom: 320px;
+  width: 700px;
 }
 
 .awords .about_second .context-box {
-    position: relative;
-    top: -590px;
-    left: -300px;
-    width: 800px;
+  position: relative;
+  top: -590px;
+  left: -300px;
+  width: 800px;
 }
 
 .awords .about_second .context-box .context-txt {
-    width: auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-
 
 .awords .about_second .context-box .shape {
-    left: 450px;
-    top: 206px;
+  left: 450px;
+  top: 206px;
 }
 
-
 .qualifications {
-    position: relative;
-    left: 488px;
-    bottom: 1374px;
-    width: 700px;
+  position: relative;
+  left: 488px;
+  bottom: 1374px;
+  width: 700px;
 }
 
 .qualifications .about_third .context-box {
-    position: relative;
-    top: -440px;
-    left: -300px;
-    width: 780px;
+  position: relative;
+  top: -440px;
+  left: -300px;
+  width: 780px;
 }
 
 .qualifications .about_third .context-box .context-txt {
-    width: auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .qualifications .about_third .context-box .shape {
-    left: 450px;
-    top: 180px;
+  left: 450px;
+  top: 180px;
 }
 
 .strength {
-    position: relative;
-    right: -1252px;
-    bottom: 2098px;
-    width: 700px;
+  position: relative;
+  right: -1252px;
+  bottom: 2098px;
+  width: 700px;
 }
 
 .strength .about_four .context-box {
-    position: relative;
-    top: -740px;
-    left: -200px;
-    width: 562px;
+  position: relative;
+  top: -740px;
+  left: -200px;
+  width: 562px;
 }
 
 .strength .about_four .context-box .context-txt {
-    width: auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .strength .about_four .context-box .shape {
-    left: 262px;
-    top: 380px;
+  left: 262px;
+  top: 380px;
+}
+
+.skill {
+  position: relative;
+  left: 560px;
+  bottom: 3340px;
+  width: 700px;
+}
+
+.skill .about_five .context-box {
+  position: relative;
+  top: -440px;
+  left: -58px;
+}
+
+.skill .about_five .context-box .context-txt {
+  width: 340px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill .about_five .context-box .shape {
+  left: 150px;
+  top: 142px;
+}
+
+.also_do_it {
+  position: relative;
+  right: -1060px;
+  bottom: 4150px;
+  width: 700px;
+}
+
+.also_do_it .about_six .context-box {
+  position: relative;
+  top: -710px;
+  left: 10px;
+}
+
+.also_do_it .about_six .context-box .context-txt {
+  position: relative;
+  width: 380px;
+}
+
+.also_do_it .about_six .context-box .list {
+  display: flex;
+  flex-direction: column;
+}
+
+.also_do_it .about_six .context-box .list .tropy {
+  width: 310px;
+}
+
+.also_do_it .about_six .context-box .shape {
+  left: 168px;
+  top: 314px;
+}
+
+.break_time {
+  position: relative;
+  left: 550px;
+  bottom: 5450px;
+  width: 700px;
+}
+
+.break_time .about_seven .context-box {
+  position: relative;
+  top: -730px;
+  left: -300px;
+}
+
+.break_time .about_seven .context-box .context-txt {
+  width: 680px;
+}
+
+.break_time .about_seven .context-box .context-txt .two {
+  width: 300px;
+}
+
+.break_time .about_seven .context-box .shape {
+  left: 380px;
+  top: 240px;
+}
+
+.specialty {
+  position: relative;
+  right: -1000px;
+  bottom: 6420px;
+  width: 700px;
+}
+
+.specialty .about_eight .context-box .list {
+  display: flex;
+  flex-direction: column;
+}
+
+.specialty .about_eight .context-box .list .tropy {
+  width: 320px;
+}
+
+.specialty .about_eight .context-box {
+  position: relative;
+  top: -720px;
+  left: 0px;
+}
+
+.specialty .about_eight .context-box .context-txt {
+  width: 400px;
+}
+
+.specialty .about_eight .context-box .shape {
+  left: 176px;
+  top: 314px;
+}
+
+.top_bird {
+  position: relative;
+  left: 620px;
+  bottom: 7300px;
+  width: 700px;
+}
+
+.top_bird .list {
+  position: relative;
+  left: -20px;
+}
+
+.top_bird .list .b_one {
+  position: relative;
+  bottom: 200px;
+}
+
+.top_bird .list .b_two {
+  position: relative;
+  bottom: 150px;
+}
+
+.top_bird .list .b_three {
+  position: relative;
+  bottom: 140px;
+  left: -500px;
+}
+
+.top_bird .list .b_four {
+  position: relative;
+  bottom: 260px;
+  left: -720px;
+}
+
+.top_bird .list .b_five {
+  position: relative;
+  bottom: 280px;
+  left: -540px;
+}
+
+.top_bird .list .b_six {
+  position: relative;
+  bottom: 340px;
+  left: -900px;
 }
 
 .context-box {
-    position: relative;
-    left: -30px;
-    top: -600px;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-    align-items: flex-end;
-    justify-content: flex-start;
-    position: relative;
+  position: relative;
+  left: -30px;
+  top: -600px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  position: relative;
 }
 
 .context-txt {
-    width: 548px;
-    background: rgba(218, 218, 218, 0.88);
-    border-radius: 40px;
-    border-style: solid;
-    border-color: #000000;
-    border-width: 4px;
-    padding: 30px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: flex-start;
-    justify-content: flex-start;
-    align-self: stretch;
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(5px);
+  width: 548px;
+  background: rgba(218, 218, 218, 0.88);
+  border-radius: 40px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 4px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+  backdrop-filter: blur(5px);
 }
 
 .txt {
-    text-align: left;
-    font-family: "-", sans-serif;
-    font-size: 30px;
-    line-height: 40px;
-    font-weight: 400;
-    text-transform: uppercase;
-    position: relative;
+  text-align: left;
+  font-family: "-", sans-serif;
+  font-size: 30px;
+  line-height: 40px;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: relative;
 }
 
 .txt-span {
-    color: #000000;
-    font-family: "Pretendard-Medium", sans-serif;
-    font-weight: 500;
+  color: #000000;
+  font-family: "Pretendard-Medium", sans-serif;
+  font-weight: 500;
 }
 
 .txt-span2 {
-    color: #000000;
-    font-family: "Pretendard-Bold", sans-serif;
-    font-weight: 700;
+  color: #000000;
+  font-family: "Pretendard-Bold", sans-serif;
+  font-weight: 700;
 }
 
 .txt-span3 {
-    color: #dd599f;
-    font-family: "Pretendard-Bold", sans-serif;
-    font-weight: 700;
+  color: #dd599f;
+  font-family: "Pretendard-Bold", sans-serif;
+  font-weight: 700;
 }
 
 .shape {
-    background: var(--color, #dadada);
-    border-radius: 600px;
-    border-style: solid;
-    border-color: #000000;
-    border-width: 4px;
-    flex-shrink: 0;
-    width: 39px;
-    height: 39px;
-    position: absolute;
-    left: 382px;
-    top: 130px;
-    overflow: hidden;
+  background: var(--color, #dadada);
+  border-radius: 600px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 4px;
+  flex-shrink: 0;
+  width: 39px;
+  height: 39px;
+  position: absolute;
+  left: 382px;
+  top: 130px;
+  overflow: hidden;
 }
 
 .tit {
-    padding: 0px 0px 10px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    position: relative;
-    text-align: center;
+  padding: 0px 0px 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  text-align: center;
 }
 
 .tit_context {
-    color: #000000;
-    text-align: left;
-    font-family: "Pretendard-Bold", sans-serif;
-    font-size: 30px;
-    line-height: 34px;
-    font-weight: 700;
-    text-transform: uppercase;
-    position: relative;
+  color: #000000;
+  text-align: left;
+  font-family: "Pretendard-Bold", sans-serif;
+  font-size: 30px;
+  line-height: 34px;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
 }
 
 .list {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    justify-content: flex-start;
-    flex-shrink: 0;
-    position: relative;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .tropy {
-    background: #ffffff;
-    border-radius: 400px;
-    border-style: solid;
-    border-color: #000000;
-    border-width: 4px;
-    padding: 20px 40px 20px 40px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
+  background: #ffffff;
+  border-radius: 400px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 4px;
+  padding: 20px 40px 20px 40px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .con_awords {
-    text-align: center;
-    font-family: "-", sans-serif;
-    font-size: 18px;
-    line-height: 28px;
-    font-weight: 400;
-    text-transform: uppercase;
-    position: relative;
+  text-align: center;
+  font-family: "-", sans-serif;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: relative;
 }
 
 .con-span {
-    color: #383836;
-    font-family: "Pretendard-Bold", sans-serif;
-    font-weight: 700;
+  color: #383836;
+  font-family: "Pretendard-Bold", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .con-span2 {
-    color: #dd599f;
-    font-family: "Pretendard-ExtraBold", sans-serif;
-    font-weight: 800;
+  color: #dd599f;
+  font-family: "Pretendard-ExtraBold", sans-serif;
+  font-weight: 800;
 }
 
 .strength .about_four .list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .one {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .two {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .cont-box {
-    width: 154px;
-    background: #ffffff;
-    border-radius: 30px;
-    border-style: solid;
-    border-color: #000000;
-    border-width: 4px;
-    padding: 10px 30px 20px 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    justify-content: flex-start;
-    flex-shrink: 0;
-    width: 154px;
-    position: relative;
-    overflow: hidden;
+  width: 154px;
+  background: #ffffff;
+  border-radius: 30px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 4px;
+  padding: 10px 30px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 154px;
+  position: relative;
+  overflow: hidden;
 }
 
 .cont {
-    font-size: 18px;
-    line-height: 24px;
-    font-weight: 700;
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .cont span {
-    width: 190px;
+  width: 190px;
+}
+
+.p-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.top_end .top_end_item {
+  position: relative;
+  left: 69%;
+  transform: translateX(-50%);
+
+  top: -8450px;
 }
