@@ -112,12 +112,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const clickables = document.querySelectorAll(".click");
   clickables.forEach((el, index) => {
     el.addEventListener("click", () => {
-
+      // data-target 속성이 있으면 해당 요소를 열기
+      const targetSelector = el.getAttribute("data-target");
+      if (targetSelector) {
+        const target = document.querySelector(targetSelector);
+        if (target) {
+          // display: block 또는 .on 클래스 등 원하는 방식으로 열기
+          target.style.display = "block";
+          target.classList.add("on");
+        }
+        return;
+      }
+      // 기존 동작 (home_main, aside)
       if (el.classList.contains("home_main")) {
         lenis.scrollTo(0);
         return;
       }
-
       const aside = document.querySelector("aside");
       aside.style.display = "block";
       aside.querySelector("ul li.on")?.classList.remove("on");
@@ -141,5 +151,22 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("focus", () => btn.classList.add("is-hover"));
     btn.addEventListener("blur", () => btn.classList.remove("is-hover"));
   });
+
+  // 햄버거 메뉴 열기/닫기
+  const hamburger = document.querySelector('.hamburger');
+  const sideMenu = document.querySelector('.side_menu');
+
+  if (hamburger && sideMenu) {
+    hamburger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sideMenu.classList.toggle('on');
+    });
+    // 메뉴 바깥 클릭 시 닫힘
+    document.addEventListener('click', (e) => {
+      if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        sideMenu.classList.remove('on');
+      }
+    });
+  }
 
 });
