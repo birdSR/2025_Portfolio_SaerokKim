@@ -13,7 +13,7 @@ body {
 }
 
 .scroll_guide {
-  position: absolute;
+  position: fixed;
   bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
