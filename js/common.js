@@ -155,16 +155,53 @@ document.addEventListener("DOMContentLoaded", () => {
   // 햄버거 메뉴 열기/닫기
   const hamburger = document.querySelector('.hamburger');
   const sideMenu = document.querySelector('.side_menu');
+  const closeBtn = document.querySelector('.side_menu .close_btn');
 
   if (hamburger && sideMenu) {
     hamburger.addEventListener('click', (e) => {
       e.stopPropagation();
-      sideMenu.classList.toggle('on');
+      sideMenu.classList.add('on');
+      sideMenu.classList.remove('close');
     });
     // 메뉴 바깥 클릭 시 닫힘
     document.addEventListener('click', (e) => {
       if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
         sideMenu.classList.remove('on');
+        sideMenu.classList.add('close');
+      }
+    });
+  }
+  if (sideMenu && closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sideMenu.classList.remove('on');
+      sideMenu.classList.add('close');
+    });
+  }
+
+  // 사이드 메뉴 Home 하위 메뉴 토글
+  const menuList = document.querySelector('.side_menu .menu ul.menu_list');
+  if (menuList) {
+    const homeItem = menuList.querySelector('li.menu_item'); // 첫 번째 li(Home)
+    const homeSubMenu = homeItem?.querySelector('ul');
+    homeItem?.addEventListener('click', function (e) {
+      // a 태그 클릭 시에는 기본 이동 막기
+      if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
+      e.stopPropagation();
+      // 토글
+      if (homeSubMenu) {
+        const isOpen = homeSubMenu.classList.contains('open');
+        // 모든 하위 ul 닫기
+        menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => ul.classList.remove('open'));
+        if (!isOpen) {
+          homeSubMenu.classList.add('open');
+        }
+      }
+    });
+    // 메뉴 바깥 클릭 시 하위 메뉴 닫기
+    document.addEventListener('click', (e) => {
+      if (!homeItem.contains(e.target)) {
+        homeSubMenu?.classList.remove('open');
       }
     });
   }

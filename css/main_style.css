@@ -6,9 +6,11 @@
 
 html,
 body {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  overflow-x: hidden;
+  min-width: 0;
+  max-width: 9600px;
+  overflow-x: hidden !important;
   overflow-y: auto;
   /* overflow-x: hidden; */
   /* 세로 기준 사이트라 가로 바는 숨겨두기 */
@@ -49,6 +51,73 @@ body {
   z-index: 10;
 }
 
+.bottom_ui {
+  position: fixed;
+  width: 100%;
+  height: 140px;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bottom_ui .sns {
+  position: absolute;
+  left: 40px;
+  display: flex;
+  gap: 10px;
+}
+
+.insta {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  border: 4px solid #000;
+  background-image: url(../assets/insta.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: center;
+}
+
+.behance {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  border: 4px solid #000;
+  background-image: url(../assets/behance.png);
+  background-repeat: no-repeat;
+  background-size: 60%;
+  background-position: center;
+}
+
+.notefolio {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  border: 4px solid #000;
+  background-image: url(../assets/notefolio.png);
+  background-repeat: no-repeat;
+  background-size: 70%;
+  background-position: center;
+}
+
+.ft_copy {
+  font-size: 14px;
+  font-weight: 400;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto auto;
+}
+
 .hamburger {
   width: 100px;
   height: 100px;
@@ -67,17 +136,45 @@ body {
 
 .side_menu {
   position: fixed;
-  right: 0px;
   top: 0;
+  right: 0;
   width: 400px;
-  height: 200%;
-  background: #fff;
+  height: 100vh;
   border-left: 4px solid #000;
   z-index: 2000;
+  transition: right 1.2s;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 48px 32px 32px 32px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.side_menu.close {
+  right: -400px;
+}
+
+.close_btn {
+  position: absolute;
+  right: 32px;
+  top: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+/* 사이드 메뉴 닫기 버튼 회전 애니메이션 */
+.side_menu .close_btn {
+  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.side_menu .close_btn:hover {
+  transform: rotate(180deg);
 }
 
 .side_menu .tit_menu {
@@ -91,7 +188,7 @@ body {
 }
 
 .side_menu ul li {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
   margin-bottom: 12px;
   color: #333;
@@ -106,9 +203,13 @@ body {
 .side_menu .menu ul.menu_list > li > ul > li {
   font-size: 24px;
   font-weight: 400;
-  color: #626262;
+  color: #484848;
   margin-bottom: 20px;
   padding-left: 10px;
+}
+
+.side_menu .menu ul.menu_list > li > ul > li:hover {
+  font-weight: 600;
 }
 
 .side_menu .menu ul.menu_list > li > ul > li:hover::before {
@@ -136,6 +237,14 @@ body {
   width: 60px;
   height: 4px;
   background: #000;
+  transform-origin: left;
+  transition: transform 1s;
+}
+
+.hamburger:hover span.bar:nth-child(2) {
+  transform: scaleX(60%);
+  transform-origin: left;
+  transition: transform 1s;
 }
 
 .home_main::after {
@@ -196,6 +305,8 @@ header {
   top: 0;
   left: 0;
   background: #ffd0e1;
+  max-width: 9600px;
+  overflow-x: hidden;
 }
 
 .horizontal-scroll {
@@ -204,6 +315,8 @@ header {
   flex-wrap: nowrap;
   height: 100vh;
   will-change: transform;
+  max-width: 9600px;
+  overflow-x: hidden;
 }
 
 .panel {
@@ -592,30 +705,37 @@ header {
 
 .uxui_page > .uxuiobj .std_drg_web {
   position: absolute;
-  top: 200px;
+  top: 180px;
   left: 250px;
   cursor: pointer;
+  width: 200px;
+  height: 400px;
 }
 
 .uxui_page > .uxuiobj .std_drg_web .sd_video {
   position: relative;
   position: absolute;
-  top: 30px;
-  left: 50px;
+  top: 0px;
+  left: 0px;
   z-index: 0;
 }
-
+.uxui_page > .uxuiobj .std_drg_web .sd_head {
+  position: absolute;
+  top: 20px;
+  right: 0px;
+  z-index: 0;
+}
 .uxui_page > .uxuiobj .std_drg_web .sd_tail {
   position: absolute;
-  top: 42px;
+  top: 52px;
   left: 40px;
   z-index: 0;
 }
 
 .uxui_page > .uxuiobj .std_drg_web .sd_wing {
   position: absolute;
-  top: 40px;
-  left: 40px;
+  top: 64px;
+  left: 24px;
   z-index: 0;
 }
 
@@ -2085,7 +2205,7 @@ aside {
   top: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 80;
   border-radius: 50px;
   overflow: hidden;
   display: none;
@@ -2418,4 +2538,18 @@ aside ul li .project_img .pj-img {
   overflow: hidden;
   object-fit: cover;
   aspect-ratio: 1;
+}
+
+/* 사이드 메뉴 하위 메뉴 토글 효과 */
+.side_menu .menu ul.menu_list > li > ul {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.side_menu .menu ul.menu_list > li > ul.open {
+  max-height: 500px; /* 충분히 큰 값으로 설정 */
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
