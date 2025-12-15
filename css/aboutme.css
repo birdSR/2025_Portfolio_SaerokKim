@@ -14,30 +14,31 @@ body {
 /* remove browser default margins so .bottom sits flush */
 html,
 body {
-  margin: 0;
+  /*   margin: 0;
   padding: 0;
   width: 100%;
   height: 3750px;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: hidden; */
 }
 
 main {
-  width: 1920px;
+  /*   width: 1920px;
   margin: 0;
   padding: 0;
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
 }
 
 #target {
   width: 100%;
+  height: 3750px;
   /* keep original intended page length but ensure at least viewport height
          so .bottom can sit flush at the document bottom */
-  min-height: max(3750px, 100vh);
+  /* min-height: max(3750px, 100vh); */
   /* keep intended page length while avoiding forced fixed height */
   position: relative;
   /* .bottom이 #target 내부 하단에 위치하도록 */
@@ -56,7 +57,7 @@ header img {
 }
 
 .bottom {
-  width: 1920px;
+  width: 100%;
   height: 320px;
   position: absolute;
   left: 0;
@@ -67,24 +68,31 @@ header img {
   background-repeat: no-repeat;
 }
 
-.intro {
+/* .intro {
   position: relative;
   bottom: 360px;
   left: 0;
-}
+} */
 
 .under_tree {
-  width: 1639px;
+  /*   width: 1639px;
   height: 100%;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -880px;
+  bottom: -880px; */
+}
+
+.under_tree {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .under_tree .tall_tree {
-  max-width: 100%;
-  height: auto;
+  /*   max-width: 100%;
+  height: auto; */
 }
 
 .article {
