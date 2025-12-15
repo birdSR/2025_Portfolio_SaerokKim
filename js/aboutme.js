@@ -65,4 +65,100 @@ document.addEventListener("DOMContentLoaded", () => {
         clearTimeout(window._aboutme_scroll_timeout);
         window._aboutme_scroll_timeout = setTimeout(scrollToBottomStart, 120);
     });
+
+    // 캐릭터 및 컨텍스트 박스 등장 애니메이션
+    // 캐릭터 SVG 파일명
+    const charNames = [
+      "about_char_coffee.svg",
+      "about_char_legup.svg",
+      "about_char_onehup.svg",
+      "about_char_readbook.svg",
+      "about_char_sdown.svg",
+      "about_char_sdownhup.svg",
+      "about_char_twohup.svg",
+      "about_char_work.svg"
+    ];
+
+    // 캐릭터 등장 효과 클래스 부여
+    charNames.forEach(name => {
+      document.querySelectorAll(`img[src*='${name}']`).forEach(img => {
+        img.classList.add("aboutme-fade");
+      });
+    });
+
+    // 모든 context-box, 캐릭터 이미지 초기화 함수
+    function resetAllTriggers() {
+      document.querySelectorAll('.context-box').forEach(box => {
+        box.classList.remove('visible');
+      });
+      document.querySelectorAll('.aboutme-fade').forEach(img => {
+        img.classList.remove('visible');
+      });
+    }
+
+    // article별로 캐릭터/컨텍스트박스 트리거
+    document.querySelectorAll('section.intro > article').forEach(article => {
+      const charImg = article.querySelector('.aboutme-fade');
+      const contextBox = article.querySelector('.context-box');
+      if (charImg) {
+        // 캐릭터가 있는 경우: 캐릭터가 보이면 캐릭터+context-box 순차 등장
+        let contextTimeout = null;
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              charImg.classList.add('visible');
+              if (contextBox) {
+                contextTimeout = setTimeout(() => contextBox.classList.add('visible'), 300);
+              }
+            } else {
+              charImg.classList.remove('visible');
+              if (contextBox) {
+                contextBox.classList.remove('visible');
+                if (contextTimeout) clearTimeout(contextTimeout);
+              }
+            }
+          });
+        }, { threshold: 0.3 });
+        observer.observe(charImg);
+      } else if (contextBox) {
+        // 캐릭터가 없는 경우: context-box만 관찰
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              contextBox.classList.add('visible');
+            } else {
+              contextBox.classList.remove('visible');
+            }
+          });
+        }, { threshold: 0.3 });
+        observer.observe(contextBox);
+      }
+    });
+
+    // --- top_end_item spread 애니메이션 트리거 (고정/최하단에서만 해제) ---
+    (function(){
+      const topEnd = document.querySelector('.top_end_item');
+      if (!topEnd) return;
+      let spreadFixed = false;
+      function checkTopEndSpread() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const docHeight = document.documentElement.scrollHeight;
+        const winHeight = window.innerHeight;
+        const atBottom = (window.scrollY + winHeight) >= (docHeight - 2); // 2px 오차 허용
+        if (scrollY <= 0) {
+          topEnd.classList.add('spread');
+          spreadFixed = true;
+        } else if (atBottom) {
+          topEnd.classList.remove('spread');
+          spreadFixed = false;
+        } else if (spreadFixed) {
+          topEnd.classList.add('spread');
+        }
+      }
+      window.addEventListener('scroll', () => {
+        window.requestAnimationFrame(checkTopEndSpread);
+      });
+      // 초기 상태도 체크
+      checkTopEndSpread();
+    })();
 });
