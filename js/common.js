@@ -152,17 +152,42 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("blur", () => btn.classList.remove("is-hover"));
   });
 
-  // 햄버거 메뉴 열기/닫기
+  // 햄버거 메뉴 열기/닫기: 로드 시 닫힘 보장, 클릭 시 토글
   const hamburger = document.querySelector('.hamburger');
   const sideMenu = document.querySelector('.side_menu');
   const closeBtn = document.querySelector('.side_menu .close_btn');
 
+  // 초기 상태: 메뉴 닫힘
+  if (sideMenu) {
+    // Defensive: remove any server-rendered/inline 'on' class and ensure closed state
+    sideMenu.classList.remove('on');
+    sideMenu.classList.add('close');
+    // Accessibility: mark hidden
+    sideMenu.setAttribute('aria-hidden', 'true');
+    // Prevent possible flash by nudging its position via inline style until CSS applies
+    sideMenu.style.display = 'none';
+    if (!sideMenu.style.right) sideMenu.style.right = '-420px';
+  }
+
   if (hamburger && sideMenu) {
     hamburger.addEventListener('click', (e) => {
       e.stopPropagation();
-      sideMenu.classList.add('on');
-      sideMenu.classList.remove('close');
+      // 토글 only
+      const isOpen = sideMenu.classList.toggle('on');
+      sideMenu.classList.toggle('close', !isOpen);
+      sideMenu.setAttribute('aria-hidden', (!isOpen).toString());
+      // manage display: when opening, set display:flex then remove inline right to allow transition
+      if (isOpen) {
+        sideMenu.style.display = 'flex';
+        // allow a tick for CSS to apply then remove inline right to let transition animate
+        requestAnimationFrame(() => sideMenu.style.right = '');
+      } else {
+        // hide after transition (give time for transition to move right)
+        sideMenu.style.right = '-420px';
+        setTimeout(() => sideMenu.style.display = 'none', 600);
+      }
     });
+
     // 메뉴 바깥 클릭 시 닫힘
     document.addEventListener('click', (e) => {
       if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
@@ -171,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   if (sideMenu && closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -188,14 +214,30 @@ document.addEventListener("DOMContentLoaded", () => {
       // a 태그 클릭 시에는 기본 이동 막기
       if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
       e.stopPropagation();
-      // 토글
-      if (homeSubMenu) {
-        const isOpen = homeSubMenu.classList.contains('open');
-        // 모든 하위 ul 닫기
-        menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => ul.classList.remove('open'));
-        if (!isOpen) {
-          homeSubMenu.classList.add('open');
+      if (!homeSubMenu) return;
+      const isOpen = homeSubMenu.classList.contains('open');
+      // 닫혀있는 다른 하위 메뉴들 부드럽게 닫기
+      menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
+        if (ul !== homeSubMenu) {
+          ul.classList.remove('open');
+          ul.style.maxHeight = '0';
+          ul.setAttribute('aria-hidden', 'true');
+          ul.previousElementSibling?.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      if (isOpen) {
+        // 닫기 애니메이션
+        homeSubMenu.classList.remove('open');
+        homeSubMenu.style.maxHeight = '0';
+        homeSubMenu.setAttribute('aria-hidden', 'true');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+      } else {
+        // 열기: real height 계산 후 적용
+        homeSubMenu.classList.add('open');
+        homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
+        homeSubMenu.setAttribute('aria-hidden', 'false');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
       }
     });
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
