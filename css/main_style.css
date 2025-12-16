@@ -118,7 +118,7 @@ header {
 
 .ft_copy {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -2490,7 +2490,8 @@ aside ul li .project_img .pj-img {
   border-left: 4px solid #000;
   z-index: 2000;
   transition: right 1.2s;
-  display: none; /* Changed to none to avoid conflict */
+  display: none;
+  /* Changed to none to avoid conflict */
   flex-direction: column;
   align-items: flex-start;
   padding: 48px 32px 32px 32px;
@@ -2503,7 +2504,8 @@ aside ul li .project_img .pj-img {
 
 .side_menu.on {
   right: 0;
-  display: flex !important; /* Ensure it displays flex when active */
+  display: flex !important;
+  /* Ensure it displays flex when active */
 }
 
 .side_menu.close {
