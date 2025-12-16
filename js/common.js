@@ -221,9 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 사이드 메뉴 Home 하위 메뉴 토글
   const menuList = document.querySelector('.side_menu .menu ul.menu_list');
+  console.debug('menuList init', { exists: !!menuList });
   if (menuList) {
     const homeItem = menuList.querySelector('li.menu_item'); // 첫 번째 li(Home)
     const homeSubMenu = homeItem?.querySelector('ul');
+    const homeAnchor = homeItem?.querySelector('> a');
+    console.debug('homeItem/homeAnchor found', { homeItem: !!homeItem, homeAnchor: !!homeAnchor, homeSubMenu: !!homeSubMenu });
 
     // helper: open submenu smoothly
     function openSubmenu(ul, item) {
@@ -303,6 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
     homeItem?.addEventListener('click', function (e) {
       // 클릭된 요소가 최상위 Home 앵커(또는 li 자체)를 클릭한 경우, 하위 메뉴 토글
       const clickedA = e.target.closest('a');
+      console.debug('homeItem click', { target: e.target.tagName, clickedA: !!clickedA });
       const isTopAnchor = clickedA && clickedA.parentElement === homeItem && clickedA.nextElementSibling && clickedA.nextElementSibling.tagName === 'UL';
       const clickedInsideLi = homeItem.contains(e.target);
       if (isTopAnchor || (!clickedA && clickedInsideLi)) {
@@ -316,6 +320,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       // 하위 메뉴의 링크를 클릭한 경우는 기존 sideAnchors 핸들러가 처리하므로 기본 동작 허용
     });
+
+    // Also attach directly to the top anchor to be extra-safe
+    if (homeAnchor) {
+      homeAnchor.addEventListener('click', (e) => {
+        console.debug('homeAnchor click', { target: e.target.tagName });
+        e.preventDefault();
+        e.stopPropagation();
+        if (!homeSubMenu) return;
+        const isOpen = homeSubMenu.classList.contains('open');
+        if (isOpen) closeSubmenu(homeSubMenu, homeItem);
+        else openSubmenu(homeSubMenu, homeItem);
+      });
+    }
 
     // Initialize aria states for any existing submenus (in case of server-rendered classes)
     menuList.querySelectorAll('li.menu_item').forEach(li => {
