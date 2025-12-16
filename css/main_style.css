@@ -168,8 +168,11 @@ header {
   align-items: center;
   font-size: 14px;
   gap: 4px;
-  font-weight: 400;
   color: #fff;
+}
+
+.scroll_ui .scroll_guide {
+  font-weight: 400;
 }
 
 .scroll_ui .scroll_guide .arrow {
