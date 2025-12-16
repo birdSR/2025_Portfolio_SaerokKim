@@ -111,11 +111,14 @@ body {
 .ft_copy {
   font-size: 14px;
   font-weight: 400;
-  color: #333;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: auto auto;
+position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .hamburger {
@@ -297,6 +300,37 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.scroll_ui .scroll_guide{
+  display: flex;
+align-items: center;
+gap: 4px;
+font-weight: 300;
+color: #fff;
+}
+
+.scroll_ui .scroll_guide .arrow{
+  animation: arrowAni 2s ease-in-out infinite;
+}
+
+@keyframes arrowAni {
+  0% {
+    transform: rotate(90deg) translateY(0px);
+  }
+
+  50% {
+    transform: rotate(90deg) translateY(-6px);
+  }
+
+  100% {
+    transform: rotate(90deg) translateY(0px);
+}
+}
+
+.scroll_ui .scroll_guide .mouse{
+  transform: rotate(90deg);
+}
+
 
 header {
   position: fixed;
