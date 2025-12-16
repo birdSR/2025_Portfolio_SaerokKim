@@ -217,46 +217,66 @@ document.addEventListener("DOMContentLoaded", () => {
   if (menuList) {
     const homeItem = menuList.querySelector('li.menu_item'); // 첫 번째 li(Home)
     const homeSubMenu = homeItem?.querySelector('ul');
+
+    // helper: open submenu smoothly
+    function openSubmenu(ul, item) {
+      if (!ul || !item) return;
+      // close others
+      menuList.querySelectorAll('li.menu_item > ul.open').forEach(other => {
+        if (other !== ul) closeSubmenu(other, other.previousElementSibling);
+      });
+      ul.classList.add('open');
+      ul.setAttribute('aria-hidden', 'false');
+      item?.querySelector('> a')?.setAttribute('aria-expanded', 'true');
+      // set explicit height then clear it after transition so future content changes work
+      const h = ul.scrollHeight;
+      ul.style.maxHeight = h + 'px';
+      const onEnd = (ev) => {
+        if (ev.propertyName !== 'max-height') return;
+        ul.style.maxHeight = '';
+        ul.removeEventListener('transitionend', onEnd);
+      };
+      ul.addEventListener('transitionend', onEnd);
+    }
+
+    // helper: close submenu smoothly
+    function closeSubmenu(ul, item) {
+      if (!ul || !item) return;
+      // ensure starting height is set (in case it was '')
+      const startH = ul.scrollHeight;
+      ul.style.maxHeight = startH + 'px';
+      // force reflow then animate to 0
+      requestAnimationFrame(() => {
+        ul.style.maxHeight = '0';
+      });
+      ul.setAttribute('aria-hidden', 'true');
+      item?.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+      const onEnd = (ev) => {
+        if (ev.propertyName !== 'max-height') return;
+        ul.classList.remove('open');
+        ul.removeEventListener('transitionend', onEnd);
+        // keep maxHeight as 0 to ensure collapsed state
+        ul.style.maxHeight = '0';
+      };
+      ul.addEventListener('transitionend', onEnd);
+    }
+
     homeItem?.addEventListener('click', function (e) {
       // a 태그 클릭 시에는 기본 이동 막기
       if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
       e.stopPropagation();
       if (!homeSubMenu) return;
-
       const isOpen = homeSubMenu.classList.contains('open');
-      // 닫혀있는 다른 하위 메뉴들 부드럽게 닫기
-      menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
-        if (ul !== homeSubMenu) {
-          ul.classList.remove('open');
-          ul.style.maxHeight = '0';
-          ul.setAttribute('aria-hidden', 'true');
-          ul.previousElementSibling?.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      if (isOpen) {
-        // 현재 열려있으면 닫기
-        homeSubMenu.classList.remove('open');
-        homeSubMenu.style.maxHeight = '0';
-        homeSubMenu.setAttribute('aria-hidden', 'true');
-        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
-      } else {
-        // 열기
-        homeSubMenu.classList.add('open');
-        homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
-        homeSubMenu.setAttribute('aria-hidden', 'false');
-        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
-      }
+      if (isOpen) closeSubmenu(homeSubMenu, homeItem);
+      else openSubmenu(homeSubMenu, homeItem);
     });
+
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
     document.addEventListener('click', (e) => {
       if (!homeItem.contains(e.target)) {
-          if (homeSubMenu) {
-            homeSubMenu.classList.remove('open');
-            homeSubMenu.style.maxHeight = '0';
-            homeSubMenu.setAttribute('aria-hidden', 'true');
-            homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
-          }
+        if (homeSubMenu && homeSubMenu.classList.contains('open')) {
+          closeSubmenu(homeSubMenu, homeItem);
+        }
       }
     });
   }
