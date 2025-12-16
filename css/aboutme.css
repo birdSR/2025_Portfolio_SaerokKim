@@ -93,6 +93,158 @@ header img {
   height: auto;
 }
 
+.hamburger {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #000;
+  position: fixed;
+  right: 40px;
+  top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+
+.side_menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  border-left: 4px solid #000;
+  z-index: 2000;
+  transition: right 1.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 48px 32px 32px 32px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* 기본적으로 DOM은 있지만 보이지 않게 처리 (JS에서 .on으로 보이게 함) */
+.side_menu {
+  display: none;
+}
+
+.side_menu.close {
+  right: -400px;
+}
+
+.close_btn {
+  position: absolute;
+  right: 32px;
+  top: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+/* 사이드 메뉴 닫기 버튼 회전 애니메이션 */
+.side_menu .close_btn {
+  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.side_menu .close_btn:hover {
+  transform: rotate(180deg);
+}
+
+.side_menu .tit_menu {
+  font-size: 60px;
+  font-weight: 800;
+  color: #02b389;
+}
+
+.side_menu .menu_list {
+  margin-top: 30px;
+}
+
+.side_menu ul li {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+  margin-bottom: 20px;
+  translate: 2s;
+}
+
+.side_menu ul li:hover {
+  color: #dd599f;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li {
+  font-size: 24px;
+  font-weight: 400;
+  color: #484848;
+  margin-bottom: 20px;
+  padding-left: 10px;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:hover {
+  font-weight: 600;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:hover::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url(../assets/svg/main_obj/dotory_a.svg);
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position: center;
+  vertical-align: middle;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:first-child {
+  margin-top: 10px;
+}
+
+/* Submenu collapse/expand smooth animation */
+.side_menu .menu ul.menu_list>li>ul {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 420ms cubic-bezier(.22, .9, .26, 1), opacity 280ms ease;
+}
+
+.side_menu .menu ul.menu_list>li>ul.open {
+  opacity: 1;
+  /* large enough max-height to contain content; JS will set exact height for smooth animation */
+  max-height: 800px;
+}
+
+.side_menu.on {
+  right: 0;
+  display: flex;
+  /* visible when 'on' */
+}
+
+.hamburger span.bar {
+  width: 60px;
+  height: 4px;
+  background: #000;
+  transform-origin: left;
+  transition: transform 1s;
+}
+
+.hamburger:hover span.bar:nth-child(2) {
+  transform: scaleX(60%);
+  transform-origin: left;
+  transition: transform 1s;
+}
+
+
 .sky .m_cloud1 {
   position: absolute;
   top: 140px;
@@ -217,6 +369,23 @@ header img {
   width: 800px;
 }
 
+.introduce .about_first .context-box{
+  position: absolute;
+  bottom: 340px;
+  left: 0;
+  width: 589px;
+}
+
+.introduce .about_first .context-box .context-txt {
+  width: auto;
+  height: 100%;
+}
+
+.introduce .about_first .context-box .shape{
+  left: 320px;
+  top: 128px;
+}
+
 .awords {
   width: 200px;
   position: absolute;
@@ -231,6 +400,7 @@ header img {
   top: 20px;
 }
 
+
 .awords .apple_b {
   position: relative;
   right: -30px;
@@ -241,7 +411,7 @@ header img {
   position: absolute;
   top: -260px;
   left: -300px;
-  width: 800px;
+  width: 858px;
 }
 
 .awords .about_second .context-box .context-txt {
@@ -287,7 +457,7 @@ header img {
   position: absolute;
   top: -254px;
   left: -300px;
-  width: 780px;
+  width: 820px;
 }
 
 .qualifications .about_third .context-box .context-txt {
@@ -347,7 +517,7 @@ header img {
 
 .strength .about_four .context-box .shape {
   left: 262px;
-  top: 380px;
+  top: 388px;
 }
 
 .skill {
@@ -423,12 +593,13 @@ header img {
 .also_do_it .about_six .context-box {
   position: absolute;
   top: -370px;
-  left: 10px;
+  left: 20px;
+  width: auto;
 }
 
 .also_do_it .about_six .context-box .context-txt {
   position: absolute;
-  width: 380px;
+  width: 420px;
 }
 
 .also_do_it .about_six .context-box .list {
@@ -441,7 +612,7 @@ header img {
 }
 
 .also_do_it .about_six .context-box .shape {
-  left: 168px;
+  left: 190px;
   top: 314px;
 }
 

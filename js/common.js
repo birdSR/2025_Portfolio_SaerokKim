@@ -315,6 +315,32 @@ document.addEventListener("DOMContentLoaded", () => {
       // 하위 메뉴의 링크를 클릭한 경우(실제 네비게이션)는 기본 동작을 허용
     });
 
+    // Initialize aria states for any existing submenus (in case of server-rendered classes)
+    menuList.querySelectorAll('li.menu_item').forEach(li => {
+      const a = li.querySelector('> a');
+      const ul = li.querySelector('ul');
+      if (!ul) return;
+      if (ul.classList.contains('open')) {
+        ul.setAttribute('aria-hidden', 'false');
+        a?.setAttribute('aria-expanded', 'true');
+      } else {
+        ul.setAttribute('aria-hidden', 'true');
+        a?.setAttribute('aria-expanded', 'false');
+        // ensure collapsed maxHeight
+        ul.style.maxHeight = '0';
+      }
+    });
+
+    // Keyboard accessibility: Space/Enter toggles the Home button
+    menuList.querySelectorAll('a.home-toggle').forEach(a => {
+      a.addEventListener('keydown', (ev) => {
+        if (ev.key === ' ' || ev.key === 'Spacebar' || ev.key === 'Enter') {
+          ev.preventDefault();
+          a.click();
+        }
+      });
+    });
+
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
     document.addEventListener('click', (e) => {
       if (!homeItem.contains(e.target)) {
