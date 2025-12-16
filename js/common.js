@@ -301,9 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     homeItem?.addEventListener('click', function (e) {
-      // 상위 Home 링크 자체를 클릭한 경우(토글 역할) 기본 동작을 막고 하위 메뉴를 토글합니다.
+      // 클릭된 요소가 최상위 Home 앵커(또는 li 자체)를 클릭한 경우, 하위 메뉴 토글
       const clickedA = e.target.closest('a');
-      if (clickedA && clickedA.classList.contains('home-toggle')) {
+      const isTopAnchor = clickedA && clickedA.parentElement === homeItem && clickedA.nextElementSibling && clickedA.nextElementSibling.tagName === 'UL';
+      const clickedInsideLi = homeItem.contains(e.target);
+      if (isTopAnchor || (!clickedA && clickedInsideLi)) {
         e.preventDefault();
         e.stopPropagation();
         if (!homeSubMenu) return;
@@ -312,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
         else openSubmenu(homeSubMenu, homeItem);
         return;
       }
-      // 하위 메뉴의 링크를 클릭한 경우(실제 네비게이션)는 기본 동작을 허용
+      // 하위 메뉴의 링크를 클릭한 경우는 기존 sideAnchors 핸들러가 처리하므로 기본 동작 허용
     });
 
     // Initialize aria states for any existing submenus (in case of server-rendered classes)
@@ -331,8 +333,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Keyboard accessibility: Space/Enter toggles the Home button
-    menuList.querySelectorAll('a.home-toggle').forEach(a => {
+    // Keyboard accessibility: Space/Enter toggles top-level anchors that control submenus
+    menuList.querySelectorAll('li.menu_item > a').forEach(a => {
+      const ul = a.nextElementSibling;
+      if (!ul || ul.tagName !== 'UL') return;
+      // ensure ul has an id for aria-controls
+      if (!ul.id) ul.id = `submenu-${Math.random().toString(36).substr(2,6)}`;
+      a.setAttribute('aria-controls', ul.id);
       a.addEventListener('keydown', (ev) => {
         if (ev.key === ' ' || ev.key === 'Spacebar' || ev.key === 'Enter') {
           ev.preventDefault();
