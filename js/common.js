@@ -479,4 +479,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+// removed duplicate debug declarations that caused a SyntaxError
+
 });
