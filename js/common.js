@@ -237,7 +237,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
     document.addEventListener('click', (e) => {
       if (!homeItem.contains(e.target)) {
-        homeSubMenu?.classList.remove('open');
+          if (homeSubMenu) {
+            homeSubMenu.classList.remove('open');
+            homeSubMenu.style.maxHeight = '0';
+            homeSubMenu.setAttribute('aria-hidden', 'true');
+            homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+          }
       }
     });
   }
@@ -309,6 +314,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
+  }
+  
+  // 가로 레이아웃 페이지에서 location.hash가 있으면 Lenis로 스크롤하여 적절한 섹션으로 이동
+  if (hasHorizontal && typeof window !== 'undefined') {
+    const initialHash = window.location.hash;
+    if (initialHash) {
+      const id = initialHash.slice(1);
+      const target = document.getElementById(id);
+      if (target && lenis) {
+        // 약간의 대기 후(렌더/Lenis 초기화) 스크롤
+        setTimeout(() => {
+          const maxScroll = Math.max(0, totalWidth - window.innerWidth);
+          const dest = Math.min(target.offsetLeft, maxScroll);
+          lenis.scrollTo(dest);
+        }, 80);
+      }
+    }
   }
 
 });
