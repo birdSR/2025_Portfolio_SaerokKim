@@ -7,49 +7,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const track = document.querySelector(".horizontal-scroll");
   const panels = document.querySelectorAll(".panel");
 
-  if (!wrapper || !track || !panels.length) {
-    console.error("horizontal 구조 DOM 누락");
-    return;
+  // 페이지에 가로 레이아웃이 있는지 체크합니다. 없는 경우에도 사이드 메뉴 등 일반 동작은 유지합니다.
+  const hasHorizontal = !!(wrapper && track && panels.length);
+  if (!hasHorizontal) {
+    console.info("No horizontal layout on this page — skipping horizontal scroll init.");
   }
 
   /* ==================================================
       1. 가로 총 길이 계산 → 세로 스크롤 높이 생성
   ================================================== */
   let totalWidth = 0;
-  panels.forEach(panel => {
-    totalWidth += panel.offsetWidth;
-  });
-
-  // viewport 만큼은 빼야 마지막 패널에서 멈춤
-  const scrollHeight = totalWidth - window.innerWidth + window.innerHeight;
-  document.body.style.height = `${scrollHeight}px`;
+  if (hasHorizontal) {
+    panels.forEach(panel => {
+      totalWidth += panel.offsetWidth;
+    });
+    // viewport 만큼은 빼야 마지막 패널에서 멈춤
+    const scrollHeight = totalWidth - window.innerWidth + window.innerHeight;
+    document.body.style.height = `${scrollHeight}px`;
+  }
 
   /* ==================================================
       2. Lenis (세로 스크롤 전용)
   ================================================== */
-  const lenis = new Lenis({
-    smooth: true,
-    lerp: 0.08,
-    wheelMultiplier: 1,
-  });
+  // Lenis는 가로 레이아웃이 있을 때만 동작하도록 설정합니다.
+  let lenis = null;
+  if (hasHorizontal) {
+    lenis = new Lenis({
+      smooth: true,
+      lerp: 0.08,
+      wheelMultiplier: 1,
+    });
 
-  function raf(time) {
-    lenis.raf(time);
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
     requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
 
-  /* ==================================================
-      3. 세로 스크롤 → 가로 이동 매핑
-  ================================================== */
-  lenis.on("scroll", ({ scroll }) => {
-    track.style.transform = `translate3d(${-scroll}px, 0, 0)`;
-  });
+    /* ==================================================
+        3. 세로 스크롤 → 가로 이동 매핑
+    ==================================================*/
+    lenis.on("scroll", ({ scroll }) => {
+      track.style.transform = `translate3d(${-scroll}px, 0, 0)`;
+    });
+  }
 
   /* ==================================================
       4. resize 대응
   ================================================== */
   window.addEventListener("resize", () => {
+    if (!hasHorizontal) return;
     totalWidth = 0;
     panels.forEach(panel => {
       totalWidth += panel.offsetWidth;
@@ -242,9 +249,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!href || href === '#') return;
         const id = href.slice(1);
         const target = document.getElementById(id);
-        if (!target) return;
-        // target.offsetLeft 값으로 Lenis의 세로 스크롤값을 지정하면 가로로 이동합니다.
-        lenis.scrollTo(target.offsetLeft);
+        if (!target) {
+          // 현재 페이지에 타겟이 없으면 인덱스 페이지로 이동
+          window.location.href = `index.html#${id}`;
+          return;
+        }
+        // 가로 레이아웃이 있는 페이지이면 Lenis로 스크롤, 아니면 인덱스로 리디렉트
+        if (hasHorizontal && lenis) {
+          const maxScroll = Math.max(0, totalWidth - window.innerWidth);
+          const dest = Math.min(target.offsetLeft, maxScroll);
+          lenis.scrollTo(dest);
+        } else {
+          window.location.href = `index.html#${id}`;
+          return;
+        }
         // 메뉴 자동 닫기
         if (sideMenu) {
           sideMenu.classList.remove('on');
