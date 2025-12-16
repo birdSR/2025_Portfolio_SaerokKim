@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 페이지에 가로 레이아웃이 있는지 체크합니다. 없는 경우에도 사이드 메뉴 등 일반 동작은 유지합니다.
   const hasHorizontal = !!(wrapper && track && panels.length);
   if (!hasHorizontal) {
-    console.info("No horizontal layout on this page — skipping horizontal scroll init.");
+    console.debug("No horizontal layout on this page — skipping horizontal scroll init.");
   }
 
   /* ==================================================
@@ -228,6 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
         menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => ul.classList.remove('open'));
         if (!isOpen) {
           homeSubMenu.classList.add('open');
+          homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
+          homeSubMenu.setAttribute('aria-hidden', 'false');
+          homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
         }
       }
     });
@@ -235,6 +238,39 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('click', (e) => {
       if (!homeItem.contains(e.target)) {
         homeSubMenu?.classList.remove('open');
+      }
+    });
+  }
+
+  // 타이틀(Menu)을 눌러도 하위메뉴가 열리도록 처리
+  const titMenu = document.querySelector('.side_menu .menu .tit_menu');
+  if (titMenu && menuList) {
+    titMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const homeItem = menuList.querySelector('li.menu_item');
+      const homeSubMenu = homeItem?.querySelector('ul');
+      if (!homeSubMenu) return;
+      const isOpen = homeSubMenu.classList.contains('open');
+      // 닫혀있는 다른 하위 메뉴들 부드럽게 닫기
+      menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
+        if (ul !== homeSubMenu) {
+          ul.classList.remove('open');
+          ul.style.maxHeight = '0';
+          ul.setAttribute('aria-hidden', 'true');
+          ul.previousElementSibling?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      if (isOpen) {
+        homeSubMenu.classList.remove('open');
+        homeSubMenu.style.maxHeight = '0';
+        homeSubMenu.setAttribute('aria-hidden', 'true');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+      } else {
+        homeSubMenu.classList.add('open');
+        homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
+        homeSubMenu.setAttribute('aria-hidden', 'false');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
       }
     });
   }
