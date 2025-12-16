@@ -2390,7 +2390,7 @@ aside ul li .project_img .pj-img {
   text-align: left;
   font-family: "-", sans-serif;
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 400;
   position: relative;
   align-self: stretch;
 }
@@ -2402,6 +2402,7 @@ aside ul li .project_img .pj-img {
 
 .uxui-design-personal-project-span2 {
   font-family: "Pretendard-Regular", sans-serif;
+
 }
 
 .app {
@@ -2436,9 +2437,9 @@ aside ul li .project_img .pj-img {
   color: #464646;
   text-align: left;
   font-family: "Pretendard-Medium", sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 150%;
-  font-weight: 200;
+  font-weight: 500;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -2470,7 +2471,7 @@ aside ul li .project_img .pj-img {
   text-align: left;
   font-family: "Pretendard-Medium", sans-serif;
   font-size: 16px;
-  font-weight: 200;
+  font-weight: 500;
 }
 
 .dir_btn {
