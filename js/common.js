@@ -14,24 +14,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ==================================================
-      1. 가로 총 길이 계산 → 세로 스크롤 높이 생성
+      1. 가로 스크롤 너비 계산 (hasHorizontal인 경우)
   ================================================== */
   let totalWidth = 0;
   if (hasHorizontal) {
     panels.forEach(panel => {
       totalWidth += panel.offsetWidth;
     });
-    // viewport 만큼은 빼야 마지막 패널에서 멈춤
+    // 페이지의 세로 문서 높이를 가로 스크롤 전체 너비에 맞춰 계산
     const scrollHeight = totalWidth - window.innerWidth + window.innerHeight;
     document.body.style.height = `${scrollHeight}px`;
-  }
 
-  /* ==================================================
-      2. Lenis (세로 스크롤 전용)
-  ================================================== */
-  // Lenis는 가로 레이아웃이 있을 때만 동작하도록 설정합니다.
-  let lenis = null;
-  if (hasHorizontal) {
+    /* ==================================================
+        2. Lenis (세로 스크롤 전용)
+    ================================================== */
+    // Lenis는 가로 레이아웃이 있을 때만 동작하도록 설정합니다.
     lenis = new Lenis({
       smooth: true,
       lerp: 0.08,
@@ -191,6 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         // hide after transition (give time for transition to move right)
         sideMenu.style.right = '-420px';
+        if (typeof sideMenu.closeAllSubmenus === 'function') sideMenu.closeAllSubmenus();
+        sideMenu.setAttribute('aria-hidden', 'true');
         setTimeout(() => sideMenu.style.display = 'none', 600);
       }
     });
@@ -200,6 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
         sideMenu.classList.remove('on');
         sideMenu.classList.add('close');
+        sideMenu.setAttribute('aria-hidden', 'true');
+        if (typeof sideMenu.closeAllSubmenus === 'function') sideMenu.closeAllSubmenus();
+        sideMenu.style.right = '-420px';
+        setTimeout(() => sideMenu.style.display = 'none', 600);
       }
     });
   }
@@ -209,6 +212,10 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       sideMenu.classList.remove('on');
       sideMenu.classList.add('close');
+      sideMenu.setAttribute('aria-hidden', 'true');
+      if (typeof sideMenu.closeAllSubmenus === 'function') sideMenu.closeAllSubmenus();
+      sideMenu.style.right = '-420px';
+      setTimeout(() => sideMenu.style.display = 'none', 600);
     });
   }
 
@@ -284,6 +291,15 @@ document.addEventListener("DOMContentLoaded", () => {
       console.debug('closeSubmenu called', { item });
     }
 
+    // expose a helper on sideMenu to close all submenus (used when menu is closed)
+    if (sideMenu) {
+      sideMenu.closeAllSubmenus = function () {
+        menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
+          closeSubmenu(ul, ul.previousElementSibling);
+        });
+      };
+    }
+
     homeItem?.addEventListener('click', function (e) {
       // a 태그 클릭 시에는 기본 이동 막기
       if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
@@ -313,27 +329,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const homeSubMenu = homeItem?.querySelector('ul');
       if (!homeSubMenu) return;
       const isOpen = homeSubMenu.classList.contains('open');
-      // 닫혀있는 다른 하위 메뉴들 부드럽게 닫기
-      menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
-        if (ul !== homeSubMenu) {
-          ul.classList.remove('open');
-          ul.style.maxHeight = '0';
-          ul.setAttribute('aria-hidden', 'true');
-          ul.previousElementSibling?.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      if (isOpen) {
-        homeSubMenu.classList.remove('open');
-        homeSubMenu.style.maxHeight = '0';
-        homeSubMenu.setAttribute('aria-hidden', 'true');
-        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
-      } else {
-        homeSubMenu.classList.add('open');
-        homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
-        homeSubMenu.setAttribute('aria-hidden', 'false');
-        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
-      }
+      if (isOpen) closeSubmenu(homeSubMenu, homeItem);
+      else openSubmenu(homeSubMenu, homeItem);
     });
   }
 
@@ -366,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
           sideMenu.classList.remove('on');
           sideMenu.classList.add('close');
           sideMenu.setAttribute('aria-hidden', 'true');
+          if (typeof sideMenu.closeAllSubmenus === 'function') sideMenu.closeAllSubmenus();
           sideMenu.style.right = '-420px';
           setTimeout(() => sideMenu.style.display = 'none', 600);
         }
