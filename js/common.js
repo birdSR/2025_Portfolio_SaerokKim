@@ -301,13 +301,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     homeItem?.addEventListener('click', function (e) {
-      // a 태그 클릭 시에는 기본 이동 막기
-      if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
-      e.stopPropagation();
-      if (!homeSubMenu) return;
-      const isOpen = homeSubMenu.classList.contains('open');
-      if (isOpen) closeSubmenu(homeSubMenu, homeItem);
-      else openSubmenu(homeSubMenu, homeItem);
+      // 상위 Home 링크 자체를 클릭한 경우(토글 역할) 기본 동작을 막고 하위 메뉴를 토글합니다.
+      const clickedA = e.target.closest('a');
+      if (clickedA && clickedA.classList.contains('home-toggle')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!homeSubMenu) return;
+        const isOpen = homeSubMenu.classList.contains('open');
+        if (isOpen) closeSubmenu(homeSubMenu, homeItem);
+        else openSubmenu(homeSubMenu, homeItem);
+        return;
+      }
+      // 하위 메뉴의 링크를 클릭한 경우(실제 네비게이션)는 기본 동작을 허용
     });
 
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
