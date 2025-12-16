@@ -232,4 +232,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 사이드 메뉴 내부 앵커 클릭 -> Lenis로 수평 스크롤 처리
+  const sideAnchors = document.querySelectorAll('.side_menu .menu ul.menu_list a[href^="#"]');
+  if (sideAnchors.length) {
+    sideAnchors.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = a.getAttribute('href');
+        if (!href || href === '#') return;
+        const id = href.slice(1);
+        const target = document.getElementById(id);
+        if (!target) return;
+        // target.offsetLeft 값으로 Lenis의 세로 스크롤값을 지정하면 가로로 이동합니다.
+        lenis.scrollTo(target.offsetLeft);
+        // 메뉴 자동 닫기
+        if (sideMenu) {
+          sideMenu.classList.remove('on');
+          sideMenu.classList.add('close');
+          sideMenu.setAttribute('aria-hidden', 'true');
+          sideMenu.style.right = '-420px';
+          setTimeout(() => sideMenu.style.display = 'none', 600);
+        }
+      });
+    });
+  }
+
 });
