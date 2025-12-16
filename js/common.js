@@ -107,6 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
   tryAutoPlay();
   updateIcon();
 
+
+
+
+
   /* ==================================================
       6. 클릭 요소 (aside / home 복귀)
   ================================================== */
@@ -144,6 +148,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => {
       document.querySelector("aside").style.display = "none";
     });
+
+
+
 
   /* ==================================================
       7. 버튼 hover 보정
@@ -225,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (menuList) {
     const homeItem = menuList.querySelector('li.menu_item'); // 첫 번째 li(Home)
     const homeSubMenu = homeItem?.querySelector('ul');
-    const homeAnchor = homeItem?.querySelector('> a');
+    const homeAnchor = homeItem?.querySelector('span');
     console.debug('homeItem/homeAnchor found', { homeItem: !!homeItem, homeAnchor: !!homeAnchor, homeSubMenu: !!homeSubMenu });
 
     // helper: open submenu smoothly
@@ -335,17 +342,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Initialize aria states for any existing submenus (in case of server-rendered classes)
-    menuList.querySelectorAll('li.menu_item').forEach(li => {
-      const a = li.querySelector('> a');
+    menuList.querySelectorAll('li.menu_item').forEach((li, index) => {
+      //const a = li.querySelector('> a');
       const ul = li.querySelector('ul');
       if (!ul) return;
       if (ul.classList.contains('open')) {
         ul.setAttribute('aria-hidden', 'false');
-        a?.setAttribute('aria-expanded', 'true');
+        // a?.setAttribute('aria-expanded', 'true');
       } else {
         ul.setAttribute('aria-hidden', 'true');
-        a?.setAttribute('aria-expanded', 'false');
-        // ensure collapsed maxHeight
+        // a?.setAttribute('aria-expanded', 'false');
         ul.style.maxHeight = '0';
       }
     });
@@ -355,7 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ul = a.nextElementSibling;
       if (!ul || ul.tagName !== 'UL') return;
       // ensure ul has an id for aria-controls
-      if (!ul.id) ul.id = `submenu-${Math.random().toString(36).substr(2,6)}`;
+      if (!ul.id) ul.id = `submenu-${Math.random().toString(36).substr(2, 6)}`;
       a.setAttribute('aria-controls', ul.id);
       a.addEventListener('keydown', (ev) => {
         if (ev.key === ' ' || ev.key === 'Spacebar' || ev.key === 'Enter') {
@@ -461,7 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-  
+
   // 가로 레이아웃 페이지에서 location.hash가 있으면 Lenis로 스크롤하여 적절한 섹션으로 이동
   if (hasHorizontal && typeof window !== 'undefined') {
     const initialHash = window.location.hash;
@@ -480,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 햄버거 클릭 시 사이드 메뉴 오픈/클로즈 (심플 토글)
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var hamburger = document.querySelector('.hamburger');
     var sideMenu = document.querySelector('.side_menu');
     var closeBtn = document.querySelector('.side_menu .close_btn');
@@ -490,21 +496,21 @@ document.addEventListener("DOMContentLoaded", () => {
     sideMenu.classList.remove('on');
     sideMenu.classList.add('close');
 
-    hamburger.addEventListener('click', function(e) {
+    hamburger.addEventListener('click', function (e) {
       e.stopPropagation();
       sideMenu.classList.add('on');
       sideMenu.classList.remove('close');
     });
 
     if (closeBtn) {
-      closeBtn.addEventListener('click', function(e) {
+      closeBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         sideMenu.classList.remove('on');
         sideMenu.classList.add('close');
       });
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
         sideMenu.classList.remove('on');
         sideMenu.classList.add('close');
@@ -514,59 +520,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Home 클릭 시 하위 ul이 슬라이드+페이드로 자연스럽게 열리고 닫히는 JS 보완
   // (index.html, aboutme.html 모두 동작)
-  document.addEventListener('DOMContentLoaded', function() {
-    var homeToggle = document.querySelector('.side_menu .home-toggle');
-    var homeSubmenu = document.getElementById('home-submenu');
-    if (!homeToggle || !homeSubmenu) return;
 
-    // 초기 상태 보장
-    homeSubmenu.style.maxHeight = '0';
-    homeSubmenu.style.opacity = '0';
-    homeSubmenu.classList.remove('open');
-    homeSubmenu.setAttribute('aria-hidden', 'true');
-    homeToggle.setAttribute('aria-expanded', 'false');
+  var homeToggle = document.querySelector('.side_menu .home-toggle');
+  var homeSubmenu = document.getElementById('home-submenu');
+  if (!homeToggle || !homeSubmenu) return;
 
-    homeToggle.addEventListener('click', function(e) {
-      e.preventDefault();
-      var isOpen = homeSubmenu.classList.contains('open');
-      if (isOpen) {
-        // 닫기
-        homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
-        homeSubmenu.style.opacity = '1';
-        requestAnimationFrame(function() {
+  // 초기 상태 보장
+  homeSubmenu.style.maxHeight = '0';
+  homeSubmenu.style.opacity = '0';
+  homeSubmenu.classList.remove('open');
+  homeSubmenu.setAttribute('aria-hidden', 'true');
+  homeToggle.setAttribute('aria-expanded', 'false');
+
+  homeToggle.addEventListener('click', function (e) {
+    e.preventDefault();
+    var isOpen = homeSubmenu.classList.contains('open');
+    if (isOpen) {
+      // 닫기
+      homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
+      homeSubmenu.style.opacity = '1';
+      requestAnimationFrame(function () {
+        homeSubmenu.style.maxHeight = '0';
+        homeSubmenu.style.opacity = '0';
+      });
+      homeSubmenu.setAttribute('aria-hidden', 'true');
+      homeToggle.setAttribute('aria-expanded', 'false');
+      homeSubmenu.classList.remove('open');
+      // 닫힌 후 maxHeight 해제
+      var onEndClose = function (ev) {
+        if (ev.propertyName === 'max-height') {
           homeSubmenu.style.maxHeight = '0';
-          homeSubmenu.style.opacity = '0';
-        });
-        homeSubmenu.setAttribute('aria-hidden', 'true');
-        homeToggle.setAttribute('aria-expanded', 'false');
-        homeSubmenu.classList.remove('open');
-        // 닫힌 후 maxHeight 해제
-        var onEndClose = function(ev) {
-          if (ev.propertyName === 'max-height') {
-            homeSubmenu.style.maxHeight = '0';
-            homeSubmenu.removeEventListener('transitionend', onEndClose);
-          }
-        };
-        homeSubmenu.addEventListener('transitionend', onEndClose);
-      } else {
-        // 열기
-        homeSubmenu.classList.add('open');
-        homeSubmenu.setAttribute('aria-hidden', 'false');
-        homeToggle.setAttribute('aria-expanded', 'true');
-        homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
-        homeSubmenu.style.opacity = '1';
-        // transition 끝나면 maxHeight 해제(자연스러운 애니메이션)
-        var onEnd = function(ev) {
-          if (ev.propertyName === 'max-height') {
-            homeSubmenu.style.maxHeight = '';
-            homeSubmenu.removeEventListener('transitionend', onEnd);
-          }
-        };
-        homeSubmenu.addEventListener('transitionend', onEnd);
-      }
-    });
+          homeSubmenu.removeEventListener('transitionend', onEndClose);
+        }
+      };
+      homeSubmenu.addEventListener('transitionend', onEndClose);
+    } else {
+      // 열기
+      homeSubmenu.classList.add('open');
+      homeSubmenu.setAttribute('aria-hidden', 'false');
+      homeToggle.setAttribute('aria-expanded', 'true');
+      homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
+      homeSubmenu.style.opacity = '1';
+      // transition 끝나면 maxHeight 해제(자연스러운 애니메이션)
+      var onEnd = function (ev) {
+        if (ev.propertyName === 'max-height') {
+          homeSubmenu.style.maxHeight = '';
+          homeSubmenu.removeEventListener('transitionend', onEnd);
+        }
+      };
+      homeSubmenu.addEventListener('transitionend', onEnd);
+    }
   });
+});
 
 // removed duplicate debug declarations that caused a SyntaxError
 
-});

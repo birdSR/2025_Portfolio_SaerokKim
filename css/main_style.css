@@ -115,7 +115,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-position: absolute;
+  position: absolute;
   bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
@@ -135,6 +135,7 @@ position: absolute;
   gap: 14px;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .side_menu {
@@ -192,24 +193,26 @@ position: absolute;
   color: #02b389;
 }
 
-.side_menu .menu_list {
+.side_menu ul.menu_list {
   margin-top: 30px;
 }
 
-.side_menu ul li {
+.side_menu ul.menu_list>li span {
   font-size: 32px;
   font-weight: 600;
   margin-bottom: 12px;
   color: #333;
   margin-bottom: 20px;
-  translate: 2s;
+  transition: .2s;
+  cursor: pointer;
+  display: block;
 }
 
-.side_menu ul li:hover {
+.side_menu ul.menu_list>li:hover span {
   color: #dd599f;
 }
 
-.side_menu .menu ul.menu_list>li>ul>li {
+.side_menu ul.menu_list>li>ul>li {
   font-size: 24px;
   font-weight: 400;
   color: #484848;
@@ -217,7 +220,7 @@ position: absolute;
   padding-left: 10px;
 }
 
-.side_menu .menu ul.menu_list>li>ul>li:hover {
+.side_menu ul.menu_list>li>ul>li:hover {
   font-weight: 600;
 }
 
@@ -240,9 +243,9 @@ position: absolute;
 
 /* Submenu collapse/expand smooth animation */
 .side_menu .menu ul.menu_list>li>ul {
-  max-height: 0;
+  /* max-height: 0; */
   overflow: hidden;
-  opacity: 0;
+  /* opacity: 0; */
   transition: max-height 420ms cubic-bezier(.22, .9, .26, 1), opacity 280ms ease;
 }
 
@@ -250,6 +253,23 @@ position: absolute;
   opacity: 1;
   /* large enough max-height to contain content; JS will set exact height for smooth animation */
   max-height: 800px;
+}
+
+/* 사이드 메뉴 하위 메뉴 토글 효과 */
+.side_menu .menu ul.menu_list>li>ul {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.side_menu .menu ul.menu_list>li>ul.open {
+  max-height: 500px;
+  /* 충분히 큰 값으로 설정 */
+  padding-top: 8px;
+  padding-bottom: 8px;
+  /* background: #ccc; */
 }
 
 .side_menu.on {
@@ -304,15 +324,15 @@ position: absolute;
   bottom: 34px;
 }
 
-.scroll_ui .scroll_guide{
+.scroll_ui .scroll_guide {
   display: flex;
-align-items: center;
-gap: 4px;
-font-weight: 300;
-color: #fff;
+  align-items: center;
+  gap: 4px;
+  font-weight: 300;
+  color: #fff;
 }
 
-.scroll_ui .scroll_guide .arrow{
+.scroll_ui .scroll_guide .arrow {
   animation: arrowAni 2s ease-in-out infinite;
 }
 
@@ -327,10 +347,10 @@ color: #fff;
 
   100% {
     transform: rotate(90deg) translateY(0px);
-}
+  }
 }
 
-.scroll_ui .scroll_guide .mouse{
+.scroll_ui .scroll_guide .mouse {
   transform: rotate(90deg);
 }
 
@@ -2606,20 +2626,4 @@ aside ul li .project_img .pj-img {
   overflow: hidden;
   object-fit: cover;
   aspect-ratio: 1;
-}
-
-/* 사이드 메뉴 하위 메뉴 토글 효과 */
-.side_menu .menu ul.menu_list>li>ul {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.side_menu .menu ul.menu_list>li>ul.open {
-  max-height: 500px;
-  /* 충분히 큰 값으로 설정 */
-  padding-top: 8px;
-  padding-bottom: 8px;
 }
