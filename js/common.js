@@ -221,27 +221,47 @@ document.addEventListener("DOMContentLoaded", () => {
     // helper: open submenu smoothly
     function openSubmenu(ul, item) {
       if (!ul || !item) return;
+      // cleanup existing end handler if present
+      if (ul._submenuOnEnd) {
+        ul.removeEventListener('transitionend', ul._submenuOnEnd);
+        ul._submenuOnEnd = null;
+      }
       // close others
       menuList.querySelectorAll('li.menu_item > ul.open').forEach(other => {
         if (other !== ul) closeSubmenu(other, other.previousElementSibling);
       });
-      ul.classList.add('open');
-      ul.setAttribute('aria-hidden', 'false');
-      item?.querySelector('> a')?.setAttribute('aria-expanded', 'true');
-      // set explicit height then clear it after transition so future content changes work
-      const h = ul.scrollHeight;
-      ul.style.maxHeight = h + 'px';
-      const onEnd = (ev) => {
-        if (ev.propertyName !== 'max-height') return;
-        ul.style.maxHeight = '';
-        ul.removeEventListener('transitionend', onEnd);
-      };
-      ul.addEventListener('transitionend', onEnd);
+      // ensure start from collapsed state to trigger transition reliably
+      ul.style.maxHeight = '0';
+      // allow next frame to add open class and set target height
+      requestAnimationFrame(() => {
+        ul.classList.add('open');
+        ul.setAttribute('aria-hidden', 'false');
+        item?.querySelector('> a')?.setAttribute('aria-expanded', 'true');
+        const h = ul.scrollHeight;
+        // trigger layout then set height
+        void ul.offsetHeight;
+        ul.style.maxHeight = h + 'px';
+        const onEnd = (ev) => {
+          if (ev.propertyName !== 'max-height') return;
+          // clear inline height so content changes don't get clipped
+          ul.style.maxHeight = '';
+          ul.removeEventListener('transitionend', onEnd);
+          ul._submenuOnEnd = null;
+        };
+        ul._submenuOnEnd = onEnd;
+        ul.addEventListener('transitionend', onEnd);
+      });
+      console.debug('openSubmenu called', { item });
     }
 
     // helper: close submenu smoothly
     function closeSubmenu(ul, item) {
       if (!ul || !item) return;
+      // cleanup existing end handler if present
+      if (ul._submenuOnEnd) {
+        ul.removeEventListener('transitionend', ul._submenuOnEnd);
+        ul._submenuOnEnd = null;
+      }
       // ensure starting height is set (in case it was '')
       const startH = ul.scrollHeight;
       ul.style.maxHeight = startH + 'px';
@@ -255,10 +275,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ev.propertyName !== 'max-height') return;
         ul.classList.remove('open');
         ul.removeEventListener('transitionend', onEnd);
+        ul._submenuOnEnd = null;
         // keep maxHeight as 0 to ensure collapsed state
         ul.style.maxHeight = '0';
       };
+      ul._submenuOnEnd = onEnd;
       ul.addEventListener('transitionend', onEnd);
+      console.debug('closeSubmenu called', { item });
     }
 
     homeItem?.addEventListener('click', function (e) {
