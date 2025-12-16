@@ -171,7 +171,7 @@ header {
   color: #fff;
 }
 
-.scroll_ui .scroll_guide {
+.scroll_ui .scroll_guide span {
   font-weight: 400;
 }
 
