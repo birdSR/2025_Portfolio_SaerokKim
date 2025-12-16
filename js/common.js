@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       requestAnimationFrame(() => {
         ul.classList.add('open');
         ul.setAttribute('aria-hidden', 'false');
-        item?.querySelector('> a')?.setAttribute('aria-expanded', 'true');
+        item?.querySelector(':scope > a')?.setAttribute('aria-expanded', 'true');
         const h = ul.scrollHeight;
         // trigger layout then set height
         void ul.offsetHeight;
@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ul.style.maxHeight = '0';
       });
       ul.setAttribute('aria-hidden', 'true');
-      item?.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+      item?.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
       const onEnd = (ev) => {
         if (ev.propertyName !== 'max-height') return;
         ul.classList.remove('open');
@@ -478,6 +478,94 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  // 햄버거 클릭 시 사이드 메뉴 오픈/클로즈 (심플 토글)
+  document.addEventListener('DOMContentLoaded', function() {
+    var hamburger = document.querySelector('.hamburger');
+    var sideMenu = document.querySelector('.side_menu');
+    var closeBtn = document.querySelector('.side_menu .close_btn');
+    if (!hamburger || !sideMenu) return;
+
+    // 초기 상태: 닫힘
+    sideMenu.classList.remove('on');
+    sideMenu.classList.add('close');
+
+    hamburger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sideMenu.classList.add('on');
+      sideMenu.classList.remove('close');
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sideMenu.classList.remove('on');
+        sideMenu.classList.add('close');
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        sideMenu.classList.remove('on');
+        sideMenu.classList.add('close');
+      }
+    });
+  });
+
+  // Home 클릭 시 하위 ul이 슬라이드+페이드로 자연스럽게 열리고 닫히는 JS 보완
+  // (index.html, aboutme.html 모두 동작)
+  document.addEventListener('DOMContentLoaded', function() {
+    var homeToggle = document.querySelector('.side_menu .home-toggle');
+    var homeSubmenu = document.getElementById('home-submenu');
+    if (!homeToggle || !homeSubmenu) return;
+
+    // 초기 상태 보장
+    homeSubmenu.style.maxHeight = '0';
+    homeSubmenu.style.opacity = '0';
+    homeSubmenu.classList.remove('open');
+    homeSubmenu.setAttribute('aria-hidden', 'true');
+    homeToggle.setAttribute('aria-expanded', 'false');
+
+    homeToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      var isOpen = homeSubmenu.classList.contains('open');
+      if (isOpen) {
+        // 닫기
+        homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
+        homeSubmenu.style.opacity = '1';
+        requestAnimationFrame(function() {
+          homeSubmenu.style.maxHeight = '0';
+          homeSubmenu.style.opacity = '0';
+        });
+        homeSubmenu.setAttribute('aria-hidden', 'true');
+        homeToggle.setAttribute('aria-expanded', 'false');
+        homeSubmenu.classList.remove('open');
+        // 닫힌 후 maxHeight 해제
+        var onEndClose = function(ev) {
+          if (ev.propertyName === 'max-height') {
+            homeSubmenu.style.maxHeight = '0';
+            homeSubmenu.removeEventListener('transitionend', onEndClose);
+          }
+        };
+        homeSubmenu.addEventListener('transitionend', onEndClose);
+      } else {
+        // 열기
+        homeSubmenu.classList.add('open');
+        homeSubmenu.setAttribute('aria-hidden', 'false');
+        homeToggle.setAttribute('aria-expanded', 'true');
+        homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
+        homeSubmenu.style.opacity = '1';
+        // transition 끝나면 maxHeight 해제(자연스러운 애니메이션)
+        var onEnd = function(ev) {
+          if (ev.propertyName === 'max-height') {
+            homeSubmenu.style.maxHeight = '';
+            homeSubmenu.removeEventListener('transitionend', onEnd);
+          }
+        };
+        homeSubmenu.addEventListener('transitionend', onEnd);
+      }
+    });
+  });
 
 // removed duplicate debug declarations that caused a SyntaxError
 

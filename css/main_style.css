@@ -252,29 +252,6 @@ position: absolute;
   max-height: 800px;
 }
 
-/* Home toggle indicator and focus styles */
-.side_menu .menu ul.menu_list>li>a.home-toggle {
-  position: relative;
-  display: inline-block;
-}
-.side_menu .menu ul.menu_list>li>a.home-toggle::after {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid #000;
-  border-bottom: 2px solid #000;
-  transform: rotate(45deg);
-  transition: transform 220ms ease;
-  margin-left: 10px;
-}
-.side_menu .menu ul.menu_list>li>a.home-toggle[aria-expanded="true"]::after {
-  transform: rotate(225deg);
-}
-.side_menu .menu ul.menu_list>li>a.home-toggle:focus {
-  outline: 2px solid rgba(0,0,0,0.08);
-}
-
 .side_menu.on {
   right: 0;
   display: flex;

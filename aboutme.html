@@ -17,6 +17,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
   <script src="./js/common.js"></script>
   <script src="./js/aboutme.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      if (window.sideMenu && typeof sideMenu.openHome === 'function') {
+        console.log('%c[디버그] 콘솔에서 sideMenu.openHome(), sideMenu.closeHome()을 실행하면 Home 서브메뉴가 열리고 닫힙니다.', 'color: #1976d2; font-weight: bold');
+      } else {
+        console.warn('[디버그] sideMenu.openHome() 사용 불가: common.js가 정상 로드되지 않았거나, 메뉴 구조가 다릅니다.');
+      }
+    });
+  </script>
 </head>
 
 <body>
