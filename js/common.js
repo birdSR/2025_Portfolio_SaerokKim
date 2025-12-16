@@ -373,6 +373,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     });
+
+    // Delegate click handler as a robust fallback for submenu anchors (works even if individual handlers missing)
+    menuList.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      // if some other handler already prevented default, don't interfere
+      if (e.defaultPrevented) return;
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      const id = href.slice(1);
+      const target = document.getElementById(id);
+      console.debug('menuList delegated click', { href, id, hasTarget: !!target });
+      e.preventDefault();
+      if (!target) {
+        // not on this page — redirect to index with hash
+        window.location.href = `index.html#${id}`;
+        return;
+      }
+      if (hasHorizontal && lenis) {
+        const maxScroll = Math.max(0, totalWidth - window.innerWidth);
+        const dest = Math.min(target.offsetLeft, maxScroll);
+        lenis.scrollTo(dest);
+      } else {
+        // fallback to in-page anchor
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+      // close menu
+      if (sideMenu) {
+        sideMenu.classList.remove('on');
+        sideMenu.classList.add('close');
+        sideMenu.setAttribute('aria-hidden', 'true');
+        if (typeof sideMenu.closeAllSubmenus === 'function') sideMenu.closeAllSubmenus();
+        sideMenu.style.right = '-420px';
+        setTimeout(() => sideMenu.style.display = 'none', 600);
+      }
+    });
   }
 
   // 타이틀(Menu)을 눌러도 하위메뉴가 열리도록 처리
