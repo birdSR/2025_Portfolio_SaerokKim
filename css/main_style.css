@@ -23,6 +23,14 @@ body {
   left: 0; */
 }
 
+header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
 .click {
   position: relative;
 }
@@ -116,181 +124,12 @@ body {
   align-items: center;
   justify-content: center;
   position: absolute;
-  bottom: 40px;
+  bottom: 44px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.hamburger {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #fff;
-  border: 4px solid #000;
-  position: fixed;
-  right: 40px;
-  top: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
 
-.side_menu {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 400px;
-  height: 100vh;
-  border-left: 4px solid #000;
-  z-index: 2000;
-  transition: right 1.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 48px 32px 32px 32px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.7);
-}
-
-/* 기본적으로 DOM은 있지만 보이지 않게 처리 (JS에서 .on으로 보이게 함) */
-.side_menu {
-  display: none;
-}
-
-.side_menu.close {
-  right: -400px;
-}
-
-.close_btn {
-  position: absolute;
-  right: 32px;
-  top: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 80px;
-  height: 80px;
-}
-
-/* 사이드 메뉴 닫기 버튼 회전 애니메이션 */
-.side_menu .close_btn {
-  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.side_menu .close_btn:hover {
-  transform: rotate(180deg);
-}
-
-.side_menu .tit_menu {
-  font-size: 60px;
-  font-weight: 800;
-  color: #02b389;
-}
-
-.side_menu ul.menu_list {
-  margin-top: 30px;
-}
-
-.side_menu ul.menu_list>li span {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #333;
-  margin-bottom: 20px;
-  transition: .2s;
-  cursor: pointer;
-  display: block;
-}
-
-.side_menu ul.menu_list>li:hover span {
-  color: #dd599f;
-}
-
-.side_menu ul.menu_list>li>ul>li {
-  font-size: 24px;
-  font-weight: 400;
-  color: #484848;
-  margin-bottom: 20px;
-  padding-left: 10px;
-}
-
-.side_menu ul.menu_list>li>ul>li:hover {
-  font-weight: 600;
-}
-
-.side_menu .menu ul.menu_list>li>ul>li:hover::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  background-image: url(../assets/svg/main_obj/dotory_a.svg);
-  background-repeat: no-repeat;
-  background-size: 20px 20px;
-  background-position: center;
-  vertical-align: middle;
-}
-
-.side_menu .menu ul.menu_list>li>ul>li:first-child {
-  margin-top: 10px;
-}
-
-/* Submenu collapse/expand smooth animation */
-.side_menu .menu ul.menu_list>li>ul {
-  /* max-height: 0; */
-  overflow: hidden;
-  /* opacity: 0; */
-  transition: max-height 420ms cubic-bezier(.22, .9, .26, 1), opacity 280ms ease;
-}
-
-.side_menu .menu ul.menu_list>li>ul.open {
-  opacity: 1;
-  /* large enough max-height to contain content; JS will set exact height for smooth animation */
-  max-height: 800px;
-}
-
-/* 사이드 메뉴 하위 메뉴 토글 효과 */
-.side_menu .menu ul.menu_list>li>ul {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.side_menu .menu ul.menu_list>li>ul.open {
-  max-height: 500px;
-  /* 충분히 큰 값으로 설정 */
-  padding-top: 8px;
-  padding-bottom: 8px;
-  /* background: #ccc; */
-}
-
-.side_menu.on {
-  right: 0;
-  display: flex;
-  /* visible when 'on' */
-}
-
-.hamburger span.bar {
-  width: 60px;
-  height: 4px;
-  background: #000;
-  transform-origin: left;
-  transition: transform 1s;
-}
-
-.hamburger:hover span.bar:nth-child(2) {
-  transform: scaleX(60%);
-  transform-origin: left;
-  transition: transform 1s;
-}
 
 .home_main::after {
   content: "Home";
@@ -327,6 +166,7 @@ body {
 .scroll_ui .scroll_guide {
   display: flex;
   align-items: center;
+  font-size: 14px;
   gap: 4px;
   font-weight: 300;
   color: #fff;
@@ -354,14 +194,6 @@ body {
   transform: rotate(90deg);
 }
 
-
-header {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-}
 
 .fixed-logo {
   position: fixed;
@@ -2626,4 +2458,180 @@ aside ul li .project_img .pj-img {
   overflow: hidden;
   object-fit: cover;
   aspect-ratio: 1;
+}
+
+
+/* menu */
+
+.hamburger {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #000;
+  position: fixed;
+  right: 40px;
+  top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 30;
+}
+
+.side_menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  border-left: 4px solid #000;
+  z-index: 2000;
+  transition: right 1.2s;
+  display: none; /* Changed to none to avoid conflict */
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 48px 32px 32px 32px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* 기본적으로 DOM은 있지만 보이지 않게 처리 (JS에서 .on으로 보이게 함) */
+
+.side_menu.on {
+  right: 0;
+  display: flex !important; /* Ensure it displays flex when active */
+}
+
+.side_menu.close {
+  right: -400px;
+}
+
+.close_btn {
+  position: absolute;
+  right: 32px;
+  top: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+/* 사이드 메뉴 닫기 버튼 회전 애니메이션 */
+.side_menu .close_btn {
+  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.side_menu .close_btn:hover {
+  transform: rotate(180deg);
+}
+
+.side_menu .tit_menu {
+  font-size: 60px;
+  font-weight: 800;
+  color: #02b389;
+}
+
+.side_menu ul.menu_list {
+  margin-top: 30px;
+}
+
+.side_menu ul.menu_list>li span {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+  margin-bottom: 10px;
+  transition: .2s;
+  cursor: pointer;
+  display: block;
+}
+
+.side_menu ul.menu_list>li:hover span {
+  color: #dd599f;
+}
+
+
+.side_menu ul.menu_list>li>ul>li,
+.side_menu .menu ul.menu_list>li>ul>li {
+  font-size: 24px;
+  font-weight: 400;
+  color: #484848;
+  margin-bottom: 20px;
+  padding-left: 10px;
+}
+
+.side_menu ul.menu_list>li>ul>li:hover,
+.side_menu .menu ul.menu_list>li>ul>li:hover {
+  font-weight: 600;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:hover::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-image: url(../assets/svg/main_obj/dotory_a.svg);
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position: center;
+  vertical-align: middle;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:first-child {
+  margin-top: 10px;
+}
+
+/* Submenu collapse/expand smooth animation */
+.side_menu .menu ul.menu_list>li>ul {
+  /* max-height: 0; */
+  overflow: hidden;
+  /* opacity: 0; */
+  transition: max-height 420ms cubic-bezier(.22, .9, .26, 1), opacity 280ms ease;
+}
+
+.side_menu .menu ul.menu_list>li>ul.open {
+  opacity: 1;
+  /* large enough max-height to contain content; JS will set exact height for smooth animation */
+  max-height: 800px;
+}
+
+/* 사이드 메뉴 하위 메뉴 토글 효과 */
+.side_menu .menu ul.menu_list>li>ul {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.side_menu .menu ul.menu_list>li>ul.open {
+  max-height: 500px;
+  /* 충분히 큰 값으로 설정 */
+  padding-top: 8px;
+  padding-bottom: 8px;
+  /* background: #ccc; */
+}
+
+.hamburger span.bar {
+  width: 60px;
+  height: 4px;
+  background: #000;
+  display: block;
+  margin: 0 auto;
+  transform-origin: left;
+  transition: transform 1s, background 1s;
+}
+
+.hamburger:hover span.bar:nth-child(2) {
+  transform: scaleX(60%);
+  transform-origin: left;
+  transition: transform 1s;
 }
