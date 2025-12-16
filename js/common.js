@@ -221,17 +221,31 @@ document.addEventListener("DOMContentLoaded", () => {
       // a 태그 클릭 시에는 기본 이동 막기
       if (e.target.tagName === 'A' && e.target.closest('ul') !== homeSubMenu) return;
       e.stopPropagation();
-      // 토글
-      if (homeSubMenu) {
-        const isOpen = homeSubMenu.classList.contains('open');
-        // 모든 하위 ul 닫기
-        menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => ul.classList.remove('open'));
-        if (!isOpen) {
-          homeSubMenu.classList.add('open');
-          homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
-          homeSubMenu.setAttribute('aria-hidden', 'false');
-          homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
+      if (!homeSubMenu) return;
+
+      const isOpen = homeSubMenu.classList.contains('open');
+      // 닫혀있는 다른 하위 메뉴들 부드럽게 닫기
+      menuList.querySelectorAll('li.menu_item > ul.open').forEach(ul => {
+        if (ul !== homeSubMenu) {
+          ul.classList.remove('open');
+          ul.style.maxHeight = '0';
+          ul.setAttribute('aria-hidden', 'true');
+          ul.previousElementSibling?.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      if (isOpen) {
+        // 현재 열려있으면 닫기
+        homeSubMenu.classList.remove('open');
+        homeSubMenu.style.maxHeight = '0';
+        homeSubMenu.setAttribute('aria-hidden', 'true');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'false');
+      } else {
+        // 열기
+        homeSubMenu.classList.add('open');
+        homeSubMenu.style.maxHeight = homeSubMenu.scrollHeight + 'px';
+        homeSubMenu.setAttribute('aria-hidden', 'false');
+        homeItem.querySelector('> a')?.setAttribute('aria-expanded', 'true');
       }
     });
     // 메뉴 바깥 클릭 시 하위 메뉴 닫기
