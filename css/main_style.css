@@ -1818,7 +1818,7 @@ header {
 }
 
 .enter_about-me::after {
-  content: "About Me";
+  content: "About me";
 }
 
 .about-me .enter_about-me {
