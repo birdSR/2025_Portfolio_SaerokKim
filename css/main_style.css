@@ -2184,7 +2184,55 @@ aside ul li .project_img {
 }
 
 aside ul li .project_img .pj-img {
-  background-image: url(../assets/pj_img_bl.jpg);
+  background-image: url(../assets/pj_img/studio_dragon_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(3) .project_img .pj-img {
+  background-image: url(../assets/pj_img/breadlee_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(4) .project_img .pj-img {
+  background-image: url(../assets/pj_img/mow_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(5) .project_img .pj-img {
+  background-image: url(../assets/pj_img/samsung_promo_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(6) .project_img .pj-img {
+  background-image: url(../assets/pj_img/vfun_login_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(7) .project_img .pj-img {
+  background-image: url(../assets/pj_img/lgplal_thera_house_img.jpg);
+  background-position: 0;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+}
+
+aside ul li:nth-child(8) .project_img .pj-img {
+  background-image: url(../assets/pj_img/banners_img.jpg);
   background-position: 0;
   background-repeat: no-repeat;
   object-fit: cover;
@@ -2272,11 +2320,91 @@ aside ul li .project_img .pj-img {
   font-weight: 500;
 }
 
+/* default .app-span2 style */
 .app-span2 {
-  color: #ff9191;
+  color: #574DAA;
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
 }
+
+/* fallback for any additional items keeps original color (per-li overrides follow) */
+
+/* User-specified mappings only
+/* li1: 스튜디오 드래곤 -> app-span2 color */
+/* aside ul>li:first-child .app-span2 {
+  color: #574DAA;
+} */
+
+
+/* li1: 스튜디오 드래곤 -> app-span2 color */
+aside ul>li:nth-child(2) .app-span2 {
+  padding-top: 12px;
+  color: #574DAA;
+}
+
+/* li2: 브래드리 -> app-span2 color */
+aside ul>li:nth-child(3) .app-span2 {
+  color: #FF9191;
+
+}
+
+/* li3: 국립세계문자박물관 -> app-span2 color */
+aside ul>li:nth-child(4) .app-span2 {
+  color: #AD968D;
+}
+
+/* li4: 삼성전자 -> app-span bold black + color */
+aside ul>li:nth-child(5) .app-span {
+  font-family: "Pretendard-Black", sans-serif;
+  font-weight: 900;
+  color: #575697;
+}
+
+aside ul>li:nth-child(5) .app-span2 {
+  color: #000000;
+  font-family: "Pretendard-Medium", sans-serif;
+  font-weight: 500;
+}
+
+/* li5: VFUN -> app-span bold blue */
+aside ul>li:nth-child(6) .app-span {
+  font-family: "Pretendard-Black", sans-serif;
+  font-weight: 900;
+  color: #5846CE;
+}
+
+aside ul>li:nth-child(6) .app-span2 {
+  color: #000000;
+  font-family: "Pretendard-Medium", sans-serif;
+  font-weight: 500;
+}
+
+/* li6: LGPla.L -> app-span red bold */
+aside ul>li:nth-child(7) .app-span {
+  font-family: "Pretendard-Black", sans-serif;
+  font-weight: 900;
+  color: #a61b1b;
+}
+
+aside ul>li:nth-child(7) .app-span2 {
+  font-family: "Pretendard-Medium", sans-serif;
+  font-weight: 500;
+  color: #000000;
+}
+
+/* li7: 컨텐츠 배너 -> app-span green bold, app-span2 normal */
+aside ul>li:nth-child(8) .app-span {
+  font-family: "Pretendard-Black", sans-serif;
+  font-weight: 900;
+  color: #4D6D53;
+}
+
+aside ul>li:nth-child(8) .app-span2 {
+  color: #000000;
+  font-family: "Pretendard-Medium", sans-serif;
+  font-weight: 500;
+}
+
 
 .txt {
   align-self: stretch;
@@ -2295,7 +2423,11 @@ aside ul li .project_img .pj-img {
   position: absolute;
   left: 0px;
   top: 0px;
-  width: 570px;
+  width: 620px;
+}
+
+aside ul>li:nth-child(2) .txt_t {
+  margin-top: -20px;
 }
 
 .pop_bottom {
@@ -2305,6 +2437,14 @@ aside ul li .project_img .pj-img {
   align-items: flex-start;
   justify-content: flex-start;
   position: relative;
+}
+
+aside ul>li:nth-child(2) .pop_bottom .s_tit {
+  padding-bottom: 18px;
+}
+
+aside ul>li:nth-child(2) .dir_btn {
+  margin-left: 0;
 }
 
 .s_tit {
@@ -2318,7 +2458,7 @@ aside ul li .project_img .pj-img {
 }
 
 .s_txt {
-  width: 200px;
+  width: 500px;
   color: #5b5b5b;
   text-align: left;
   font-family: "Pretendard-Medium", sans-serif;
@@ -2329,7 +2469,10 @@ aside ul li .project_img .pj-img {
 .dir_btn {
   padding-top: 30px;
   display: flex;
-  gap: 20px;
+}
+
+.direct_plan {
+  margin-right: 20px;
 }
 
 .direct_plan,

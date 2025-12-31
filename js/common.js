@@ -1,4 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+  console.log('[common.js] DOMContentLoaded fired');
+  // Diagnostic: log every click at capture phase to ensure events reach document
+  document.addEventListener('click', function (ev) {
+    try {
+      const tgt = ev.target;
+      const inClickable = !!tgt.closest && !!tgt.closest('.click');
+      console.log('[capture-click] target:', tgt.tagName, 'classList:', tgt.className, 'in .click?:', inClickable);
+    } catch (e) {
+      console.log('[capture-click] error reading target', e);
+    }
+  }, true); // use capture phase
 
   /* ==================================================
       0. 필수 DOM
@@ -118,29 +129,110 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => { });
 
   const clickables = document.querySelectorAll(".click");
+  // Define project-specific clickables in the same visual order as aside list
+  // This ensures fallback indexing (index+1) matches aside nth-child order.
+  const projectClickables = document.querySelectorAll('.uxuiobj .click, .promoobj .click, .bniobj .click');
+  // mapping from clickable class -> aside nth-child index (1-based)
+  const clickableToAsideIndex = {
+    'std_drg_web': 1,
+    'braedlee_app': 2,
+    'gwm_web': 3,
+    'samsung_promo': 4,
+    'vfun_login': 5,
+    'lg_plal': 6,
+    'bn': 7
+  };
+
+  // (no annotateAsideItems — data-project annotation removed per user request)
+
+  console.log('[common.js] total .click elements found:', clickables.length);
   clickables.forEach((el, index) => {
+    console.log('[common.js] attaching click handler to element:', el.className, 'index', index);
+    // also listen for pointer/mousedown/touchstart at capture to see raw input
+    el.addEventListener('pointerdown', (ev) => console.log('[pointerdown on .click]', el.className));
+    el.addEventListener('mousedown', (ev) => console.log('[mousedown on .click]', el.className));
+    el.addEventListener('touchstart', (ev) => console.log('[touchstart on .click]', el.className));
     el.addEventListener("click", () => {
-      // data-target 속성이 있으면 해당 요소를 열기
+      console.log('[click] element clicked:', el.className);
+      // data-target 속성이 있으면 해당 요소를 열기 (우선권)
       const targetSelector = el.getAttribute("data-target");
       if (targetSelector) {
+        console.log('[click] data-target found:', targetSelector);
         const target = document.querySelector(targetSelector);
         if (target) {
-          // display: block 또는 .on 클래스 등 원하는 방식으로 열기
           target.style.display = "block";
           target.classList.add("on");
         }
         return;
       }
-      // 기존 동작 (home_main, aside)
+
+      // home_main 처리(메인으로 스크롤)
       if (el.classList.contains("home_main")) {
-        lenis.scrollTo(0);
+        console.log('[click] home_main clicked — scrolling to main');
+        if (typeof lenis !== 'undefined' && lenis && typeof lenis.scrollTo === 'function') lenis.scrollTo(0);
         return;
       }
+
+      // aside 열기: only for project area clickables or explicitly mapped elements
       const aside = document.querySelector("aside");
+      if (!aside) return;
+      // allow opening aside only when element is within project containers or has mapping
+      const isProjectClickable = !!el.closest('.uxuiobj, .promoobj, .bniobj');
+      const hasMapping = Object.keys(clickableToAsideIndex).some(cls => el.classList.contains(cls));
+      if (!isProjectClickable && !hasMapping) {
+        console.log('[click] element not in project area and has no mapping — not opening aside:', el.className);
+        return;
+      }
       aside.style.display = "block";
-      aside.querySelector("ul li.on")?.classList.remove("on");
-      aside.querySelector(`ul li:nth-child(${index + 1})`)
-        ?.classList.add("on");
+      // remove existing selection
+      aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
+
+      // determine target index by mapping (class-based) first
+      let targetIndex = null;
+      for (const cls in clickableToAsideIndex) {
+        if (el.classList.contains(cls)) {
+          targetIndex = clickableToAsideIndex[cls];
+          console.log('[click] class-mapped target index for', cls, '=>', targetIndex);
+          break;
+        }
+      }
+
+      // fallback: use positional index among project-specific clickables (matches aside order)
+      if (targetIndex === null) {
+        const projIndex = Array.prototype.indexOf.call(projectClickables, el);
+        console.log('[click] projIndex:', projIndex, 'global index:', index);
+        if (projIndex !== -1) {
+          targetIndex = projIndex + 1;
+          console.log('[click] using project-specific fallback index =>', targetIndex);
+        } else {
+          targetIndex = index + 1; // last-resort: original global clickable order
+          console.log('[click] using global fallback index =>', targetIndex);
+        }
+      }
+
+      // Diagnostic: list aside li count and a short snippet to help identify order
+      const asideLis = Array.from(aside.querySelectorAll('ul > li'));
+      console.log('[click] aside lis count:', asideLis.length);
+      asideLis.forEach((li, i) => {
+        const title = li.querySelector('.tit')?.innerText?.trim() || li.querySelector('.app-span')?.innerText?.trim() || li.textContent.trim().slice(0, 40);
+        console.log('[click] aside li', i + 1, 'snippet:', title ? title.replace(/\s+/g, ' ') : '(empty)');
+      });
+
+      // Use array-based selection to avoid nth-child mismatch when whitespace/comments or text nodes exist
+      let targetLi = null;
+      if (Number.isInteger(targetIndex) && targetIndex >= 1 && targetIndex <= asideLis.length) {
+        targetLi = asideLis[targetIndex - 1];
+        console.log('[click] selecting aside by array index', targetIndex - 1);
+      } else {
+        console.log('[click] targetIndex out of range or invalid:', targetIndex);
+      }
+
+      if (targetLi) {
+        targetLi.classList.add('on');
+        console.log('[click] targetLi found and .on added (array selection)');
+      } else {
+        console.log('[click] targetLi NOT found for index', targetIndex);
+      }
     });
   });
 
