@@ -287,6 +287,44 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Debug: close button diagnostics (presence, computed z-index, events)
+  (function closeBtnDiagnostics() {
+    const asideEl = document.querySelector('aside');
+    const btn = document.querySelector('aside .close-btn') || document.querySelector('.close-btn');
+    console.log('[diag] close-btn element found?', !!btn);
+    if (!btn) return;
+
+    function reportState(prefix) {
+      try {
+        const cs = window.getComputedStyle(btn);
+        const z = cs && cs.zIndex ? cs.zIndex : '(none)';
+        const rect = btn.getBoundingClientRect();
+        console.log(`[diag] ${prefix} - overlay-mode: ${asideEl && asideEl.classList.contains('overlay-mode')}, zIndex: ${z}, rect: ${Math.round(rect.left)},${Math.round(rect.top)} ${Math.round(rect.width)}x${Math.round(rect.height)}`);
+      } catch (e) { console.log('[diag] reportState error', e); }
+    }
+
+    // initial
+    reportState('initial');
+
+    // report when overlay-mode toggles
+    if (asideEl) {
+      const mo = new MutationObserver(() => reportState('mutation'));
+      mo.observe(asideEl, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // listen for pointer and click events on btn
+    btn.addEventListener('pointerdown', (e) => { console.log('[diag] pointerdown on close-btn', e.type, 'pointerId', e.pointerId); reportState('pointerdown'); });
+    btn.addEventListener('pointerup', (e) => { console.log('[diag] pointerup on close-btn'); reportState('pointerup'); });
+    btn.addEventListener('click', (e) => { console.log('[diag] click on close-btn'); reportState('click'); });
+
+    // periodic check in case computed styles change due to late CSS load
+    let checks = 0;
+    const iv = setInterval(() => {
+      reportState('interval');
+      checks += 1; if (checks > 8) clearInterval(iv);
+    }, 500);
+  })();
+
   document.querySelector("aside .close-btn")
     ?.addEventListener("click", () => {
       document.querySelector("aside").style.display = "none";
