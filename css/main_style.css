@@ -4,6 +4,26 @@
   box-sizing: border-box;
 }
 
+/* ===== Hover scale for illust gallery images (strengthened) ===== */
+/* Do not change width/height/border; ensure images accept pointer events and hover transform applies */
+aside .illust-track img,
+aside.overlay-mode .illust-track img {
+  transition: transform 260ms cubic-bezier(.22, .9, .26, 1);
+  transform-origin: center center;
+  pointer-events: auto;
+  /* ensure image itself accepts hover/click */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Use !important so hover transform takes effect even if inline transform is set on the element */
+aside .illust-track img:hover,
+aside.overlay-mode .illust-track img:hover {
+  transform: scale(1.2) !important;
+}
+
+/* End hover rules */
+
 html,
 body {
   width: 100vw;
@@ -57,6 +77,11 @@ header {
   border-radius: 50%;
   animation: afterAni 1s linear infinite;
   z-index: 10;
+}
+
+/* allow clicks to pass through the decorative pseudo-element */
+.click::after {
+  pointer-events: none;
 }
 
 .bottom_ui {
@@ -455,6 +480,25 @@ header {
 }
 
 .main_page .rabbit {
+
+  /* Larger hit area for aside close button; keep visual svg smaller */
+  aside.overlay-mode .close-btn,
+  .close-btn {
+    width: 80px;
+    height: 80px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close-btn img {
+    width: 48px;
+    height: 48px;
+    display: block;
+    pointer-events: none;
+  }
+
   position: absolute;
   top: 280px;
   left: 520px;
@@ -2131,6 +2175,124 @@ aside {
   border: 4px solid #000000;
 }
 
+/* Overlay mode for illustpop: full-screen darkened background and horizontal swipe gallery */
+aside.overlay-mode {
+  z-index: 200;
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  transform: none;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.15);
+  /* semi-transparent black */
+  display: block;
+  align-items: center;
+  justify-content: center;
+}
+
+/* backdrop blur layer: covers full viewport and blurs underlying page without blurring gallery itself */
+aside.overlay-mode::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  /* -webkit-backdrop-filter: blur(8px); */
+  z-index: 90;
+  /* below gallery which will be higher */
+}
+
+/* ensure gallery (illustpop) sits above the blur layer */
+aside.overlay-mode ul>li.illustpop {
+  z-index: 95 !important;
+}
+
+/* make aside ul li fill overlay, but keep transitions */
+/* In overlay mode hide all list items except the illustpop item to avoid overlap */
+aside.overlay-mode ul>li {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+aside.overlay-mode ul>li.illustpop {
+  display: flex !important;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.illust-gallery-wrap {
+  /* fullscreen carousel container when aside.overlay-mode is active */
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illust-gallery {
+  width: 100vw;
+  height: 100%;
+  overflow: hidden;
+  outline: none;
+  display: block;
+  justify-content: center;
+  align-content: center;
+}
+
+.illust-track {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  transition: transform 360ms cubic-bezier(.22, .9, .26, 1);
+  will-change: transform;
+}
+
+.illust-track img {
+  /* flex: 0 0 100vw; */
+  width: 340px;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  margin-right: 64px;
+  border-radius: 40px;
+  border: 4px solid #fff;
+}
+
+
+/* In overlay-mode we let JS handle horizontal pointer gestures. Disable browser touch-action to avoid interference. */
+.illust-gallery {
+  touch-action: none;
+}
+
+/* small close button for overlay */
+aside.overlay-mode .close-btn {
+  position: fixed;
+  right: 24px;
+  top: 24px;
+  z-index: 99999;
+  /* ensure on top of other UI */
+  width: 72px;
+  /* larger hit area */
+  height: 72px;
+  padding: 0;
+}
+
 aside ul li {
   position: absolute;
   width: 100%;
@@ -2149,6 +2311,8 @@ aside ul li div {
   display: flex;
 }
 
+/* overlay-only gallery adjustments were removed per user request */
+
 aside ul li.on {
   opacity: 1;
   pointer-events: auto;
@@ -2158,14 +2322,32 @@ aside ul li.on {
   position: absolute;
   top: 20px;
   right: 20px;
-  font-size: 2rem;
+  width: 72px;
+  /* match larger hit area for non-overlay fallback */
+  height: 72px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: transform 1s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  background: transparent;
+  border: none;
 }
 
 .close-btn:hover,
 .close-btn:focus {
   transform: rotate(180deg);
+}
+
+/* ensure the svg image itself doesn't steal pointer events; the button receives clicks */
+.close-btn img {
+  width: 48px;
+  /* visible svg size */
+  height: 48px;
+  display: block;
+  pointer-events: none;
+  /* ensure button receives clicks */
 }
 
 button {
@@ -2671,6 +2853,8 @@ aside ul>li:nth-child(2) .dir_btn {
 .side_menu .close_btn {
   transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  /* ensure it receives clicks */
+  pointer-events: auto;
 }
 
 .side_menu .close_btn:hover {
@@ -2779,4 +2963,42 @@ aside ul>li:nth-child(2) .dir_btn {
   transform: scaleX(60%);
   transform-origin: left;
   transition: transform 1s;
+}
+
+/* Caption for illust overlay (safely appended) */
+.illust-caption {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(6px);
+  z-index: 1200;
+  pointer-events: none;
+  /* background removed to keep caption text unobstructed */
+  color: #fff;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 24px;
+  backdrop-filter: none;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.illust-caption.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.illust-caption .title {
+  font-weight: 600;
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.illust-caption .year {
+  opacity: 0.85;
+  font-weight: 400;
+  font-size: 18px;
+  display: block;
 }

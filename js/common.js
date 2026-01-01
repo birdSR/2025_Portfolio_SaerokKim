@@ -56,6 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
         3. 세로 스크롤 → 가로 이동 매핑
     ==================================================*/
     lenis.on("scroll", ({ scroll }) => {
+      try {
+        const asideEl = document.querySelector('aside');
+        if (asideEl && asideEl.classList.contains('overlay-mode')) {
+          // while overlay gallery open, ignore Lenis scroll updates to avoid horizontal movement
+          return;
+        }
+      } catch (e) { /* ignore */ }
       track.style.transform = `translate3d(${-scroll}px, 0, 0)`;
     });
   }
@@ -187,6 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
 
+      // ensure aside is interactive when opened
+      try {
+        aside.inert = false;
+      } catch (e) { /* inert may not be supported */ }
+      aside.setAttribute('aria-hidden', 'false');
+
       // determine target index by mapping (class-based) first
       let targetIndex = null;
       for (const cls in clickableToAsideIndex) {
@@ -228,8 +241,46 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (targetLi) {
-        targetLi.classList.add('on');
-        console.log('[click] targetLi found and .on added (array selection)');
+        // Special case: illustpop should open as a full overlay gallery (different from boxed aside)
+        if (targetLi.classList.contains('illustpop')) {
+          console.log('[click] opening illust overlay gallery');
+          // set aside into overlay mode (CSS will handle sizing/background)
+          aside.classList.add('overlay-mode');
+          try { aside.inert = false; } catch (e) { }
+          aside.setAttribute('aria-hidden', 'false');
+          // Inject gallery markup only once (safe to run multiple times)
+          if (!targetLi.querySelector('.illust-gallery')) {
+            targetLi.innerHTML = `
+              <div class="illust-gallery-wrap">
+                <div class="illust-gallery" role="region" aria-label="Illustration gallery">
+                  <div class="illust-track">
+                <img src="./assets/illust_img/illust_bloomflower.jpg" alt="bloomflower" />
+              <img src="./assets/illust_img/illust_ottugi.jpg" alt="ottugi" />
+              <img src="./assets/illust_img/illust_crossant.JPG" alt="crossant" />
+              <img src="./assets/illust_img/illust_brunch.JPG" alt="brunch" />
+              <img src="./assets/illust_img/illust_christmars.JPG" alt="christmars" />
+              <img src="./assets/illust_img/illust_kitchen.JPG" alt="kitchen" />
+              <img src="./assets/illust_img/illust_moodshot.psd.jpg" alt="moodshot" />
+              <img src="./assets/illust_img/illust_moondust.jpg" alt="moondust" />
+              <img src="./assets/illust_img/illust_kich.jpg" alt="kich" />
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+          // ensure aside visible and mark this li
+          aside.style.display = 'block';
+          targetLi.classList.add('on');
+          // initialize carousel immediately so clones/positioning are ready
+          try { if (typeof setupCarousel === 'function') setupCarousel(); } catch (e) { /* setupCarousel defined later in scope; ignore if not available */ }
+          // focus for accessibility
+          const firstImg = targetLi.querySelector('.illust-track img');
+          if (firstImg) firstImg.focus({ preventScroll: true });
+          console.log('[click] illust overlay shown');
+        } else {
+          targetLi.classList.add('on');
+          console.log('[click] targetLi found and .on added (array selection)');
+        }
       } else {
         console.log('[click] targetLi NOT found for index', targetIndex);
       }
@@ -240,6 +291,532 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => {
       document.querySelector("aside").style.display = "none";
     });
+
+  // Overlay gallery swipe + close handling for illust overlay
+  (function setupIllustOverlayHandlers() {
+    const asideEl = document.querySelector('aside');
+    if (!asideEl) return;
+
+    // Close overlay when ESC pressed
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && asideEl.classList.contains('overlay-mode')) {
+        asideEl.classList.remove('overlay-mode');
+        asideEl.style.display = 'none';
+        // restore any previous li content? currently original content persists in DOM
+      }
+    });
+
+    // Infinite-loop carousel setup + delegated pointer events
+    let carousel = {
+      track: null,
+      slides: [],
+      slideWidth: 0,
+      index: 0, // logical index (0..n-1)
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      baseTranslate: 0,
+      allowClickClose: true,
+      autoplayId: null,
+      autoplayInterval: 2800,
+    };
+
+    function setupCarousel() {
+      const track = asideEl.querySelector('.illust-track');
+      console.log('[setupCarousel] called, found track?', !!track);
+      if (!track) return;
+      // ensure track accepts pointer interactions when overlay active
+      track.style.touchAction = track.style.touchAction || 'pan-y';
+      track.style.pointerEvents = track.style.pointerEvents || '';
+      carousel.track = track;
+      // Store original HTML snapshot so we can reliably rebuild clones if the track
+      // element is replaced/modified between open/close cycles.
+      if (!track.dataset.originalHtml) track.dataset.originalHtml = track.innerHTML;
+
+      // If dataset.loop is set but the current DOM doesn't match expected 3x set
+      // (e.g. track was replaced), reset to original and let cloning run again.
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = track.dataset.originalHtml || '';
+        const origCount = tmp.querySelectorAll('img').length || 0;
+        const currentCount = track.querySelectorAll('img').length || 0;
+        if (track.dataset.loop === '3' && currentCount !== origCount * 3) {
+          // reset to original markup and clear loop flag so cloning recreates sets
+          track.innerHTML = track.dataset.originalHtml;
+          delete track.dataset.loop;
+          console.log('[setupCarousel] track loop mismatch — reset innerHTML and will reclone');
+        }
+      } catch (e) { /* non-fatal */ }
+
+      // collect original slides (img elements)
+      // Prefer images that are not marked as clones. If none found, and total is divisible by 3,
+      // assume a triple set and take the middle third as originals.
+      const allImgs = Array.from(track.querySelectorAll('img'));
+      let originalImgs = allImgs.filter(i => !i.dataset.cloned);
+      if (originalImgs.length === 0 && allImgs.length % 3 === 0 && allImgs.length > 0) {
+        const third = allImgs.length / 3;
+        originalImgs = allImgs.slice(third, third * 2);
+        console.log('[setupCarousel] no non-clone imgs found — assuming middle third as originals');
+      }
+      const n = originalImgs.length;
+      if (n === 0) return;
+      console.log('[setupCarousel] original slide count', n);
+
+      // If we've already expanded to a triple set, just refresh references
+      if (track.dataset.loop === '3' && allImgs.length >= n * 3) {
+        carousel.slides = Array.from(track.querySelectorAll('img'));
+      } else {
+        // create clones: prepend one full copy and append one full copy so sequence is [cloneSet][original][cloneSet]
+        const fragPre = document.createDocumentFragment();
+        const fragPost = document.createDocumentFragment();
+        originalImgs.forEach(img => {
+          const c = img.cloneNode(true);
+          c.setAttribute('draggable', 'false');
+          c.style.touchAction = 'manipulation';
+          c.dataset.cloned = 'true';
+          fragPost.appendChild(c);
+        });
+        // prepend clones in reverse order so the visual order matches
+        for (let i = originalImgs.length - 1; i >= 0; i--) {
+          const c2 = originalImgs[i].cloneNode(true);
+          c2.setAttribute('draggable', 'false');
+          c2.style.touchAction = 'manipulation';
+          c2.dataset.cloned = 'true';
+          fragPre.appendChild(c2);
+        }
+        track.insertBefore(fragPre, track.firstChild);
+        track.appendChild(fragPost);
+        track.dataset.loop = '3';
+        carousel.slides = Array.from(track.querySelectorAll('img'));
+      }
+
+      // compute step (width + horizontal margins) using the first real image in the middle set
+      // locate the index of the first non-clone image inside carousel.slides
+      let middleStartIndex = carousel.slides.findIndex(s => !s.dataset.cloned);
+      if (middleStartIndex === -1) middleStartIndex = 0; // fallback
+      const realN = n; // number of originals
+      const firstReal = carousel.slides[middleStartIndex];
+      if (!firstReal) {
+        console.warn('[setupCarousel] firstReal not found, aborting setup');
+        return;
+      }
+      const rect = firstReal.getBoundingClientRect();
+      const style = getComputedStyle(firstReal);
+      const marginLeft = parseFloat(style.marginLeft) || 0;
+      const marginRight = parseFloat(style.marginRight) || 0;
+      carousel.step = Math.round(rect.width + marginLeft + marginRight) || window.innerWidth;
+
+      // logical index 0..n-1
+      carousel.index = 0;
+      // position track so that the first real slide (middle set) is visible
+      const middleOffset = middleStartIndex; // index where real set begins
+      const initialTranslate = -carousel.step * (middleOffset + carousel.index);
+      carousel.track.style.transform = `translate3d(${initialTranslate}px,0,0)`;
+      carousel.baseTranslate = initialTranslate;
+      carousel.realCount = realN;
+      // ensure no transition initially
+      carousel.track.style.transition = 'none';
+
+      // attach handlers (avoid duplicates)
+      carousel.track.removeEventListener('transitionend', onTransitionEnd);
+      carousel.track.addEventListener('transitionend', onTransitionEnd);
+      window.removeEventListener('resize', onResize);
+      window.addEventListener('resize', onResize);
+    }
+
+    function onTransitionEnd() {
+      if (!carousel.track) return;
+      const realN = carousel.realCount || 0;
+      if (realN === 0) return;
+      // If we've animated into the right clone set (visual index >= realN*2), jump back to middle set
+      const visualIndex = Math.round((-carousel.baseTranslate) / carousel.step);
+      const middleStart = realN;
+      if (visualIndex >= realN * 2) {
+        // compute equivalent index inside middle set
+        const eq = visualIndex - realN * 2;
+        carousel.index = eq % realN;
+        carousel.track.style.transition = 'none';
+        const tx = -carousel.step * (middleStart + carousel.index);
+        carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+        carousel.baseTranslate = tx;
+        void carousel.track.offsetHeight;
+        carousel.track.style.transition = '';
+      }
+      // If we've animated into the left clone set (visual index < middleStart), jump to middle set
+      if (visualIndex < middleStart) {
+        const eq = (visualIndex - middleStart + realN) % realN;
+        carousel.index = eq;
+        carousel.track.style.transition = 'none';
+        const tx = -carousel.step * (middleStart + carousel.index);
+        carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+        carousel.baseTranslate = tx;
+        void carousel.track.offsetHeight;
+        carousel.track.style.transition = '';
+      }
+    }
+
+    function onResize() {
+      if (!carousel.track) return;
+      // recalc step using current middle set first image
+      const realN = carousel.realCount || 0;
+      if (realN === 0) return;
+      const firstReal = carousel.slides[realN];
+      const rect = firstReal.getBoundingClientRect();
+      const style = getComputedStyle(firstReal);
+      const marginLeft = parseFloat(style.marginLeft) || 0;
+      const marginRight = parseFloat(style.marginRight) || 0;
+      carousel.step = Math.round(rect.width + marginLeft + marginRight) || window.innerWidth;
+      const tx = -carousel.step * (realN + carousel.index);
+      carousel.track.style.transition = 'none';
+      carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+      carousel.baseTranslate = tx;
+      void carousel.track.offsetHeight;
+      carousel.track.style.transition = '';
+    }
+
+    function startAutoplay() {
+      console.log('[autoplay] start requested');
+      stopAutoplay();
+      carousel.autoplayId = setInterval(() => {
+        if (carousel.isDragging) return;
+        carousel.index += 1;
+        const tx = -carousel.step * (carousel.realCount + carousel.index);
+        carousel.track.style.transition = 'transform 560ms cubic-bezier(.22,.9,.26,1)';
+        carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+        carousel.baseTranslate = tx;
+      }, carousel.autoplayInterval);
+    }
+
+    function stopAutoplay() {
+      if (carousel.autoplayId) {
+        clearInterval(carousel.autoplayId);
+        carousel.autoplayId = null;
+        console.log('[autoplay] stopped');
+      } else {
+        console.log('[autoplay] stop called but no active interval');
+      }
+    }
+
+    // pointer handlers
+    asideEl.addEventListener('pointerdown', (ev) => {
+      // allow pointer interactions when overlay-mode is active OR when illustpop item is visible (.illustpop.on)
+      const illustActive = asideEl.classList.contains('overlay-mode') || !!asideEl.querySelector('ul>li.illustpop.on');
+      if (!illustActive) return;
+      console.log('[pointerdown] clientX=', ev.clientX, 'overlay-mode=', asideEl.classList.contains('overlay-mode'));
+      setupCarousel();
+      if (!carousel.track) return;
+      carousel.isDragging = true;
+      carousel.startX = ev.clientX;
+      carousel.currentX = ev.clientX;
+      // capture current translate from computed style
+      const style = getComputedStyle(carousel.track);
+      const matrix = new WebKitCSSMatrix(style.transform || '');
+      carousel.baseTranslate = matrix.m41 || 0;
+      // prevent accidental close when dragging
+      carousel.allowClickClose = false;
+      carousel.track.setPointerCapture?.(ev.pointerId);
+      // pause autoplay while dragging
+      console.log('[pointerdown] start drag');
+      stopAutoplay();
+    });
+
+    // handle pointercancel and pointerleave to reset dragging state
+    asideEl.addEventListener('pointercancel', (ev) => {
+      console.log('[pointercancel]');
+      if (!carousel.isDragging || !carousel.track) return;
+      carousel.isDragging = false;
+      carousel.track.releasePointerCapture?.(ev.pointerId);
+      // snap back to nearest slide
+      const style = getComputedStyle(carousel.track);
+      const m = new WebKitCSSMatrix(style.transform || '');
+      const cur = Number.isFinite(m.m41) ? m.m41 : carousel.baseTranslate;
+      const nearestIndex = Math.round((-cur / carousel.step) - carousel.realCount);
+      carousel.index = nearestIndex;
+      const tx = -carousel.step * (carousel.realCount + carousel.index);
+      carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
+      carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+      carousel.baseTranslate = tx;
+      setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 600);
+    });
+
+    asideEl.addEventListener('pointerleave', (ev) => {
+      // if pointer leaves the aside while pressing, treat like pointerup
+      if (carousel.isDragging) {
+        const fake = Object.assign({}, ev);
+        asideEl.dispatchEvent(new PointerEvent('pointerup', { clientX: ev.clientX, pointerId: ev.pointerId }));
+      }
+    });
+
+    asideEl.addEventListener('pointermove', (ev) => {
+      if (!carousel.isDragging || !carousel.track) return;
+      ev.preventDefault();
+      carousel.currentX = ev.clientX;
+      const dx = carousel.currentX - carousel.startX;
+      carousel.track.style.transition = 'none';
+      carousel.track.style.transform = `translate3d(${carousel.baseTranslate + dx}px,0,0)`;
+      if (Math.abs(dx) > 5) console.log('[pointermove] dx=', dx);
+    });
+
+    asideEl.addEventListener('pointerup', (ev) => {
+      console.log('[pointerup] clientX=', ev.clientX);
+      if (!carousel.isDragging || !carousel.track) return;
+      carousel.track.releasePointerCapture?.(ev.pointerId);
+      const dx = carousel.currentX - carousel.startX;
+      // threshold: quarter of one step to move one slide
+      const threshold = carousel.step / 4;
+      if (dx > threshold) {
+        // move previous
+        carousel.index -= 1;
+      } else if (dx < -threshold) {
+        // move next
+        carousel.index += 1;
+      }
+      // animate to new position (account for leading clone)
+      const tx = -carousel.step * (carousel.realCount + carousel.index);
+      carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
+      carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+      carousel.baseTranslate = tx;
+      console.log('[pointerup] dx=', dx, 'moved to index=', carousel.index);
+      // allow click-close after short delay
+      setTimeout(() => { carousel.allowClickClose = true; }, 300);
+      carousel.isDragging = false;
+      // restart autoplay shortly after release
+      setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 600);
+    });
+
+
+    // clicking outside gallery or close button should close overlay
+    asideEl.addEventListener('click', (e) => {
+      if (!asideEl.classList.contains('overlay-mode')) return;
+      const wrap = asideEl.querySelector('.illust-gallery-wrap');
+      const closeBtn = asideEl.querySelector('.close-btn');
+      if (closeBtn && (closeBtn === e.target || closeBtn.contains(e.target))) {
+        stopAutoplay();
+        asideEl.classList.remove('overlay-mode');
+        asideEl.style.display = 'none';
+        return;
+      }
+      // if click outside the gallery content, close
+      if (wrap && !wrap.contains(e.target) && carousel.allowClickClose) {
+        stopAutoplay();
+        asideEl.classList.remove('overlay-mode');
+        asideEl.style.display = 'none';
+      }
+    });
+
+    // When overlay-mode is added/removed programmatically, start/stop autoplay accordingly
+    const obs = new MutationObserver((mutations) => {
+      const setImageState = (on) => {
+        const illustLi = asideEl.querySelector('ul>li.illustpop');
+        // make whole subtree inert and non-interactive when off
+        try {
+          if (!illustLi) return;
+          if (on) {
+            // restore
+            illustLi.querySelectorAll('*').forEach(el => {
+              try {
+                el.style.pointerEvents = '';
+                if (el.tagName === 'IMG' || el.matches && el.matches('a,button,input,select,textarea')) {
+                  el.setAttribute('tabindex', el.dataset._savedTabIndex || '0');
+                }
+                el.setAttribute('aria-hidden', 'false');
+              } catch (e) { }
+            });
+            try { illustLi.inert = false; } catch (e) { }
+          } else {
+            // save existing tabindex for restore
+            illustLi.querySelectorAll('*').forEach(el => {
+              try {
+                const ti = el.getAttribute('tabindex');
+                if (ti !== null) el.dataset._savedTabIndex = ti;
+                el.style.pointerEvents = 'none';
+                el.setAttribute('tabindex', '-1');
+                el.setAttribute('aria-hidden', 'true');
+              } catch (e) { }
+            });
+            try { illustLi.inert = true; } catch (e) { }
+          }
+        } catch (e) { console.warn('[setImageState] error', e); }
+      };
+
+      for (const m of mutations) {
+        if (m.attributeName === 'class' && m.target === asideEl) {
+          const isOn = asideEl.classList.contains('overlay-mode');
+          if (isOn) {
+            // give DOM a tick then ensure track is interactive, carousel setup and start autoplay
+            setTimeout(() => {
+              const trackEl = asideEl.querySelector('.illust-track');
+              if (trackEl) {
+                trackEl.style.pointerEvents = '';
+                trackEl.style.touchAction = trackEl.style.touchAction || 'pan-y';
+              }
+              // remove inert so focusable elements are exposed to AT
+              try { asideEl.inert = false; } catch (e) { /* inert may not be supported */ }
+              setupCarousel(); startAutoplay(); setImageState(true);
+            }, 60);
+          } else {
+            stopAutoplay();
+            // immediately disable interaction with images
+            setImageState(false);
+            // if an element inside aside currently has focus, blur it to avoid aria-hidden on focused
+            try {
+              const active = document.activeElement;
+              if (active && asideEl.contains(active)) {
+                active.blur();
+              }
+            } catch (e) { /* ignore */ }
+            // mark aside inert to fully prevent focus and AT access
+            try { asideEl.inert = true; } catch (e) { /* ignore if not supported */ }
+            // clear carousel references to avoid stale handlers
+            carousel.track = null;
+            carousel.slides = [];
+            carousel.step = 0;
+            carousel.realCount = 0;
+          }
+        }
+      }
+    });
+    obs.observe(asideEl, { attributes: true, attributeFilter: ['class'] });
+
+    // Pause autoplay while user is interacting with the gallery; use delegation so it works
+    // even if .illust-gallery/.illust-track elements are removed and re-added.
+    (function attachHoverPause() {
+      if (!asideEl) return;
+      // pointerover => pause when entering gallery area
+      asideEl.addEventListener('pointerover', (e) => {
+        try {
+          if (!asideEl.classList.contains('overlay-mode')) return;
+          if (!e.target.closest || !e.target.closest('.illust-gallery')) return;
+          stopAutoplay();
+        } catch (err) { /* ignore */ }
+      });
+      // pointerout => resume shortly after leaving gallery area
+      asideEl.addEventListener('pointerout', (e) => {
+        try {
+          if (!asideEl.classList.contains('overlay-mode')) return;
+          if (!e.target.closest || !e.target.closest('.illust-gallery')) return;
+          setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 300);
+        } catch (err) { /* ignore */ }
+      });
+      // touch fallbacks (delegated checks)
+      asideEl.addEventListener('touchstart', (e) => { try { if (e.target.closest('.illust-gallery')) stopAutoplay(); } catch (err) { } }, { passive: true });
+      asideEl.addEventListener('touchend', (e) => { try { if (e.target.closest('.illust-gallery')) setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 300); } catch (err) { } });
+    })();
+
+    // Wheel support: allow mouse wheel (vertical or horizontal) to control carousel when overlay is active
+    // Non-passive listener so we can prevent default scrolling when appropriate.
+    (function attachWheelHandler() {
+      if (!asideEl) return;
+      let wheelAccum = 0; // accumulate small wheel deltas to avoid one-pixel jitter
+      let wheelTimeout = null;
+
+      asideEl.addEventListener('wheel', (e) => {
+        try {
+          // Only handle when overlay-mode is active
+          if (!asideEl.classList.contains('overlay-mode')) return;
+          // Only when pointer is over the gallery area
+          const overGallery = !!(e.target && e.target.closest && e.target.closest('.illust-gallery'));
+          if (!overGallery) return;
+
+          // Prevent page / Lenis from scrolling horizontally while overlay is active
+          e.preventDefault();
+          e.stopPropagation();
+
+          // convert wheel delta to horizontal movement: prefer deltaX if present, otherwise use deltaY
+          const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? -e.deltaX : -e.deltaY;
+          // Accumulate and threshold to trigger slide moves, because many mice/touchpads send small deltas
+          wheelAccum += delta;
+
+          // pause autoplay while wheel interacting
+          stopAutoplay();
+
+          // if user is currently dragging, ignore wheel to avoid fights
+          if (carousel.isDragging) return;
+
+          // threshold: use 100 px of accumulated wheel to move one slide (tunable)
+          const threshold = Math.max(80, (carousel.step || window.innerWidth) / 3);
+          if (Math.abs(wheelAccum) >= threshold) {
+            if (wheelAccum > 0) {
+              // moved right (previous visually), so decrement logical index
+              carousel.index -= 1;
+            } else {
+              // moved left -> next
+              carousel.index += 1;
+            }
+            // animate
+            if (carousel.track && carousel.realCount) {
+              const tx = -carousel.step * (carousel.realCount + carousel.index);
+              carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
+              carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+              carousel.baseTranslate = tx;
+              console.log('[wheel] moved to index=', carousel.index, 'tx=', tx);
+            }
+            wheelAccum = 0;
+          }
+
+          // resume autoplay after short inactivity
+          if (wheelTimeout) clearTimeout(wheelTimeout);
+          wheelTimeout = setTimeout(() => {
+            wheelAccum = 0;
+            if (asideEl.classList.contains('overlay-mode')) startAutoplay();
+          }, 200);
+        } catch (err) { /* ignore */ }
+      }, { passive: false });
+    })();
+  })();
+
+  // Caption element for illust overlay (shows title + year on hover)
+  (function attachHoverCaption() {
+    try {
+      const asideEl = document.querySelector('aside');
+      if (!asideEl) return;
+      // avoid duplicate insertion
+      if (asideEl._hasIllustCaption) return; asideEl._hasIllustCaption = true;
+
+      const caption = document.createElement('div');
+      caption.className = 'illust-caption';
+      caption.innerHTML = '<span class="title"></span><span class="year"></span>';
+      document.body.appendChild(caption);
+
+      let hoverTimer = null;
+
+      // Use delegation on aside so it remains valid even if .illust-track nodes are replaced.
+      asideEl.addEventListener('pointerover', (e) => {
+        try {
+          if (!asideEl.classList.contains('overlay-mode')) return;
+          const img = e.target.closest && e.target.closest('img');
+          if (!img) return;
+          if (!img.closest || !img.closest('.illust-track')) return;
+          const title = img.dataset.title || img.alt || '';
+          const year = img.dataset.year || '';
+          caption.querySelector('.title').textContent = title;
+          caption.querySelector('.year').textContent = year || '';
+          if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+          caption.classList.add('show');
+        } catch (err) { /* ignore */ }
+      });
+
+      asideEl.addEventListener('pointerout', (e) => {
+        try {
+          if (!asideEl.classList.contains('overlay-mode')) {
+            caption.classList.remove('show');
+            return;
+          }
+          // if moving between images inside the same track, do not hide immediately
+          if (hoverTimer) clearTimeout(hoverTimer);
+          hoverTimer = setTimeout(() => caption.classList.remove('show'), 120);
+        } catch (err) { /* ignore */ }
+      });
+
+      // ensure caption hides when overlay is closed
+      const mo = new MutationObserver(() => {
+        if (!asideEl.classList.contains('overlay-mode')) caption.classList.remove('show');
+      });
+      mo.observe(asideEl, { attributes: true, attributeFilter: ['class'] });
+    } catch (e) {
+      // non-fatal
+    }
+  })();
 
 
 
