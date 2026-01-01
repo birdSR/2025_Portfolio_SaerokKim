@@ -480,32 +480,32 @@ header {
 }
 
 .main_page .rabbit {
-
-  /* Larger hit area for aside close button; keep visual svg smaller */
-  aside.overlay-mode .close-btn,
-  .close-btn {
-    width: 80px;
-    height: 80px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-  }
-
-  .close-btn img {
-    width: 48px;
-    height: 48px;
-    display: block;
-    pointer-events: none;
-  }
-
+  /* rabbit visual positioning */
   position: absolute;
   top: 280px;
   left: 520px;
   z-index: 30;
   animation: rabbitJump 4s ease-in-out infinite;
   transform-origin: left bottom;
+}
+
+/* Larger hit area for aside close button; keep visual svg smaller */
+aside.overlay-mode .close-btn,
+.close-btn {
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.close-btn img {
+  width: 48px;
+  height: 48px;
+  display: block;
+  pointer-events: none;
 }
 
 .main_page .watering_can {
