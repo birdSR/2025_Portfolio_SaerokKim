@@ -490,6 +490,7 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    z-index: 300;
   }
 
   .close-btn img {
