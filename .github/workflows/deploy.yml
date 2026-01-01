@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # If you had a build step (npm, hugo, etc.) add it here. This project is static HTML/CSS/JS.
+      # - name: Build
+      #   run: |
+      #     npm ci
+      #     npm run build
+
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        with:
+          branch: gh-pages
+          folder: '.'
+          clean: true
+          commit-message: 'github action: deploy site from main'
+          token: ${{ secrets.GITHUB_TOKEN }}
