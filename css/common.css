@@ -1,0 +1,217 @@
+/* Common side menu styles consolidated from aboutme.css and main_style.css */
+.side_menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    border-left: 4px solid #000;
+    z-index: 2000;
+    transition: right 1.2s;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 48px 32px 32px 32px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* visible state */
+.side_menu.on {
+    right: 0;
+    display: flex !important;
+}
+
+.side_menu.close {
+    right: -400px;
+}
+
+.side_menu .close_btn,
+.close_btn {
+    position: absolute;
+    right: 32px;
+    top: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 80px;
+    height: 80px;
+}
+
+.side_menu .close_btn {
+    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.side_menu .close_btn:hover {
+    transform: rotate(180deg);
+}
+
+.side_menu .tit_menu {
+    font-size: 60px;
+    font-weight: 800;
+    color: #02b389;
+}
+
+.side_menu ul.menu_list {
+    margin-top: 30px;
+}
+
+.side_menu ul.menu_list>li>a,
+.side_menu ul.menu_list>li span {
+    font-size: 32px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    transition: color .2s;
+    cursor: pointer;
+    display: block;
+}
+
+.side_menu ul.menu_list>li:hover span,
+.side_menu ul.menu_list>li:hover>a,
+.side_menu ul.menu_list>li>a:focus {
+    color: #dd599f;
+}
+
+.side_menu ul.menu_list>li>ul>li,
+.side_menu .menu ul.menu_list>li>ul>li,
+.side_menu ul.menu_list>li>ul>li {
+    font-size: 24px;
+    font-weight: 400;
+    color: #484848;
+    margin-bottom: 20px;
+    padding-left: 10px;
+}
+
+.side_menu ul.menu_list>li>ul>li:hover,
+.side_menu .menu ul.menu_list>li>ul>li:hover {
+    font-weight: 600;
+}
+
+.side_menu ul.menu_list>li>ul>li:hover>a::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    background-image: url(../assets/svg/main_obj/dotory_a.svg);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center;
+    vertical-align: middle;
+}
+
+.side_menu .menu ul.menu_list>li>ul>li:first-child,
+.side_menu ul.menu_list>li>ul>li:first-child {
+    margin-top: 10px;
+}
+
+/* submenu collapse/expand */
+.side_menu .menu ul.menu_list>li>ul {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 420ms cubic-bezier(.22, .9, .26, 1), opacity 280ms ease;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.side_menu .menu ul.menu_list>li>ul.open {
+    max-height: 800px;
+    opacity: 1;
+    visibility: visible;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.hamburger span.bar {
+    width: 60px;
+    height: 4px;
+    background: #000;
+    display: block;
+    margin: 0 auto;
+    transform-origin: left;
+    transition: transform 1s, background 1s;
+}
+
+.hamburger:hover span.bar:nth-child(2) {
+    transform: scaleX(60%);
+    transform-origin: left;
+    transition: transform 1s;
+}
+
+/* central hamburger container style (moved from page CSS) */
+.hamburger {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #000;
+    position: fixed;
+    right: 40px;
+    top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 30;
+}
+
+/* Audio player common styles (moved from main_style.css) */
+.audio-player-fixed {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+}
+
+.audio-toggle {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.audio-toggle svg {
+    display: block;
+}
+
+/* Temporary debug overrides - force visible while investigating application issues */
+.hamburger {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.audio-player-fixed {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.audio-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.bottom {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}

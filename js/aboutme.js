@@ -214,46 +214,102 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ==================================================
       5. 오디오 컨트롤
   ================================================== */
-  const audio = document.getElementById("bgm-audio");
-  const toggleBtn = document.getElementById("audio-toggle");
-  const iconPlay = document.getElementById("audio-icon-play");
-  const iconPause = document.getElementById("audio-icon-pause");
+  // Audio controls are handled centrally by `js/common.js` (setup, autoplay, toggle).
+  // This file previously contained a duplicate audio initialization which could
+  // interfere with the common handler; that logic has been intentionally removed
+  // so `#bgm-audio` and `#audio-toggle` are managed in one place.
 
-  let isPlaying = false;
+});
 
-  function updateIcon() {
-    iconPlay.style.display = isPlaying ? "none" : "block";
-    iconPause.style.display = isPlaying ? "block" : "none";
+// Defensive diagnostics and small-safe initializers for aboutme page.
+// Non-invasive: only logs presence and ensures expected globals exist.
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    console.log('[aboutme.js] diagnostics init');
+    // ensure debounce timer variable exists to avoid accidental global leaks elsewhere
+    if (typeof window._aboutme_scroll_timeout === 'undefined') window._aboutme_scroll_timeout = null;
+
+    // Report integration points
+    console.log('window.sideMenu available:', !!window.sideMenu, window.sideMenu ? Object.keys(window.sideMenu) : null);
+    const audio = document.getElementById('bgm-audio');
+    const toggleBtn = document.getElementById('audio-toggle');
+    console.log('#bgm-audio present:', !!audio, ' #audio-toggle present:', !!toggleBtn);
+
+    // If common.js is not loaded or audio missing, provide a helpful console hint (no automatic changes)
+    if (!window.sideMenu) console.warn('[aboutme.js] window.sideMenu not found — common.js may not have loaded yet.');
+    if (!audio) console.warn('[aboutme.js] bgm audio element (#bgm-audio) not found.');
+  } catch (err) {
+    console.warn('[aboutme.js] diagnostics error', err);
   }
+});
 
-  function tryAutoPlay() {
-    audio.play().then(() => {
-      isPlaying = true;
-      updateIcon();
-    }).catch(() => {
-      document.body.addEventListener("click", autoPlayOnUser);
-    });
-  }
+// Removed immediate debug IIFE to avoid running before DOM is ready.
+// Diagnostics now run under DOMContentLoaded handlers (see above).
 
-  function autoPlayOnUser() {
-    audio.play().catch(() => { });
-    isPlaying = true;
-    updateIcon();
-    document.body.removeEventListener("click", autoPlayOnUser);
-  }
+// Moved from inline aboutme.html: developer debug helper
+window.addEventListener('DOMContentLoaded', function movedInlineDebug() {
+  try {
+    console.group('%c[aboutme debug] 시작 (moved from HTML inline)', 'color: #0b5; font-weight: bold');
 
-  toggleBtn.addEventListener("click", () => {
-    if (audio.paused) {
-      audio.play();
-      isPlaying = true;
-    } else {
-      audio.pause();
-      isPlaying = false;
+    // Stylesheet list and load order
+    console.log('stylesheets:', Array.from(document.styleSheets).map(s => s.href).filter(Boolean));
+
+    // Check presence of key elements
+    const hamburger = document.querySelector('.hamburger');
+    const sideMenu = document.querySelector('.side_menu');
+    console.log('.hamburger present:', !!hamburger, hamburger);
+    console.log('.side_menu present:', !!sideMenu, sideMenu);
+
+    // Log computed styles for critical rules
+    if (hamburger) {
+      const ch = getComputedStyle(hamburger);
+      console.log('hamburger computed:', ch.position, ch.zIndex);
     }
-    updateIcon();
-  });
+    if (sideMenu) {
+      const cs = getComputedStyle(sideMenu);
+      console.log('side_menu computed right/display/z-index:', cs.right, cs.display, cs.zIndex);
+    }
 
-  tryAutoPlay();
-  updateIcon();
+    // Inspect same-origin stylesheet rules for duplicated selectors (best-effort)
+    try {
+      const selectorCounts = {};
+      Array.from(document.styleSheets).forEach(ss => {
+        if (!ss || !ss.cssRules) return;
+        Array.from(ss.cssRules).forEach(rule => {
+          if (rule.selectorText) {
+            const s = rule.selectorText.trim();
+            if (/\.side_menu|\.hamburger/.test(s)) selectorCounts[s] = (selectorCounts[s] || 0) + 1;
+          }
+        });
+      });
+      console.log('selectorCounts (side_menu/hamburger):', selectorCounts);
+    } catch (e) {
+      console.warn('Could not inspect stylesheet rules (cross-origin or blocked):', e.message);
+    }
 
+    // Audio debug: try to play and catch promise errors
+    const audio = document.getElementById('bgm-audio');
+    if (audio) {
+      console.log('#bgm-audio src:', audio.src);
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        console.log('Audio played successfully (debug test).');
+        audio.pause();
+      }).catch(err => {
+        console.error('Audio play failed (debug test):', err);
+      });
+    } else {
+      console.warn('#bgm-audio element not found');
+    }
+
+    // Event hooks for debugging
+    if (hamburger) hamburger.addEventListener('click', () => console.log('hamburger clicked (debug)'));
+    const closeBtn = document.querySelector('.side_menu .close_btn, .close_btn');
+    if (closeBtn) closeBtn.addEventListener('click', () => console.log('side_menu close clicked (debug)'));
+
+    console.groupEnd();
+  } catch (err) {
+    console.warn('[movedInlineDebug] failed', err);
+  }
 });

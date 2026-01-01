@@ -12,24 +12,14 @@
   <link rel="stylesheet" href="./css/reset.css" />
   <link rel="stylesheet" href="./css/common.css" />
   <link rel="stylesheet" href="./css/aboutme.css" />
-  <link rel="stylesheet" href="./css/media.css" />
   <script src="https://kit.fontawesome.com/8766c31511.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
   <script src="./js/common.js"></script>
   <script src="./js/aboutme.js"></script>
-  <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      if (window.sideMenu && typeof sideMenu.openHome === 'function') {
-        console.log('%c[디버그] 콘솔에서 sideMenu.openHome(), sideMenu.closeHome()을 실행하면 Home 서브메뉴가 열리고 닫힙니다.', 'color: #1976d2; font-weight: bold');
-      } else {
-        console.warn('[디버그] sideMenu.openHome() 사용 불가: common.js가 정상 로드되지 않았거나, 메뉴 구조가 다릅니다.');
-      }
-    });
-  </script>
 </head>
 
 <body>
-      <div class="audio-player-fixed">
+  <div class="audio-player-fixed">
     <audio id="bgm-audio" src="./assets/Wandering Through the Pines.mp3" loop></audio>
     <button id="audio-toggle" class="audio-toggle" aria-label="음악 재생/일시정지">
       <svg id="audio-icon-play" width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -45,52 +35,53 @@
   </div>
 
   <div id="target">
-      <div class="scroll_guide">
-        <img src="./assets/svg/about_me_page/arrow.svg" alt="arrow" class="arrow" />
-    <img src="./assets/svg/about_me_page/mouse.svg" alt="mouse" class="mouse" />
-    
-  </div>
+    <div class="scroll_guide">
+      <img src="./assets/svg/about_me_page/arrow.svg" alt="arrow" class="arrow" />
+      <img src="./assets/svg/about_me_page/mouse.svg" alt="mouse" class="mouse" />
+
+    </div>
     <header>
       <div class="fixed-logo">
         <a href="index.html"><img src="./assets/logo_tit.png" alt="로고" /></a>
 
-       <div class="hamburger">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </div>
-    <div class="side_menu">
-      <div class="menu">
-        <div class="close_btn"><img src="./assets/close_btn.svg" alt="Close Menu"></div>
-        <span class="tit_menu">Menu</span>
-        <ul class="menu_list">
-          <li class="menu_item">
-              <a href="#" class="home-toggle" role="button" aria-expanded="false" aria-controls="home-submenu">Home</a>
-              <ul class="open" id="home-submenu" aria-hidden="true">
-              <li><a href="#one_main_page">Main</a></li>
-              <li><a href="#two_uxui_page">UX/UI Work</a></li>
-              <li><a href="#three_promo_page">Promotion Work</a></li>
-              <li><a href="#four_visual_design_page">Visual Design</a></li>
-              <li><a href="#five_footer_page">Footer</a></li>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+        <div class="side_menu">
+          <div class="menu">
+            <div class="close_btn"><img src="./assets/close_btn.svg" alt="Close Menu"></div>
+            <span class="tit_menu">Menu</span>
+            <ul class="menu_list">
+              <li class="menu_item">
+                <a href="#" class="home-toggle" role="button" aria-expanded="false"
+                  aria-controls="home-submenu">Home</a>
+                <ul class="open" id="home-submenu" aria-hidden="false">
+                  <li><a href="index.html#one_main_page">Main</a></li>
+                  <li><a href="index.html#two_uxui_page">UX/UI Work</a></li>
+                  <li><a href="index.html#three_promo_page">Promotion Work</a></li>
+                  <li><a href="index.html#four_visual_design_page">Visual Design</a></li>
+                  <li><a href="index.html#five_footer_page">Footer</a></li>
+                </ul>
+              </li>
+              <li class="menu_item"><a href="aboutme.html">About me</a></li>
+              <li class="menu_item"><a href="mailto:rocks2bird@gmail.com">Contact me</a></li>
             </ul>
-          </li>
-          <li class="menu_item"><a href="aboutme.html">About me</a></li>
-          <li class="menu_item"><a href="mailto:rocks2bird@gmail.com">Contact me</a></li>
-        </ul>
-      </div>
-    </div>
+          </div>
+        </div>
     </header>
     <main>
       <div class="bottom"></div>
       <div class="sky">
-          <img src="./assets/svg/main_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
-          <img src="./assets/svg/main_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
-          <img src="./assets/svg/main_obj/cloud_third.svg" alt="m_cloud3" class="m_cloud3" />
-        </div>
+        <img src="./assets/svg/main_obj/cloud_first.svg" alt="m_cloud1" class="m_cloud1" />
+        <img src="./assets/svg/main_obj/cloud_second.svg" alt="m_cloud2" class="m_cloud2" />
+        <img src="./assets/svg/main_obj/cloud_third.svg" alt="m_cloud3" class="m_cloud3" />
+      </div>
       <div class="under_tree">
         <img src="./assets/svg/about_me_page/tall_tree.svg" alt="tall_tree" class="tall_tree" />
       </div>
-            <section class="intro">
+      <section class="intro">
         <article class="introduce">
           <img src="./assets/svg/about_me_page/big_apple_basket.svg" alt="big_apple_basket" class="big_apple_basket" />
           <img src="./assets/svg/about_me_page/about_char_onehup.svg" alt="about_char_onehup"
@@ -117,8 +108,8 @@
         <article class="awords">
           <img src="./assets/svg/about_me_page/about_char_readbook.svg" alt="about_char_readbook"
             class="about_char_readbook" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
           <aside class="about_second">
             <div class="context-box">
               <div class="context-txt">
@@ -168,9 +159,9 @@
         <article class="qualifications">
           <img src="./assets/svg/about_me_page/about_char_coffee.svg" alt="about_char_coffee"
             class="about_char_coffee" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
           <aside class="about_third">
             <div class="context-box">
               <div class="context-txt">
@@ -210,9 +201,9 @@
         <article class="strength">
           <img src="./assets/svg/about_me_page/about_char_sdownhup.svg" alt="about_char_sdownhup"
             class="about_char_sdownhup" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
           <aside class="about_four">
             <div class="context-box">
               <div class="context-txt">
@@ -289,9 +280,9 @@
         </article>
         <article class="skill">
           <img src="./assets/svg/about_me_page/about_char_work.svg" alt="about_char_work" class="about_char_work" />
-              <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
           <aside class="about_five">
             <div class="context-box">
               <div class="context-txt">
@@ -313,9 +304,9 @@
         </article>
         <article class="also_do_it">
           <img src="./assets/svg/about_me_page/about_char_legup.svg" alt="about_char_legup" class="about_char_legup" />
-                   <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
           <aside class="about_six">
             <div class="context-box">
               <div class="context-txt">
@@ -340,10 +331,10 @@
         <article class="break_time">
           <img src="./assets/svg/about_me_page/about_char_twohup.svg" alt="about_char_twohup"
             class="about_char_twohup" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
           <aside class="about_seven">
             <div class="context-box">
               <div class="context-txt">
@@ -382,9 +373,9 @@
         <article class="specialty">
           <img src="./assets/svg/about_me_page/about_char_sdown.svg" alt="about_char_sdown" class="about_char_sdown" />
           <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
-            <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
-            <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
-            <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
+          <img src="./assets/svg/uxui-obj/apple_b.svg" alt="apple_b" class="apple_b" />
+          <img src="./assets/svg/uxui-obj/apple_c.svg" alt="apple_c" class="apple_c" />
+          <img src="./assets/svg/uxui-obj/apple_a.svg" alt="apple_a" class="apple_a" />
           <aside class="about_eight">
             <div class="context-box">
               <div class="context-txt">

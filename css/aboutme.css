@@ -40,9 +40,11 @@ body {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(4px);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -56,7 +58,10 @@ body {
   /* min-height: max(3750px, 100vh); */
   /* keep intended page length while avoiding forced fixed height */
   position: relative;
-  /* .bottom이 #target 내부 하단에 위치하도록 */
+  max-width: 1920px;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
 }
 
 .audio-player-fixed {
@@ -66,6 +71,21 @@ body {
   z-index: 2000;
   display: flex;
   align-items: center;
+}
+
+/* Ensure controls are placed relative to centered #target area on wide screens */
+@media (min-width: 1200px) {
+  #target .hamburger {
+    position: fixed;
+    right: calc((100vw - 1920px)/2 + 40px);
+    top: 40px;
+  }
+
+  #target .audio-player-fixed {
+    position: fixed;
+    right: calc((100vw - 1920px)/2 + 32px);
+    bottom: 32px;
+  }
 }
 
 .audio-toggle {
@@ -123,31 +143,39 @@ header img {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-18px);
   }
+
   100% {
     transform: translateY(0);
   }
 }
+
 @keyframes floatCloud2 {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(12px);
   }
+
   100% {
     transform: translateY(0);
   }
 }
+
 @keyframes floatCloud3 {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -171,15 +199,6 @@ header img {
   bottom: 360px;
   left: 0;
 } */
-
-.under_tree {
-  /*   width: 1639px;
-  height: 100%;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: -880px; */
-}
 
 .under_tree {
   position: absolute;
@@ -217,7 +236,7 @@ header img {
   width: 800px;
 }
 
-.introduce .about_first .context-box{
+.introduce .about_first .context-box {
   position: absolute;
   bottom: 340px;
   left: 0;
@@ -229,7 +248,7 @@ header img {
   height: 100%;
 }
 
-.introduce .about_first .context-box .shape{
+.introduce .about_first .context-box .shape {
   left: 320px;
   top: 128px;
 }
@@ -375,10 +394,48 @@ header img {
   width: 700px;
 }
 
+/* Note: desktop transform/position overrides were removed to restore original
+  article positions. If you want refined centering inside a 1920px viewport,
+  we'll apply narrower, non-destructive rules per-article instead. */
+
+/* For narrower screens, stack blocks vertically to avoid overflow */
+@media (max-width: 1199px) {
+
+  .awords,
+  .qualifications,
+  .strength,
+  .skill {
+    position: relative;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    margin: 24px 0;
+  }
+}
+
 .skill .apple_a {
   position: relative;
   left: -360px;
   top: 0px;
+}
+
+/* Ensure SVGs render at their native/intrinsic size on aboutme page
+   Exclude animated cloud/apple assets so their transforms/animations are preserved. */
+#target svg,
+#target img[src$=".svg"] {
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  display: inline-block;
+}
+
+/* Explicitly allow transforms/animations for clouds and apples */
+#target .m_cloud1, #target .m_cloud2, #target .m_cloud3,
+#target .apple_a, #target .apple_b, #target .apple_c {
+  transform: none; /* allow keyframes to set transform */
+  will-change: transform; /* hint for smoother animation */
 }
 
 .skill .apple_b {
@@ -470,6 +527,7 @@ header img {
   bottom: 3170px;
   width: 700px;
 }
+
 
 .break_time .apple_a {
   position: relative;
@@ -649,18 +707,23 @@ header img {
 .top_bird.visible .list .b_one {
   transition-delay: 0.1s;
 }
+
 .top_bird.visible .list .b_two {
   transition-delay: 0.3s;
 }
+
 .top_bird.visible .list .b_three {
   transition-delay: 0.5s;
 }
+
 .top_bird.visible .list .b_four {
   transition-delay: 0.7s;
 }
+
 .top_bird.visible .list .b_five {
   transition-delay: 0.9s;
 }
+
 .top_bird.visible .list .b_six {
   transition-delay: 1.1s;
 }
@@ -916,6 +979,7 @@ header img {
   transition: opacity 0.8s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     transform 0.8s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
+
 .top_bird .list .con-span {
   padding: 20px 40px 20px 40px;
 }
@@ -996,7 +1060,8 @@ header img {
   border-left: 4px solid #000;
   z-index: 2000;
   transition: right 1.2s;
-  display: none; /* Changed to none to avoid conflict */
+  display: none;
+  /* Changed to none to avoid conflict */
   flex-direction: column;
   align-items: flex-start;
   padding: 48px 32px 32px 32px;
@@ -1009,107 +1074,12 @@ header img {
 
 .side_menu.on {
   right: 0;
-  display: flex !important; /* Ensure it displays flex when active */
-}
-
-.side_menu.close {
-  right: -400px;
-}
-
-.close_btn {
-  position: absolute;
-  right: 32px;
-  top: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 80px;
-  height: 80px;
-}
-
-/* 사이드 메뉴 닫기 버튼 회전 애니메이션 */
-.side_menu .close_btn {
-  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.side_menu .close_btn:hover {
-  transform: rotate(180deg);
-}
-
-.side_menu .tit_menu {
-  font-size: 60px;
-  font-weight: 800;
-  color: #02b389;
-}
-
-.side_menu ul.menu_list {
-  margin-top: 30px;
+  display: flex !important;
+  /* Ensure it displays flex when active */
 }
 
 
-
-.side_menu ul.menu_list > li > a {
-  font-size: 32px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
-  transition: color .2s;
-  cursor: pointer;
-  display: block;
-}
-
-.side_menu ul.menu_list > li:hover > a,
-.side_menu ul.menu_list > li > a:focus {
-  color: #dd599f;
-}
-
-
-.side_menu ul.menu_list > li > ul > li {
-  font-size: 24px;
-  font-weight: 400;
-  color: #484848;
-  margin-bottom: 20px;
-  padding-left: 10px;
-}
-
-.side_menu ul.menu_list > li > ul > li:hover > a,
-.side_menu ul.menu_list > li > ul > li > a:focus {
-  font-weight: 600;
-}
-
-.side_menu ul.menu_list > li > ul > li:hover > a::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  background-image: url(../assets/svg/main_obj/dotory_a.svg);
-  background-repeat: no-repeat;
-  background-size: 20px 20px;
-  background-position: center;
-  vertical-align: middle;
-}
-
-.side_menu ul.menu_list > li > ul > li:first-child {
-  margin-top: 10px;
-}
-
-
-/* Submenu collapse/expand smooth animation */
-.side_menu ul.menu_list > li > ul {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  visibility: hidden;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.side_menu ul.menu_list > li > ul.open {
+.side_menu ul.menu_list>li>ul.open {
   max-height: 500px;
   opacity: 1;
   visibility: visible;

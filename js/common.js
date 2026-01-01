@@ -5,7 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const tgt = ev.target;
       const inClickable = !!tgt.closest && !!tgt.closest('.click');
-      console.log('[capture-click] target:', tgt.tagName, 'classList:', tgt.className, 'in .click?:', inClickable);
+      // Only verbose-log clicks that are in project "click" areas to avoid noisy output
+      if (inClickable) {
+        console.log('[capture-click] target:', tgt.tagName, 'classList:', tgt.className, 'in .click?:', inClickable);
+      }
     } catch (e) {
       console.log('[capture-click] error reading target', e);
     }
@@ -29,8 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
   ================================================== */
   let totalWidth = 0;
   if (hasHorizontal) {
+    // Use bounding rect width to account for transforms/margins that offsetWidth misses
     panels.forEach(panel => {
-      totalWidth += panel.offsetWidth;
+      try {
+        totalWidth += Math.round((panel.getBoundingClientRect && panel.getBoundingClientRect().width) || panel.offsetWidth || 0);
+      } catch (e) { totalWidth += panel.offsetWidth || 0; }
     });
     // 페이지의 세로 문서 높이를 가로 스크롤 전체 너비에 맞춰 계산
     const scrollHeight = totalWidth - window.innerWidth + window.innerHeight;
@@ -40,9 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
         2. Lenis (세로 스크롤 전용)
     ================================================== */
     // Lenis는 가로 레이아웃이 있을 때만 동작하도록 설정합니다.
+    // Lenis 초기화
+    // NOTE: lerp tuned slightly lower for crisper programmatic jumps; can be adjusted if needed.
     lenis = new Lenis({
       smooth: true,
-      lerp: 0.08,
+      lerp: 0.06,
       wheelMultiplier: 1,
     });
 
@@ -51,6 +59,192 @@ document.addEventListener("DOMContentLoaded", () => {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+
+    // Global scroll offset (pixels) applied to all programmatic Lenis scrolls.
+    // Default is 24px to compensate for small layout/header offsets.
+    // You can override at runtime for testing via:
+    // sessionStorage.setItem('scrollOffset', '16')
+    const DEFAULT_SCROLL_OFFSET = 24;
+    const SCROLL_OFFSET = (function () {
+      try {
+        const s = sessionStorage.getItem('scrollOffset');
+        return s ? parseInt(s, 10) || DEFAULT_SCROLL_OFFSET : DEFAULT_SCROLL_OFFSET;
+      } catch (e) { return DEFAULT_SCROLL_OFFSET; }
+    })();
+
+    // Wrapper for lenis.scrollTo that applies the global offset and clamps to bounds.
+    function adjustedScrollTo(x, options) {
+      if (!lenis) return;
+      // recalc maxScroll on each call because layout may change
+      totalWidth = 0;
+      panels.forEach(panel => { totalWidth += panel.offsetWidth; });
+      const maxScroll = Math.max(0, totalWidth - window.innerWidth);
+      let dest = Math.round(x - (SCROLL_OFFSET || 0));
+      if (dest < 0) dest = 0;
+      if (dest > maxScroll) dest = maxScroll;
+      try { console.debug('[scroll-adjust] orig:', x, 'offset:', SCROLL_OFFSET, 'adj:', dest, 'maxScroll:', maxScroll); } catch (e) { }
+      // diagnostic dump for panels/track at time of scroll
+      try { dumpPanelMetrics('before-adjustedScrollTo', options && options._hashId); } catch (e) { }
+
+      // perform the initial scroll
+      try {
+        if (options && typeof lenis.scrollTo === 'function') {
+          lenis.scrollTo(dest, options);
+        } else {
+          lenis.scrollTo(dest);
+        }
+      } catch (e) {
+        try { lenis.scrollTo(dest); } catch (ee) { console.error('[scroll-adjust] lenis.scrollTo failed', ee); }
+      }
+
+      // Verify track's current transform and retry if off by more than tolerance.
+      const tolerance = 6; // pixels
+      let attempts = 0;
+      const maxAttempts = 8;
+
+      function readTrackX() {
+        try {
+          const cs = window.getComputedStyle(track);
+          const tf = cs && cs.transform ? cs.transform : 'none';
+          if (!tf || tf === 'none') return 0;
+          // try DOMMatrix first
+          if (typeof DOMMatrix === 'function') {
+            try {
+              const m = new DOMMatrix(tf);
+              if (Number.isFinite(m.m41)) return Math.abs(m.m41);
+            } catch (e) { /* ignore */ }
+          }
+          // regex fallback for matrix(a,b,c,d,tx,ty)
+          const m = tf.match(/matrix\([^,]+,[^,]+,[^,]+,[^,]+,([-0-9.]+),/);
+          if (m && m[1]) return Math.abs(parseFloat(m[1]));
+        } catch (e) { /* ignore */ }
+        return 0;
+      }
+
+      function verifyLoop() {
+        attempts += 1;
+        const currentX = readTrackX();
+        const diff = Math.abs(currentX - dest);
+        console.debug('[scroll-verify] attempt', attempts, 'currentX', currentX, 'dest', dest, 'diff', diff);
+        if (diff <= tolerance) {
+          try {
+            // If caller passed desired hash id, update URL without native jump
+            if (options && options._hashId) {
+              history.replaceState(null, '', `${location.pathname}#${options._hashId}`);
+            }
+          } catch (e) { }
+          return;
+        }
+        if (attempts >= maxAttempts) {
+          console.warn('[scroll-verify] max attempts reached, final diff:', diff);
+          try {
+            // Last resort: snap to nearest panel start to avoid multi-panel misalignment
+            let nearestPanelIndex = 0;
+            let bestDelta = Infinity;
+            let cum = 0;
+            for (let i = 0; i < panels.length; i++) {
+              const p = panels[i];
+              const panelLeft = cum;
+              const d = Math.abs(panelLeft - dest);
+              if (d < bestDelta) { bestDelta = d; nearestPanelIndex = i; }
+              const w = Math.round((p.getBoundingClientRect && p.getBoundingClientRect().width) || p.offsetWidth || 0);
+              cum += w;
+            }
+            const snapLeft = panels[nearestPanelIndex] ? (Array.from(panels).slice(0, nearestPanelIndex).reduce((s, pl) => s + (Math.round((pl.getBoundingClientRect && pl.getBoundingClientRect().width) || pl.offsetWidth || 0)), 0)) : 0;
+            console.warn('[scroll-verify] snapping to panel', nearestPanelIndex, 'snapLeft', snapLeft);
+            try { lenis.scrollTo(snapLeft); } catch (e) { try { lenis.scrollTo(snapLeft); } catch (ee) { /* ignore */ } }
+            // update URL hash if caller provided id
+            if (options && options._hashId) {
+              try { history.replaceState(null, '', `${location.pathname}#${options._hashId}`); } catch (e) { }
+            }
+          } catch (e) { console.error('[scroll-verify] snap fallback error', e); }
+          return;
+        }
+        // apply a corrective scroll and retry after short delay
+        try {
+          lenis.scrollTo(dest);
+        } catch (e) { try { lenis.scrollTo(dest); } catch (ee) { /* ignore */ } }
+        setTimeout(verifyLoop, 90 + attempts * 30);
+      }
+
+      // Start verify loop after a small delay allowing lenis to animate
+      setTimeout(verifyLoop, 80);
+    }
+
+    // If a target element sits inside a panel, return the panel's offsetLeft
+    // This ensures we snap exactly to the panel start instead of ending up
+    // several panels off due to transient measurements.
+    function getPanelOffsetForElement(el) {
+      try {
+        if (!el || !panels || panels.length === 0) return null;
+        let cum = 0;
+        for (let i = 0; i < panels.length; i++) {
+          const p = panels[i];
+          const w = Math.round((p.getBoundingClientRect && p.getBoundingClientRect().width) || p.offsetWidth || 0);
+          if (p.contains && p.contains(el)) return cum;
+          if (p.id && el.id && p.id === el.id) return cum;
+          cum += w;
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    // Compute a robust scroll target by summing widths of panels preceding the panel
+    // that contains the element, plus the element's offsetLeft within that panel.
+    function computeTargetScrollForElement(el) {
+      try {
+        if (!el || !panels || panels.length === 0) return null;
+        let cum = 0;
+        for (let i = 0; i < panels.length; i++) {
+          const p = panels[i];
+          const w = Math.round((p.getBoundingClientRect && p.getBoundingClientRect().width) || p.offsetWidth || 0);
+          if (p.contains && p.contains(el)) {
+            const elRect = el.getBoundingClientRect();
+            const panelRect = p.getBoundingClientRect();
+            const within = Math.round(elRect.left - panelRect.left);
+            return Math.max(0, cum + within);
+          }
+          cum += w;
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    // Diagnostic: dump panel metrics and track transform to console for debugging
+    function dumpPanelMetrics(note, targetId) {
+      try {
+        console.groupCollapsed('[panels-dump]', note || '', 'targetId:', targetId || '(none)');
+        console.log('panels.length =', panels.length);
+        let cum = 0;
+        const list = [];
+        for (let i = 0; i < panels.length; i++) {
+          const p = panels[i];
+          const rect = p.getBoundingClientRect ? p.getBoundingClientRect() : { left: 0, width: p.offsetWidth || 0 };
+          const w = Math.round(rect.width || p.offsetWidth || 0);
+          list.push({ index: i, id: p.id || '(no-id)', width: w, left: Math.round(rect.left), rectWidth: Math.round(rect.width), cumLeft: cum });
+          cum += w;
+        }
+        console.table(list);
+        console.log('totalWidth (computed) =', cum, 'document.body.style.height =', document.body.style.height);
+        try {
+          const cs = window.getComputedStyle(track);
+          const tf = cs && cs.transform ? cs.transform : 'none';
+          console.log('track.transform =', tf);
+        } catch (e) { console.log('track.transform read error', e); }
+        if (targetId) {
+          const t = document.getElementById(targetId);
+          if (t) {
+            console.log('target.offsetLeft =', t.offsetLeft, 'getBoundingClientRect.left=', t.getBoundingClientRect().left);
+            const panelOffset = getPanelOffsetForElement(t);
+            const computed = computeTargetScrollForElement(t);
+            console.log('computed panelOffset =', panelOffset, 'computeTargetScrollForElement =', computed);
+          } else {
+            console.log('target element not found for id=', targetId);
+          }
+        }
+        console.groupEnd();
+      } catch (e) { console.log('[panels-dump] error', e); }
+    }
 
     /* ==================================================
         3. 세로 스크롤 → 가로 이동 매핑
@@ -74,7 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!hasHorizontal) return;
     totalWidth = 0;
     panels.forEach(panel => {
-      totalWidth += panel.offsetWidth;
+      try {
+        totalWidth += Math.round((panel.getBoundingClientRect && panel.getBoundingClientRect().width) || panel.offsetWidth || 0);
+      } catch (e) { totalWidth += panel.offsetWidth || 0; }
     });
     const newHeight = totalWidth - window.innerWidth + window.innerHeight;
     document.body.style.height = `${newHeight}px`;
@@ -91,8 +287,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let isPlaying = false;
 
   function updateIcon() {
-    iconPlay.style.display = isPlaying ? "none" : "block";
-    iconPause.style.display = isPlaying ? "block" : "none";
+    try {
+      if (iconPlay) iconPlay.style.display = isPlaying ? "none" : "block";
+      if (iconPause) iconPause.style.display = isPlaying ? "block" : "none";
+    } catch (e) { /* ignore */ }
   }
 
   function tryAutoPlay() {
@@ -111,16 +309,35 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.removeEventListener("click", autoPlayOnUser);
   }
 
-  toggleBtn.addEventListener("click", () => {
+  // encapsulated action that toggles audio state safely
+  function toggleAudioAction() {
+    if (!audio) return;
     if (audio.paused) {
-      audio.play();
-      isPlaying = true;
+      audio.play().then(() => {
+        isPlaying = true; updateIcon();
+      }).catch(() => { isPlaying = false; updateIcon(); });
     } else {
-      audio.pause();
-      isPlaying = false;
+      try { audio.pause(); } catch (e) { }
+      isPlaying = false; updateIcon();
     }
-    updateIcon();
-  });
+  }
+
+  // attach handler directly if button exists, otherwise delegate to document
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAudioAction(); });
+  } else {
+    // delegated fallback: handle clicks on elements matching #audio-toggle
+    document.addEventListener('click', function (e) {
+      const t = e.target.closest && e.target.closest('#audio-toggle');
+      if (t) { e.preventDefault(); toggleAudioAction(); }
+    });
+  }
+
+  // keep UI in sync if audio state changes externally
+  if (audio) {
+    audio.addEventListener('play', () => { isPlaying = true; updateIcon(); });
+    audio.addEventListener('pause', () => { isPlaying = false; updateIcon(); });
+  }
 
   tryAutoPlay();
   updateIcon();
@@ -152,7 +369,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // (no annotateAsideItems — data-project annotation removed per user request)
 
-  console.log('[common.js] total .click elements found:', clickables.length);
+  if (clickables.length > 0) {
+    console.log('[common.js] total .click elements found:', clickables.length);
+  } else {
+    console.debug('[common.js] no .click elements found on this page (this is normal for aboutme.html)');
+  }
   clickables.forEach((el, index) => {
     console.log('[common.js] attaching click handler to element:', el.className, 'index', index);
     // also listen for pointer/mousedown/touchstart at capture to see raw input
@@ -292,8 +513,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Debug: close button diagnostics (presence, computed z-index, events)
   (function closeBtnDiagnostics() {
     const asideEl = document.querySelector('aside');
-    const btn = document.querySelector('aside .close-btn') || document.querySelector('.close-btn');
-    console.log('[diag] close-btn element found?', !!btn);
+    // support both naming conventions: .close-btn and .close_btn
+    const btn = document.querySelector('aside .close-btn, aside .close_btn') || document.querySelector('.close-btn, .close_btn');
+    console.log('[diag] close-btn element found?', !!btn, 'selectorMatched:', btn ? (btn.className || btn.getAttribute('class')) : '(none)');
     if (!btn) return;
 
     function reportState(prefix) {
@@ -714,16 +936,16 @@ document.addEventListener("DOMContentLoaded", () => {
       carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
       carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
       carousel.baseTranslate = tx;
-  // clear suppression and schedule safe resume
-  carousel._suppressAutoplayResume = false;
-  scheduleResume(600);
+      // clear suppression and schedule safe resume
+      carousel._suppressAutoplayResume = false;
+      scheduleResume(600);
     });
 
-  asideEl.addEventListener('pointerleave', (ev) => {
+    asideEl.addEventListener('pointerleave', (ev) => {
       // if pointer leaves the aside while pressing, treat like pointerup
       if (carousel.isDragging) {
         // call docPointerUp directly with an object shaped like an event
-  try { docPointerUp({ clientX: ev.clientX ?? ev.pageX ?? carousel.currentX, pointerId: ev.pointerId }); } catch (e) { }
+        try { docPointerUp({ clientX: ev.clientX ?? ev.pageX ?? carousel.currentX, pointerId: ev.pointerId }); } catch (e) { }
       }
     });
 
@@ -795,9 +1017,9 @@ document.addEventListener("DOMContentLoaded", () => {
       carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
       carousel.baseTranslate = tx;
       console.log('[doc pointerup] dx=', dx, 'moved to index=', carousel.index);
-  setTimeout(() => { carousel.allowClickClose = true; }, 300);
-  carousel._suppressAutoplayResume = false;
-  scheduleResume(600);
+      setTimeout(() => { carousel.allowClickClose = true; }, 300);
+      carousel._suppressAutoplayResume = false;
+      scheduleResume(600);
       // remove document/window fallbacks that may have been attached on pointerdown
       try {
         document.removeEventListener('pointermove', docPointerMove, { passive: false });
@@ -865,9 +1087,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // allow click-close after short delay
       setTimeout(() => { carousel.allowClickClose = true; }, 300);
       carousel.isDragging = false;
-  // clear suppression and schedule safe resume
-  carousel._suppressAutoplayResume = false;
-  scheduleResume(600);
+      // clear suppression and schedule safe resume
+      carousel._suppressAutoplayResume = false;
+      scheduleResume(600);
       // cleanup any fallback listeners attached to document/window
       try {
         document.removeEventListener('pointermove', docPointerMove);
@@ -1176,6 +1398,9 @@ document.addEventListener("DOMContentLoaded", () => {
         sideMenu.style.display = 'flex';
         // allow a tick for CSS to apply then remove inline right to let transition animate
         requestAnimationFrame(() => sideMenu.style.right = '');
+        // if a page-specific controller provided an openHome helper, call it to
+        // ensure Home submenu is expanded when menu opens (helps aboutme page)
+        try { if (window.sideMenu && typeof window.sideMenu.openHome === 'function') window.sideMenu.openHome(); } catch (e) { /* ignore */ }
       } else {
         // hide after transition (give time for transition to move right)
         sideMenu.style.right = '-420px';
@@ -1238,19 +1463,32 @@ document.addEventListener("DOMContentLoaded", () => {
         ul.classList.add('open');
         ul.setAttribute('aria-hidden', 'false');
         item?.querySelector(':scope > a')?.setAttribute('aria-expanded', 'true');
-        const h = ul.scrollHeight;
-        // trigger layout then set height
-        void ul.offsetHeight;
-        ul.style.maxHeight = h + 'px';
-        const onEnd = (ev) => {
-          if (ev.propertyName !== 'max-height') return;
-          // clear inline height so content changes don't get clipped
-          ul.style.maxHeight = '';
-          ul.removeEventListener('transitionend', onEnd);
-          ul._submenuOnEnd = null;
+
+        // compute target height; sometimes ancestor is display:none and scrollHeight==0
+        // poll a few frames until a non-zero scrollHeight is available or attempts exhausted
+        const computeAndSetHeight = (attempt = 0) => {
+          const h = ul.scrollHeight || 0;
+          if (h > 0 || attempt >= 8) {
+            // trigger layout then set height
+            void ul.offsetHeight;
+            ul.style.maxHeight = (h > 0 ? h : 0) + 'px';
+            const onEnd = (ev) => {
+              if (ev.propertyName !== 'max-height') return;
+              // clear inline height so content changes don't get clipped
+              ul.style.maxHeight = '';
+              ul.removeEventListener('transitionend', onEnd);
+              ul._submenuOnEnd = null;
+            };
+            ul._submenuOnEnd = onEnd;
+            ul.addEventListener('transitionend', onEnd);
+            return;
+          }
+          // wait a frame and retry
+          requestAnimationFrame(() => {
+            setTimeout(() => computeAndSetHeight(attempt + 1), 30);
+          });
         };
-        ul._submenuOnEnd = onEnd;
-        ul.addEventListener('transitionend', onEnd);
+        computeAndSetHeight(0);
       });
       console.debug('openSubmenu called', { item });
     }
@@ -1292,6 +1530,18 @@ document.addEventListener("DOMContentLoaded", () => {
           closeSubmenu(ul, ul.previousElementSibling);
         });
       };
+      // Expose a small API for other pages that expect a global sideMenu controller.
+      // aboutme.html contains a debug snippet that checks window.sideMenu.openHome()
+      // — provide those functions here so the check passes and can control the Home submenu.
+      try {
+        window.sideMenu = window.sideMenu || {};
+        window.sideMenu.openHome = function () {
+          try { if (typeof openSubmenu === 'function' && homeSubMenu && homeItem) openSubmenu(homeSubMenu, homeItem); } catch (e) { }
+        };
+        window.sideMenu.closeHome = function () {
+          try { if (typeof closeSubmenu === 'function' && homeSubMenu && homeItem) closeSubmenu(homeSubMenu, homeItem); } catch (e) { }
+        };
+      } catch (e) { /* non-fatal */ }
     }
 
     homeItem?.addEventListener('click', function (e) {
@@ -1325,20 +1575,68 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // Safety: capture-phase listener on any .home-toggle anchors to ensure
+    // we toggle submenu even if other listeners stopPropagation or preventDefault.
+    document.addEventListener('click', (e) => {
+      try {
+        const t = e.target.closest && e.target.closest('.home-toggle');
+        if (!t) return;
+        console.debug('capture home-toggle click', { tag: e.target.tagName });
+        e.preventDefault();
+        e.stopPropagation();
+        if (!homeSubMenu) return;
+        const isOpen = homeSubMenu.classList.contains('open');
+        if (isOpen) closeSubmenu(homeSubMenu, homeItem);
+        else openSubmenu(homeSubMenu, homeItem);
+      } catch (err) { /* ignore */ }
+    }, true); // use capture phase
+
     // Initialize aria states for any existing submenus (in case of server-rendered classes)
-    menuList.querySelectorAll('li.menu_item').forEach((li, index) => {
-      //const a = li.querySelector('> a');
-      const ul = li.querySelector('ul');
-      if (!ul) return;
-      if (ul.classList.contains('open')) {
-        ul.setAttribute('aria-hidden', 'false');
-        // a?.setAttribute('aria-expanded', 'true');
-      } else {
-        ul.setAttribute('aria-hidden', 'true');
-        // a?.setAttribute('aria-expanded', 'false');
-        ul.style.maxHeight = '0';
-      }
-    });
+    // Centralized sync: ensure aria attributes, anchor aria-expanded, and inline maxHeight
+    // are consistent with the element's .open class. Run at init and when classes change.
+    function syncSubmenuState() {
+      menuList.querySelectorAll('li.menu_item').forEach((li) => {
+        const ul = li.querySelector('ul');
+        const topA = li.querySelector(':scope > a, :scope > span, :scope > .home-toggle');
+        if (!ul) return;
+        if (ul.classList.contains('open')) {
+          ul.setAttribute('aria-hidden', 'false');
+          if (topA) topA.setAttribute('aria-expanded', 'true');
+          // If no explicit maxHeight or it's '0', set to scrollHeight to allow transition
+          if (!ul.style.maxHeight || ul.style.maxHeight === '0px') {
+            ul.style.maxHeight = ul.scrollHeight + 'px';
+            // clear after transition to allow dynamic content
+            const _clear = () => { ul.style.maxHeight = ''; ul.removeEventListener('transitionend', _clear); };
+            ul.addEventListener('transitionend', _clear);
+          }
+        } else {
+          ul.setAttribute('aria-hidden', 'true');
+          if (topA) topA.setAttribute('aria-expanded', 'false');
+          ul.style.maxHeight = '0';
+        }
+      });
+      console.debug('syncSubmenuState executed');
+    }
+
+    // run initially
+    syncSubmenuState();
+
+    // observe class changes within menuList to keep ARIA in sync (defensive)
+    try {
+      const mo = new MutationObserver((mutations) => {
+        let needsSync = false;
+        for (const m of mutations) {
+          if (m.type === 'attributes' && m.attributeName === 'class') { needsSync = true; break; }
+          if (m.type === 'childList') { needsSync = true; break; }
+        }
+        if (needsSync) {
+          // small debounce
+          clearTimeout(menuList._syncTimer);
+          menuList._syncTimer = setTimeout(() => syncSubmenuState(), 40);
+        }
+      });
+      mo.observe(menuList, { attributes: true, subtree: true, childList: true, attributeFilter: ['class'] });
+    } catch (e) { /* ignore if MutationObserver not available */ }
 
     // Keyboard accessibility: Space/Enter toggles top-level anchors that control submenus
     menuList.querySelectorAll('li.menu_item > a').forEach(a => {
@@ -1374,19 +1672,31 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!href || href === '#') return;
       const id = href.slice(1);
       const target = document.getElementById(id);
-      console.debug('menuList delegated click', { href, id, hasTarget: !!target });
+      console.debug('menuList delegated click', { href, id, hasTarget: !!target, hasHorizontal: !!hasHorizontal, hasLenis: !!lenis });
       e.preventDefault();
       if (!target) {
-        // not on this page — redirect to index with hash
-        window.location.href = `index.html#${id}`;
+        // not on this page — store target id then redirect to index (avoid native hash jump)
+        // Also append a query param as a reliable fallback for servers/clients where
+        // sessionStorage may be cleared or not available in the next load event.
+        console.debug('menuList delegated click -> target not found, storing and redirecting', { href, id });
+        try { a.blur && a.blur(); } catch (e) { /* ignore */ }
+        try { sessionStorage.setItem('scrollTargetId', id); } catch (e) { /* ignore */ }
+        const qurl = `index.html?scrollTarget=${encodeURIComponent(id)}`;
+        window.location.href = qurl;
         return;
       }
       if (hasHorizontal && lenis) {
         const maxScroll = Math.max(0, totalWidth - window.innerWidth);
-        const dest = Math.min(target.offsetLeft, maxScroll);
-        lenis.scrollTo(dest);
+        // Prefer panel-aligned offset if applicable
+        const computedTarget = computeTargetScrollForElement(target);
+        const panelOffset = getPanelOffsetForElement(target);
+        const preferred = (computedTarget !== null) ? computedTarget : ((panelOffset !== null) ? panelOffset : target.offsetLeft);
+        const dest = Math.min(preferred, maxScroll);
+        console.debug('menuList -> lenis scroll', { targetOffset: target.offsetLeft, computedTarget, panelOffset, totalWidth, maxScroll, dest });
+        adjustedScrollTo(dest, { _hashId: id });
       } else {
         // fallback to in-page anchor
+        console.debug('menuList -> fallback scrollIntoView', { targetOffset: target.offsetLeft });
         target.scrollIntoView({ behavior: 'smooth' });
       }
       // close menu
@@ -1426,16 +1736,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const id = href.slice(1);
         const target = document.getElementById(id);
         if (!target) {
-          // 현재 페이지에 타겟이 없으면 인덱스 페이지로 이동
-          window.location.href = `index.html#${id}`;
+          // 현재 페이지에 타겟이 없으면 index로 이동하되, 세션에 목적지 id를 저장합니다.
+          // 이를 통해 index에서 Lenis로 정확하게 스크롤합니다.
+          console.debug('sideAnchor click -> target not found, storing and redirecting', { href, id });
+          try { a.blur && a.blur(); } catch (e) { /* ignore */ }
+          try { sessionStorage.setItem('scrollTargetId', id); } catch (e) { /* ignore */ }
+          const qurl2 = `index.html?scrollTarget=${encodeURIComponent(id)}`;
+          window.location.href = qurl2;
           return;
         }
         // 가로 레이아웃이 있는 페이지이면 Lenis로 스크롤, 아니면 인덱스로 리디렉트
         if (hasHorizontal && lenis) {
           const maxScroll = Math.max(0, totalWidth - window.innerWidth);
-          const dest = Math.min(target.offsetLeft, maxScroll);
-          lenis.scrollTo(dest);
+          const computedTarget = computeTargetScrollForElement(target);
+          const panelOffset = getPanelOffsetForElement(target);
+          const preferred = (computedTarget !== null) ? computedTarget : ((panelOffset !== null) ? panelOffset : target.offsetLeft);
+          const dest = Math.min(preferred, maxScroll);
+          console.debug('sideAnchor -> lenis.scroll', { href, id, targetOffset: target.offsetLeft, computedTarget, panelOffset, totalWidth, maxScroll, dest });
+          adjustedScrollTo(dest, { _hashId: id });
         } else {
+          console.debug('sideAnchor -> redirect to index', { href, id });
           window.location.href = `index.html#${id}`;
           return;
         }
@@ -1454,23 +1774,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 가로 레이아웃 페이지에서 location.hash가 있으면 Lenis로 스크롤하여 적절한 섹션으로 이동
   if (hasHorizontal && typeof window !== 'undefined') {
+    // Prefer sessionStorage-stored target id (set when redirecting from other pages)
+    const storedId = (function () { try { return sessionStorage.getItem('scrollTargetId'); } catch (e) { return null; } })();
     const initialHash = window.location.hash;
-    if (initialHash) {
-      const id = initialHash.slice(1);
+    const idFromHash = initialHash ? initialHash.slice(1) : null;
+    const id = storedId || idFromHash;
+    if (storedId) {
+      try { sessionStorage.removeItem('scrollTargetId'); } catch (e) { /* ignore */ }
+    }
+    if (id) {
       const target = document.getElementById(id);
       if (target && lenis) {
-        // 약간의 대기 후(렌더/Lenis 초기화) 스크롤
-        setTimeout(() => {
+        // 페이지 렌더링/레이아웃 안정화까지 기다린 뒤 Lenis로 스크롤합니다.
+        // target.offsetLeft가 안정화(값이 더 이상 변하지 않음)되거나
+        // 최대 시도 횟수에 도달하면 스크롤을 수행합니다.
+        const tryScroll = (attempt = 0, lastOffset = -1) => {
+          // recalc totalWidth in case layout changed after initial measurement
+          totalWidth = 0;
+          panels.forEach(panel => { totalWidth += panel.offsetWidth; });
           const maxScroll = Math.max(0, totalWidth - window.innerWidth);
-          const dest = Math.min(target.offsetLeft, maxScroll);
-          lenis.scrollTo(dest);
-        }, 80);
+          const offset = target.offsetLeft;
+          const dest = Math.min(offset, maxScroll);
+          console.debug('[initial-hash] tryScroll', { attempt, offset, lastOffset, totalWidth, maxScroll, dest });
+          try { dumpPanelMetrics('[initial-hash] tryScroll', id); } catch (e) { }
+          // offset이 더 이상 변하지 않거나 시도 횟수 초과 시 스크롤
+          if (offset === lastOffset || attempt >= 10) {
+            console.debug('[initial-hash] final scroll', { attempt, offset, dest });
+            try {
+              // Prefer panel offset on initial load as well
+              const computedTarget = computeTargetScrollForElement(target);
+              const panelOffset = getPanelOffsetForElement(target);
+              const finalPreferred = (computedTarget !== null) ? computedTarget : ((panelOffset !== null) ? panelOffset : dest);
+              adjustedScrollTo(finalPreferred, { _hashId: id });
+            } catch (e) { console.error('[initial-hash] adjustedScrollTo error', e); }
+            // verify result and apply up to 3 small corrections if needed
+            try {
+              let verifyAttempts = 0;
+              const verify = () => {
+                verifyAttempts += 1;
+                // current horizontal transform (negative scroll)
+                const transform = track && track.style.transform ? track.style.transform : window.getComputedStyle(track).transform;
+                let currentX = 0;
+                try {
+                  const m = transform.match(/matrix\(([^,]+),/);
+                  if (m) currentX = Math.abs(parseFloat(m[1]));
+                } catch (e) { /* ignore */ }
+                const diff = Math.abs(currentX - dest);
+                if (diff > 6 && verifyAttempts <= 3) {
+                  // apply small correction (lerp a bit towards dest)
+                  try { lenis.scrollTo(Math.round(dest)); } catch (e) { /* ignore */ }
+                  setTimeout(verify, 120);
+                  return;
+                }
+                // finally update URL hash without causing native jump
+                try { history.replaceState(null, '', `${location.pathname}#${id}`); } catch (e) { /* ignore */ }
+              };
+              setTimeout(verify, 120);
+            } catch (e) { try { history.replaceState(null, '', `${location.pathname}#${id}`); } catch (ee) { /* ignore */ } }
+            return;
+          }
+          // 다음 애니메이션 프레임 후 짧은 지연을 두고 재시도
+          requestAnimationFrame(() => {
+            setTimeout(() => tryScroll(attempt + 1, offset), 30);
+          });
+        };
+        // If we were redirected with a storedId, prefer waiting for full window.load
+        // so images/fonts have stabilized; otherwise start after a short delay.
+        const startTry = () => setTimeout(() => tryScroll(0, -1), 80);
+        if (storedId) {
+          if (document.readyState === 'complete') startTry();
+          else window.addEventListener('load', startTry, { once: true });
+        } else {
+          startTry();
+        }
       }
     }
   }
 
   // 햄버거 클릭 시 사이드 메뉴 오픈/클로즈 (심플 토글)
-  document.addEventListener('DOMContentLoaded', function () {
+  (function () {
     var hamburger = document.querySelector('.hamburger');
     var sideMenu = document.querySelector('.side_menu');
     var closeBtn = document.querySelector('.side_menu .close_btn');
@@ -1500,61 +1882,9 @@ document.addEventListener("DOMContentLoaded", () => {
         sideMenu.classList.add('close');
       }
     });
-  });
+  })();
 
-  // Home 클릭 시 하위 ul이 슬라이드+페이드로 자연스럽게 열리고 닫히는 JS 보완
-  // (index.html, aboutme.html 모두 동작)
-
-  var homeToggle = document.querySelector('.side_menu .home-toggle');
-  var homeSubmenu = document.getElementById('home-submenu');
-  if (!homeToggle || !homeSubmenu) return;
-
-  // 초기 상태 보장
-  homeSubmenu.style.maxHeight = '0';
-  homeSubmenu.style.opacity = '0';
-  homeSubmenu.classList.remove('open');
-  homeSubmenu.setAttribute('aria-hidden', 'true');
-  homeToggle.setAttribute('aria-expanded', 'false');
-
-  homeToggle.addEventListener('click', function (e) {
-    e.preventDefault();
-    var isOpen = homeSubmenu.classList.contains('open');
-    if (isOpen) {
-      // 닫기
-      homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
-      homeSubmenu.style.opacity = '1';
-      requestAnimationFrame(function () {
-        homeSubmenu.style.maxHeight = '0';
-        homeSubmenu.style.opacity = '0';
-      });
-      homeSubmenu.setAttribute('aria-hidden', 'true');
-      homeToggle.setAttribute('aria-expanded', 'false');
-      homeSubmenu.classList.remove('open');
-      // 닫힌 후 maxHeight 해제
-      var onEndClose = function (ev) {
-        if (ev.propertyName === 'max-height') {
-          homeSubmenu.style.maxHeight = '0';
-          homeSubmenu.removeEventListener('transitionend', onEndClose);
-        }
-      };
-      homeSubmenu.addEventListener('transitionend', onEndClose);
-    } else {
-      // 열기
-      homeSubmenu.classList.add('open');
-      homeSubmenu.setAttribute('aria-hidden', 'false');
-      homeToggle.setAttribute('aria-expanded', 'true');
-      homeSubmenu.style.maxHeight = homeSubmenu.scrollHeight + 'px';
-      homeSubmenu.style.opacity = '1';
-      // transition 끝나면 maxHeight 해제(자연스러운 애니메이션)
-      var onEnd = function (ev) {
-        if (ev.propertyName === 'max-height') {
-          homeSubmenu.style.maxHeight = '';
-          homeSubmenu.removeEventListener('transitionend', onEnd);
-        }
-      };
-      homeSubmenu.addEventListener('transitionend', onEnd);
-    }
-  });
+  // Duplicate home-toggle handler removed. Rely on existing openSubmenu/closeSubmenu helpers below.
 });
 
 // removed duplicate debug declarations that caused a SyntaxError
