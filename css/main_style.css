@@ -22,6 +22,12 @@ aside.overlay-mode .illust-track img:hover {
   transform: scale(1.2) !important;
 }
 
+/* while user is actively dragging, disable hover scaling to avoid visual conflict */
+.illust-track.dragging img:hover,
+.illust-track.dragging img {
+  transform: none !important;
+}
+
 /* End hover rules */
 
 html,
@@ -2259,6 +2265,10 @@ aside.overlay-mode ul>li.illustpop {
   align-items: center;
   transition: transform 360ms cubic-bezier(.22, .9, .26, 1);
   will-change: transform;
+  /* ensure track itself doesn't allow browser gestures and accepts pointer events */
+  touch-action: none;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .illust-track img {

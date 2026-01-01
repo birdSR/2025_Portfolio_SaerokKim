@@ -244,6 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Special case: illustpop should open as a full overlay gallery (different from boxed aside)
         if (targetLi.classList.contains('illustpop')) {
           console.log('[click] opening illust overlay gallery');
+          // save previously focused element so we can restore focus when overlay closes
+          try { aside._prevFocus = document.activeElement; } catch (e) { /* ignore */ }
           // set aside into overlay mode (CSS will handle sizing/background)
           aside.classList.add('overlay-mode');
           try { aside.inert = false; } catch (e) { }
@@ -274,8 +276,8 @@ document.addEventListener("DOMContentLoaded", () => {
           // initialize carousel immediately so clones/positioning are ready
           try { if (typeof setupCarousel === 'function') setupCarousel(); } catch (e) { /* setupCarousel defined later in scope; ignore if not available */ }
           // focus for accessibility
-          const firstImg = targetLi.querySelector('.illust-track img');
-          if (firstImg) firstImg.focus({ preventScroll: true });
+          // focus will be managed by the overlay handlers (close button will receive focus)
+          // avoid focusing an internal image here to keep consistent focus target
           console.log('[click] illust overlay shown');
         } else {
           targetLi.classList.add('on');
@@ -353,6 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isDragging: false,
       startX: 0,
       currentX: 0,
+      pointerId: null,
       baseTranslate: 0,
       allowClickClose: true,
       autoplayId: null,
@@ -364,9 +367,36 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log('[setupCarousel] called, found track?', !!track);
       if (!track) return;
       // ensure track accepts pointer interactions when overlay active
-      track.style.touchAction = track.style.touchAction || 'pan-y';
+      // set to 'none' to allow JS to fully control pointer movements
+      track.style.touchAction = 'none';
       track.style.pointerEvents = track.style.pointerEvents || '';
       carousel.track = track;
+
+      // helper: robustly parse translateX from computed transform
+      // small reusable helper to parse translateX from computed transform string
+      function parseTranslateX(transformStr) {
+        try {
+          if (!transformStr || transformStr === 'none') return 0;
+          // prefer DOMMatrix if available
+          if (typeof DOMMatrix === 'function') {
+            const m = new DOMMatrix(transformStr);
+            if (Number.isFinite(m.m41)) return m.m41;
+          }
+          // WebKitCSSMatrix might exist in some browsers; guard access
+          if (typeof window !== 'undefined' && window.WebKitCSSMatrix) {
+            try {
+              const wm = new window.WebKitCSSMatrix(transformStr);
+              if (Number.isFinite(wm.m41)) return wm.m41;
+            } catch (err) { /* ignore */ }
+          }
+          // regex fallback for matrix/matrix3d (robust capture for typical browser formats)
+          const m = transformStr.match(/matrix\(([-0-9.]+),[-0-9.]+,[-0-9.]+,[-0-9.]+,([-0-9.]+),[-0-9.]+\)/);
+          if (m && m[2]) return parseFloat(m[2]);
+          const m3 = transformStr.match(/matrix3d\([^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,([-0-9.]+),/);
+          if (m3 && m3[1]) return parseFloat(m3[1]);
+        } catch (e) { /* ignore */ }
+        return 0;
+      }
       // Store original HTML snapshot so we can reliably rebuild clones if the track
       // element is replaced/modified between open/close cycles.
       if (!track.dataset.originalHtml) track.dataset.originalHtml = track.innerHTML;
@@ -390,6 +420,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Prefer images that are not marked as clones. If none found, and total is divisible by 3,
       // assume a triple set and take the middle third as originals.
       const allImgs = Array.from(track.querySelectorAll('img'));
+      // prevent native image drag/selection which can interfere with pointermove
+      allImgs.forEach(i => {
+        try {
+          i.setAttribute('draggable', 'false');
+          i.style.userSelect = 'none';
+          i.style.webkitUserSelect = 'none';
+          i.style.touchAction = 'none';
+          i.style.webkitUserDrag = 'none';
+          i.style.pointerEvents = 'auto';
+        } catch (e) { /* ignore */ }
+      });
       let originalImgs = allImgs.filter(i => !i.dataset.cloned);
       if (originalImgs.length === 0 && allImgs.length % 3 === 0 && allImgs.length > 0) {
         const third = allImgs.length / 3;
@@ -454,6 +495,52 @@ document.addEventListener("DOMContentLoaded", () => {
       carousel.realCount = realN;
       // ensure no transition initially
       carousel.track.style.transition = 'none';
+      // force layout so computedStyle reflects the transform immediately
+      try { void carousel.track.offsetHeight; } catch (e) { }
+      console.log('[setupCarousel] step=', carousel.step, 'middleOffset=', middleOffset, 'initialTranslate=', initialTranslate, 'realCount=', carousel.realCount);
+
+      // attach a track-level pointerdown so pointer capture is taken on the track itself
+      try {
+        if (carousel._trackDownListener) carousel.track.removeEventListener('pointerdown', carousel._trackDownListener);
+      } catch (e) { }
+      carousel._trackDownListener = function trackPointerDown(ev) {
+        // only respond when overlay-mode / gallery visible
+        const illustActive = asideEl.classList.contains('overlay-mode') || !!asideEl.querySelector('ul>li.illustpop.on');
+        if (!illustActive) return;
+        ev.preventDefault();
+        // reset moved flag at start
+        carousel._moved = false;
+        carousel.isDragging = true;
+        carousel.startX = ev.clientX ?? (ev.pageX || 0);
+        carousel.currentX = ev.clientX ?? (ev.pageX || 0);
+        // remember pointer id so document-level handlers only respond to the active pointer
+        carousel.pointerId = typeof ev.pointerId !== 'undefined' ? ev.pointerId : null;
+        // parse current translate safely
+        try {
+          const cs = getComputedStyle(carousel.track);
+          // prefer existing carousel.baseTranslate set during setupCarousel if present
+          if (typeof carousel.baseTranslate === 'number' && !isNaN(carousel.baseTranslate)) {
+            // keep existing baseTranslate
+          } else {
+            carousel.baseTranslate = parseTranslateX(cs.transform || '');
+          }
+        } catch (err) { carousel.baseTranslate = carousel.baseTranslate || 0; }
+        carousel.allowClickClose = false;
+        try { if (carousel.track && typeof carousel.track.setPointerCapture === 'function') carousel.track.setPointerCapture(ev.pointerId); } catch (e) { }
+        try { if (carousel.track) carousel.track.style.cursor = 'grabbing'; } catch (e) { }
+        // register document/window fallbacks so we still get move/up when pointer leaves gallery
+        try {
+          // active (non-passive) listeners so we can preventDefault and capture movement
+          document.addEventListener('pointermove', docPointerMove, { passive: false });
+          document.addEventListener('pointerup', docPointerUp, { passive: false });
+          document.addEventListener('mousemove', docPointerMove, { passive: false });
+          document.addEventListener('mouseup', docPointerUp, { passive: false });
+          document.addEventListener('mouseleave', docPointerUp, { passive: false });
+          window.addEventListener('blur', windowBlurHandler);
+        } catch (e) { /* ignore */ }
+        stopAutoplay();
+      };
+      try { carousel.track.addEventListener('pointerdown', carousel._trackDownListener, { passive: false }); } catch (e) { carousel.track.addEventListener('pointerdown', carousel._trackDownListener); }
 
       // attach handlers (avoid duplicates)
       carousel.track.removeEventListener('transitionend', onTransitionEnd);
@@ -463,11 +550,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function onTransitionEnd() {
+      // If user is actively dragging, ignore transitionend adjustments to avoid
+      // visual jumps/stutter caused by overlapping handlers.
+      if (carousel.isDragging) {
+        console.log('[onTransitionEnd] ignored because carousel.isDragging');
+        return;
+      }
       if (!carousel.track) return;
       const realN = carousel.realCount || 0;
       if (realN === 0) return;
       // If we've animated into the right clone set (visual index >= realN*2), jump back to middle set
-      const visualIndex = Math.round((-carousel.baseTranslate) / carousel.step);
+      const visualIndex = Math.round((-carousel.baseTranslate) / (carousel.step || 1));
+      console.log('[onTransitionEnd] baseTranslate=', carousel.baseTranslate, 'step=', carousel.step, 'visualIndex=', visualIndex);
       const middleStart = realN;
       if (visualIndex >= realN * 2) {
         // compute equivalent index inside middle set
@@ -477,6 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tx = -carousel.step * (middleStart + carousel.index);
         carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
         carousel.baseTranslate = tx;
+        console.log('[onTransitionEnd] jumped from right clone to middle, new index=', carousel.index, 'tx=', tx);
         void carousel.track.offsetHeight;
         carousel.track.style.transition = '';
       }
@@ -488,6 +583,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tx = -carousel.step * (middleStart + carousel.index);
         carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
         carousel.baseTranslate = tx;
+        console.log('[onTransitionEnd] jumped from left clone to middle, new index=', carousel.index, 'tx=', tx);
         void carousel.track.offsetHeight;
         carousel.track.style.transition = '';
       }
@@ -513,26 +609,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function startAutoplay() {
-      console.log('[autoplay] start requested');
-      stopAutoplay();
+      // idempotent: if already running, do nothing
+      if (carousel.autoplayId) return;
+      // small diagnostic
+      console.log('[autoplay] start');
       carousel.autoplayId = setInterval(() => {
-        if (carousel.isDragging) return;
-        carousel.index += 1;
-        const tx = -carousel.step * (carousel.realCount + carousel.index);
-        carousel.track.style.transition = 'transform 560ms cubic-bezier(.22,.9,.26,1)';
-        carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
-        carousel.baseTranslate = tx;
+        try {
+          if (carousel.isDragging) return;
+          carousel.index += 1;
+          const tx = -carousel.step * (carousel.realCount + carousel.index);
+          if (carousel.track) {
+            carousel.track.style.transition = 'transform 560ms cubic-bezier(.22,.9,.26,1)';
+            carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+          }
+          carousel.baseTranslate = tx;
+        } catch (e) { /* guard against unexpected errors in interval */ }
       }, carousel.autoplayInterval);
     }
 
     function stopAutoplay() {
-      if (carousel.autoplayId) {
-        clearInterval(carousel.autoplayId);
-        carousel.autoplayId = null;
-        console.log('[autoplay] stopped');
-      } else {
-        console.log('[autoplay] stop called but no active interval');
-      }
+      // idempotent stop: only clear if running
+      if (!carousel.autoplayId) return;
+      clearInterval(carousel.autoplayId);
+      carousel.autoplayId = null;
+      console.log('[autoplay] stopped');
+    }
+
+    // scheduleResume: robustly schedule resuming autoplay after user interaction
+    function scheduleResume(delay) {
+      try { if (carousel.autoplayResumeId) clearTimeout(carousel.autoplayResumeId); } catch (e) { }
+      carousel.autoplayResumeId = setTimeout(() => {
+        carousel.autoplayResumeId = null;
+        // only start if overlay still active and user is not dragging and not suppressed
+        if (!asideEl.classList.contains('overlay-mode')) return;
+        if (carousel.isDragging) return;
+        if (carousel._suppressAutoplayResume) return;
+        startAutoplay();
+      }, delay);
     }
 
     // pointer handlers
@@ -540,21 +653,49 @@ document.addEventListener("DOMContentLoaded", () => {
       // allow pointer interactions when overlay-mode is active OR when illustpop item is visible (.illustpop.on)
       const illustActive = asideEl.classList.contains('overlay-mode') || !!asideEl.querySelector('ul>li.illustpop.on');
       if (!illustActive) return;
-      console.log('[pointerdown] clientX=', ev.clientX, 'overlay-mode=', asideEl.classList.contains('overlay-mode'));
+      // If the event started inside the actual track, prefer the track-level
+      // pointerdown listener (attached in setupCarousel) to avoid double-starting
+      // dragging logic which caused the "띡띡" forward jumps. So ignore here.
+      try {
+        if (ev.target && ev.target.closest && ev.target.closest('.illust-track')) {
+          console.log('[pointerdown] inside .illust-track - ignoring aside-level handler to avoid duplicate drag start');
+          return;
+        }
+      } catch (e) { /* ignore */ }
+      console.log('[pointerdown] clientX=', ev.clientX, 'pageX=', ev.pageX, 'pointerId=', ev.pointerId, 'overlay-mode=', asideEl.classList.contains('overlay-mode'));
       setupCarousel();
       if (!carousel.track) return;
+      // reset moved flag and set dragging
+      carousel._moved = false;
       carousel.isDragging = true;
-      carousel.startX = ev.clientX;
-      carousel.currentX = ev.clientX;
-      // capture current translate from computed style
-      const style = getComputedStyle(carousel.track);
-      const matrix = new WebKitCSSMatrix(style.transform || '');
-      carousel.baseTranslate = matrix.m41 || 0;
+      // visual state: add dragging class to disable hover scale
+      try { carousel.track.classList.add('dragging'); } catch (e) { }
+      carousel.startX = ev.clientX ?? (ev.pageX || 0);
+      carousel.currentX = ev.clientX ?? (ev.pageX || 0);
+      carousel.pointerId = typeof ev.pointerId !== 'undefined' ? ev.pointerId : null;
+      // capture current translate from computed style using parse helper
+      try {
+        const style = getComputedStyle(carousel.track);
+        if (typeof carousel.baseTranslate === 'number' && !isNaN(carousel.baseTranslate)) {
+          // keep existing baseTranslate from setupCarousel
+        } else {
+          carousel.baseTranslate = parseTranslateX(style.transform || '');
+        }
+      } catch (err) { carousel.baseTranslate = carousel.baseTranslate || 0; }
       // prevent accidental close when dragging
       carousel.allowClickClose = false;
-      carousel.track.setPointerCapture?.(ev.pointerId);
-      // pause autoplay while dragging
-      console.log('[pointerdown] start drag');
+      try { carousel.track.setPointerCapture?.(ev.pointerId); } catch (e) { }
+      // set grabbing cursor
+      try { if (carousel.track) carousel.track.style.cursor = 'grabbing'; } catch (e) { }
+      // register document-level fallbacks here as well (in case track-level didn't run)
+      try {
+        document.addEventListener('pointermove', docPointerMove, { passive: false });
+        document.addEventListener('pointerup', docPointerUp, { passive: false });
+        document.addEventListener('mousemove', docPointerMove, { passive: false });
+        document.addEventListener('mouseup', docPointerUp, { passive: false });
+        window.addEventListener('blur', windowBlurHandler);
+      } catch (e) { /* ignore */ }
+      console.log('[pointerdown] start drag, startX=', carousel.startX, 'baseTranslate=', carousel.baseTranslate, 'pointerId=', carousel.pointerId);
       stopAutoplay();
     });
 
@@ -566,61 +707,188 @@ document.addEventListener("DOMContentLoaded", () => {
       carousel.track.releasePointerCapture?.(ev.pointerId);
       // snap back to nearest slide
       const style = getComputedStyle(carousel.track);
-      const m = new WebKitCSSMatrix(style.transform || '');
-      const cur = Number.isFinite(m.m41) ? m.m41 : carousel.baseTranslate;
+      const cur = parseTranslateX(style.transform || '') || carousel.baseTranslate;
       const nearestIndex = Math.round((-cur / carousel.step) - carousel.realCount);
       carousel.index = nearestIndex;
       const tx = -carousel.step * (carousel.realCount + carousel.index);
       carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
       carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
       carousel.baseTranslate = tx;
-      setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 600);
+  // clear suppression and schedule safe resume
+  carousel._suppressAutoplayResume = false;
+  scheduleResume(600);
     });
 
-    asideEl.addEventListener('pointerleave', (ev) => {
+  asideEl.addEventListener('pointerleave', (ev) => {
       // if pointer leaves the aside while pressing, treat like pointerup
       if (carousel.isDragging) {
-        const fake = Object.assign({}, ev);
-        asideEl.dispatchEvent(new PointerEvent('pointerup', { clientX: ev.clientX, pointerId: ev.pointerId }));
+        // call docPointerUp directly with an object shaped like an event
+  try { docPointerUp({ clientX: ev.clientX ?? ev.pageX ?? carousel.currentX, pointerId: ev.pointerId }); } catch (e) { }
       }
     });
 
     asideEl.addEventListener('pointermove', (ev) => {
       if (!carousel.isDragging || !carousel.track) return;
+      // ignore moves from other pointers
+      if (typeof ev.pointerId !== 'undefined' && carousel.pointerId !== null && ev.pointerId !== carousel.pointerId) return;
       ev.preventDefault();
-      carousel.currentX = ev.clientX;
+      carousel.currentX = ev.clientX ?? (ev.pageX || carousel.currentX);
+      const dx = carousel.currentX - carousel.startX;
+      if (Math.abs(dx) > 6) carousel._moved = true;
+      carousel.track.style.transition = 'none';
+      carousel.track.style.transform = `translate3d(${carousel.baseTranslate + dx}px,0,0)`;
+      if (Math.abs(dx) > 5) console.log('[pointermove] dx=', dx, 'currentX=', carousel.currentX, 'startX=', carousel.startX, 'baseTranslate=', carousel.baseTranslate);
+    });
+
+    // Fallbacks: if pointer leaves aside or events are lost, listen at document level
+    // to ensure pointerup/move still get processed.
+    function docPointerMove(ev) {
+      if (!carousel.isDragging || !carousel.track) return;
+      // ignore moves from other pointers when pointerId available
+      if (typeof ev.pointerId !== 'undefined' && carousel.pointerId !== null && ev.pointerId !== carousel.pointerId) return;
+      // robust clientX extraction (supports PointerEvent, MouseEvent, and touch-like fallbacks)
+      const clientX = ev.clientX ?? (ev.pageX) ?? (ev.touches && ev.touches[0] && ev.touches[0].clientX) ?? carousel.currentX;
+      carousel.currentX = clientX;
       const dx = carousel.currentX - carousel.startX;
       carousel.track.style.transition = 'none';
       carousel.track.style.transform = `translate3d(${carousel.baseTranslate + dx}px,0,0)`;
-      if (Math.abs(dx) > 5) console.log('[pointermove] dx=', dx);
-    });
+      if (Math.abs(dx) > 5) console.log('[doc pointermove] dx=', dx, 'clientX=', clientX, 'startX=', carousel.startX, 'baseTranslate=', carousel.baseTranslate);
+      try { ev.preventDefault(); } catch (e) { }
+    }
+
+    function docPointerUp(ev) {
+      if (!carousel.isDragging || !carousel.track) return;
+      // ignore ups from other pointers when pointerId available
+      if (typeof ev.pointerId !== 'undefined' && carousel.pointerId !== null && ev.pointerId !== carousel.pointerId) return;
+      const clientX = ev && (ev.clientX ?? ev.pageX) || carousel.currentX || carousel.startX || 0;
+      console.log('[doc pointerup] clientX=', clientX, 'startX=', carousel.startX, 'baseTranslate=', carousel.baseTranslate, 'pointerId=', ev.pointerId);
+      carousel.isDragging = false;
+      try { carousel.track.classList.remove('dragging'); } catch (e) { }
+      const movedFlag = !!carousel._moved;
+      carousel._moved = false;
+      // compute index delta from drag distance so large drags move multiple slides
+      carousel.currentX = clientX;
+      const dx = carousel.currentX - carousel.startX;
+      const step = carousel.step || 1;
+      // delta: positive when user dragged right (want previous), negative when left (next)
+      const delta = Math.round(-dx / step);
+      if (Math.abs(delta) > 0) {
+        carousel.index += delta;
+        console.log('[doc pointerup] dx=', dx, 'delta=', delta, 'new index=', carousel.index);
+      } else {
+        // small drag: snap to nearest using computed transform as safety
+        try {
+          const style = getComputedStyle(carousel.track);
+          const cur = parseTranslateX(style.transform || '') || carousel.baseTranslate;
+          const nearestIndex = Math.round((-cur / step) - (carousel.realCount || 0));
+          carousel.index = nearestIndex;
+          console.log('[doc pointerup] small dx, snapped to nearestIndex=', nearestIndex);
+        } catch (e) {
+          const threshold = step / 4;
+          if (dx > threshold) carousel.index -= 1;
+          else if (dx < -threshold) carousel.index += 1;
+          console.log('[doc pointerup] fallback threshold applied, dx=', dx, 'index=', carousel.index);
+        }
+      }
+      const tx = -carousel.step * (carousel.realCount + carousel.index);
+      carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
+      carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
+      carousel.baseTranslate = tx;
+      console.log('[doc pointerup] dx=', dx, 'moved to index=', carousel.index);
+  setTimeout(() => { carousel.allowClickClose = true; }, 300);
+  carousel._suppressAutoplayResume = false;
+  scheduleResume(600);
+      // remove document/window fallbacks that may have been attached on pointerdown
+      try {
+        document.removeEventListener('pointermove', docPointerMove, { passive: false });
+        document.removeEventListener('pointerup', docPointerUp, { passive: false });
+        document.removeEventListener('mousemove', docPointerMove, { passive: false });
+        document.removeEventListener('mouseup', docPointerUp, { passive: false });
+        document.removeEventListener('mouseleave', docPointerUp, { passive: false });
+        window.removeEventListener('blur', windowBlurHandler);
+      } catch (e) { /* ignore */ }
+      // clear active pointerId
+      carousel.pointerId = null;
+    }
+
+    // Note: document-level handlers will also be attached on pointerdown as needed; keep these
+    // global attachments as safe fallback for some browsers, but pointerdown will reattach
+    try {
+      document.addEventListener('pointermove', docPointerMove, { passive: false });
+      document.addEventListener('pointerup', docPointerUp, { passive: false });
+      document.addEventListener('mousemove', docPointerMove, { passive: false });
+      document.addEventListener('mouseup', docPointerUp, { passive: false });
+    } catch (e) { /* ignore */ }
+
+    // handle when window loses focus (treat as pointer up)
+    function windowBlurHandler() {
+      if (!carousel.isDragging) return;
+      try { docPointerUp({ clientX: carousel.currentX || carousel.startX || 0 }); } catch (e) { /* ignore */ }
+    }
 
     asideEl.addEventListener('pointerup', (ev) => {
-      console.log('[pointerup] clientX=', ev.clientX);
+      console.log('[pointerup] clientX=', ev.clientX, 'pointerId=', ev.pointerId);
       if (!carousel.isDragging || !carousel.track) return;
-      carousel.track.releasePointerCapture?.(ev.pointerId);
+      try { carousel.track.releasePointerCapture?.(ev.pointerId); } catch (e) { }
+      try { if (carousel.track) carousel.track.style.cursor = ''; } catch (e) { }
+      try { carousel.track.classList.remove('dragging'); } catch (e) { }
+      const movedFlag = !!carousel._moved;
+      carousel._moved = false;
       const dx = carousel.currentX - carousel.startX;
-      // threshold: quarter of one step to move one slide
-      const threshold = carousel.step / 4;
-      if (dx > threshold) {
-        // move previous
-        carousel.index -= 1;
-      } else if (dx < -threshold) {
-        // move next
-        carousel.index += 1;
+      // compute delta from drag and apply so multi-slide moves are possible
+      const step = carousel.step || 1;
+      const delta = Math.round(-dx / step);
+      if (Math.abs(delta) > 0) {
+        carousel.index += delta;
+        console.log('[pointerup] dx=', dx, 'delta=', delta, 'new index=', carousel.index);
+      } else {
+        // small drag: fallback to nearest computed transform
+        try {
+          const style = getComputedStyle(carousel.track);
+          const cur = parseTranslateX(style.transform || '') || carousel.baseTranslate;
+          const nearestIndex = Math.round((-cur / step) - (carousel.realCount || 0));
+          carousel.index = nearestIndex;
+          console.log('[pointerup] small dx, snapped to nearestIndex=', nearestIndex);
+        } catch (e) {
+          const threshold = step / 4;
+          if (dx > threshold) carousel.index -= 1;
+          else if (dx < -threshold) carousel.index += 1;
+          console.log('[pointerup] fallback threshold applied, dx=', dx, 'index=', carousel.index);
+        }
       }
       // animate to new position (account for leading clone)
       const tx = -carousel.step * (carousel.realCount + carousel.index);
       carousel.track.style.transition = 'transform 360ms cubic-bezier(.22,.9,.26,1)';
       carousel.track.style.transform = `translate3d(${tx}px,0,0)`;
       carousel.baseTranslate = tx;
-      console.log('[pointerup] dx=', dx, 'moved to index=', carousel.index);
+      console.log('[pointerup] dx=', dx, 'moved to index=', carousel.index, 'tx=', tx, 'baseTranslate after=', carousel.baseTranslate);
       // allow click-close after short delay
       setTimeout(() => { carousel.allowClickClose = true; }, 300);
       carousel.isDragging = false;
-      // restart autoplay shortly after release
-      setTimeout(() => { if (asideEl.classList.contains('overlay-mode')) startAutoplay(); }, 600);
+  // clear suppression and schedule safe resume
+  carousel._suppressAutoplayResume = false;
+  scheduleResume(600);
+      // cleanup any fallback listeners attached to document/window
+      try {
+        document.removeEventListener('pointermove', docPointerMove);
+        document.removeEventListener('pointerup', docPointerUp);
+        document.removeEventListener('mouseleave', docPointerUp);
+        window.removeEventListener('blur', windowBlurHandler);
+      } catch (e) { /* ignore */ }
     });
+
+    // suppress clicks triggered by drag operations
+    asideEl.addEventListener('click', (e) => {
+      const illustWrap = asideEl.querySelector('.illust-gallery');
+      if (!illustWrap) return;
+      // if we detected movement, prevent click handlers inside gallery
+      if (carousel._moved) {
+        e.stopPropagation();
+        e.preventDefault();
+        carousel._moved = false;
+        return;
+      }
+    }, true);
 
 
     // clicking outside gallery or close button should close overlay
@@ -691,6 +959,12 @@ document.addEventListener("DOMContentLoaded", () => {
               // remove inert so focusable elements are exposed to AT
               try { asideEl.inert = false; } catch (e) { /* inert may not be supported */ }
               setupCarousel(); startAutoplay(); setImageState(true);
+              // focus management: move focus to close button and remember previous focus
+              try {
+                const closeBtn = asideEl.querySelector('.close-btn');
+                if (!aside._prevFocus) aside._prevFocus = document.activeElement;
+                if (closeBtn && typeof closeBtn.focus === 'function') closeBtn.focus({ preventScroll: true });
+              } catch (e) { /* ignore */ }
             }, 60);
           } else {
             stopAutoplay();
@@ -703,6 +977,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 active.blur();
               }
             } catch (e) { /* ignore */ }
+            // restore previously focused element if available
+            try { if (aside._prevFocus && typeof aside._prevFocus.focus === 'function') aside._prevFocus.focus(); } catch (e) { }
+            aside._prevFocus = null;
             // mark aside inert to fully prevent focus and AT access
             try { asideEl.inert = true; } catch (e) { /* ignore if not supported */ }
             // clear carousel references to avoid stale handlers
