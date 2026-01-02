@@ -2652,6 +2652,12 @@ aside ul>li:nth-child(8) .app-span2 {
   width: 620px;
 }
 
+/* Ensure aside text blocks don't show pointer or behave like links */
+aside ul > li .txt_t {
+  cursor: default !important;
+  pointer-events: auto; /* allow text selection if desired */
+}
+
 aside ul>li:nth-child(2) .txt_t {
   margin-top: -20px;
 }
