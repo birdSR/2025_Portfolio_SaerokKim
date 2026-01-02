@@ -828,6 +828,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   aside.style.display = "block";
   try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing aside'); window._disableMailtoNow(); } } catch (e) { }
+  try { window._suppressMailUntil = Date.now() + 1200; console.debug('[aside] set _suppressMailUntil to', window._suppressMailUntil); } catch (e) { }
   try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open'); } catch (e) { }
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
@@ -913,6 +914,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // ensure aside visible and mark this li
           aside.style.display = 'block';
           try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing illust overlay'); window._disableMailtoNow(); } } catch (e) { }
+          try { window._suppressMailUntil = Date.now() + 1200; console.debug('[aside] set _suppressMailUntil to', window._suppressMailUntil, '(illust)'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open (illust)'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
