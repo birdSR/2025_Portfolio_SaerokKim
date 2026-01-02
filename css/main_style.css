@@ -30,6 +30,39 @@ aside.overlay-mode .illust-track img:hover {
 
 /* End hover rules */
 
+/* Defensive: ensure no lingering visual 'selected' state remains when gallery is closed */
+aside ul > li:not(.illustpop) .illust-track img,
+aside ul > li:not(.illustpop) .illust-track img:hover,
+aside:not(.overlay-mode) .illust-track img,
+aside:not(.overlay-mode) .illust-track img:hover {
+  transform: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+}
+
+/* Remove any large z-index or absolute positioned clone that could visually overlap content */
+aside .illust-gallery-wrap,
+aside .illust-track[data-loop],
+aside ul > li.illustpop.on {
+  z-index: 0 !important;
+}
+
+/* When aside is not overlay-mode, ensure illustpop is visually hidden and inert */
+aside ul > li.illustpop {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+aside.overlay-mode ul > li.illustpop {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
 html,
 body {
   width: 100vw;
