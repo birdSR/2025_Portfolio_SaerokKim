@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // only apply this defensive blocking for elements inside the aside to avoid side-effects
         const inAside = !!matched.closest && !!matched.closest('aside');
         if (!inAside) return;
+        // If the click is inside .dir_btn, allow it to proceed so those anchors work (they are intended to open links)
+        try {
+          if (e.target.closest && e.target.closest('.dir_btn')) {
+            // allow default behavior for dir_btn anchors; do not swallow the event
+            return;
+          }
+        } catch (ee) { }
         // Prevent default navigation and stop propagation so mailto or delegated anchor handlers don't run
         e.preventDefault();
         e.stopPropagation();
