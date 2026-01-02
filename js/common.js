@@ -554,6 +554,10 @@ document.addEventListener("DOMContentLoaded", () => {
           // avoid focusing an internal image here to keep consistent focus target
           console.log('[click] illust overlay shown');
         } else {
+          // Before activating a non-gallery aside item, ensure any lingering
+          // illust gallery selection/markup is fully cleared so images don't
+          // remain visually selected when other project items open.
+          try { clearIllustSelection(); } catch (e) { }
           targetLi.classList.add('on');
           console.log('[click] targetLi found and .on added (array selection)');
         }
