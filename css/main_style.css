@@ -2208,7 +2208,8 @@ aside {
   top: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  z-index: 80;
+  /* raise aside stacking so it sits above footer interactive elements (e-mail button) */
+  z-index: 300;
   border-radius: 50px;
   overflow: hidden;
   display: none;
@@ -2217,7 +2218,8 @@ aside {
 
 /* Overlay mode for illustpop: full-screen darkened background and horizontal swipe gallery */
 aside.overlay-mode {
-  z-index: 200;
+  /* overlay should sit above most UI (above footer/side elements) */
+  z-index: 2100;
   width: 100vw;
   height: 100vh;
   left: 0;
