@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log('[common.js] DOMContentLoaded fired');
+  // global-ish aside reference used by several helpers and diagnostics
+  const aside = document.querySelector('aside');
   // Diagnostic: log every click at capture phase to ensure events reach document
   document.addEventListener('click', function (ev) {
     try {
