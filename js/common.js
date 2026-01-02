@@ -821,6 +821,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   aside.style.display = "block";
   try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
+  try { document.body.classList.add('aside-open'); } catch (e) { }
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
 
@@ -905,6 +906,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // ensure aside visible and mark this li
           aside.style.display = 'block';
           try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
+          try { document.body.classList.add('aside-open'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           targetLi.classList.add('on');
           // initialize carousel immediately so clones/positioning are ready
@@ -975,7 +977,8 @@ document.addEventListener("DOMContentLoaded", () => {
       asideEl.classList.remove('overlay-mode');
   try { clearIllustSelection(); } catch (e) { /* ignore */ }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
-      asideEl.style.display = "none";
+  asideEl.style.display = "none";
+  try { document.body.classList.remove('aside-open'); } catch (e) { }
     });
 
   // Overlay gallery swipe + close handling for illust overlay
@@ -990,6 +993,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { clearIllustSelection(); } catch (ee) { }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
   asideEl.style.display = 'none';
+  try { document.body.classList.remove('aside-open'); } catch (e) { }
         // restore any previous li content? currently original content persists in DOM
       }
     });
@@ -1573,6 +1577,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { clearIllustSelection(); } catch (ee) { }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
   asideEl.style.display = 'none';
+  try { document.body.classList.remove('aside-open'); } catch (e) { }
       }
     });
 

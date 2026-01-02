@@ -2729,6 +2729,25 @@ aside ul>li:nth-child(2) .dir_btn {
   display: flex;
 }
 
+/* When an aside is open, block pointer events for the main page content
+   so underlying interactive elements (footer mailto) cannot be activated
+   by accidental clicks. The aside remains interactive via higher z-index. */
+body.aside-open > *:not(aside) {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* ensure aside remains interactive and its internal links/buttons work */
+body.aside-open aside {
+  pointer-events: auto !important;
+}
+
+/* keep .dir_btn anchors clickable inside aside even when global block is active */
+body.aside-open aside .dir_btn a {
+  pointer-events: auto !important;
+  user-select: text !important;
+}
+
 .direct_plan {
   margin-right: 20px;
 }
