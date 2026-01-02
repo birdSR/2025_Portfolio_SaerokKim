@@ -1910,6 +1910,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }, true);
   } catch (e) { /* ignore if document not available */ }
 
+  // Guard: prevent other JS from calling preventDefault on direct links
+  // If an event path contains an anchor matching '.direct_plan' or '.dir_btn a'
+  // and that anchor's href is NOT a mailto:, ignore preventDefault so the
+  // browser can follow the HTML-authored link. This preserves mailto behavior.
+  try {
+    (function () {
+      if (Event.prototype._preventDefaultGuarded) return; // idempotent
+      const _origPrevent = Event.prototype.preventDefault;
+      Event.prototype.preventDefault = function () {
+        try {
+          const ev = this;
+          const path = ev.composedPath ? ev.composedPath() : (ev.path || []);
+          for (const el of path) {
+            try {
+              if (!el || !el.getAttribute) continue;
+              if (el.matches && (el.matches('a.direct_plan') || el.matches('.dir_btn a'))) {
+                const href = el.getAttribute('href') || '';
+                if (!href.startsWith('mailto:')) {
+                  // Suppress preventDefault for authored direct links so navigation occurs
+                  console.debug('[preventDefault-guard] ignored preventDefault for', href, 'selector:', el.className || el);
+                  return; // don't call original preventDefault
+                }
+              }
+            } catch (e) { /* ignore per-element errors */ }
+          }
+        } catch (err) { /* ignore guard errors */ }
+        return _origPrevent.apply(this, arguments);
+      };
+      Event.prototype._preventDefaultGuarded = true;
+    })();
+  } catch (e) { /* non-fatal */ }
+
   // 햄버거 메뉴 열기/닫기: 로드 시 닫힘 보장, 클릭 시 토글
   const hamburger = document.querySelector('.hamburger');
   const sideMenu = document.querySelector('.side_menu');
