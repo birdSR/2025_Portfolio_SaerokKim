@@ -402,6 +402,56 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /* ==================================================
+      6. .dir_btn 링크 새탭 열기 강제 설정
+      - 목적: aside 내의 `.dir_btn a` 요소들만 새 탭으로 열리게 강제
+      - 방식: 초기화 시 기존 요소에 속성 추가, 이후 동적 추가를 위해 MutationObserver 사용
+  ==================================================*/
+  (function enforceDirBtnNewTab() {
+    function setNewTabAttrs(a) {
+      try {
+        if (!a || a.tagName !== 'A') return;
+        // Only apply for links that are inside .dir_btn
+        if (!a.closest || !a.closest('.dir_btn')) return;
+        a.setAttribute('target', '_blank');
+        // security: noopener + noreferrer
+        const rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
+        ['noopener', 'noreferrer'].forEach(r => { if (!rel.includes(r)) rel.push(r); });
+        a.setAttribute('rel', rel.join(' '));
+      } catch (e) { /* ignore */ }
+    }
+
+    // Apply to existing anchors
+    try {
+      document.querySelectorAll('.dir_btn a').forEach(setNewTabAttrs);
+    } catch (e) { }
+
+    // Watch for dynamic additions inside aside to catch future anchors
+    try {
+      const aside = document.querySelector('aside');
+      if (aside && typeof MutationObserver === 'function') {
+        const mo = new MutationObserver(muts => {
+          for (const m of muts) {
+            if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
+              m.addedNodes.forEach(n => {
+                try {
+                  if (n.nodeType === Node.ELEMENT_NODE) {
+                    // if an element node contains .dir_btn anchors, patch them
+                    n.querySelectorAll && n.querySelectorAll('.dir_btn a').forEach(setNewTabAttrs);
+                    // if the added node itself is an anchor inside .dir_btn
+                    if (n.tagName === 'A' && n.closest && n.closest('.dir_btn')) setNewTabAttrs(n);
+                  }
+                } catch (e) { }
+              });
+            }
+            // attribute changes not needed here because anchors are usually added as new nodes
+          }
+        });
+        mo.observe(aside, { childList: true, subtree: true });
+      }
+    } catch (e) { }
+  })();
+
   // attach handler directly if button exists, otherwise delegate to document
   if (toggleBtn) {
     toggleBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAudioAction(); });
