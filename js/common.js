@@ -1816,6 +1816,22 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("blur", () => btn.classList.remove("is-hover"));
   });
 
+  // Diagnostic logging for direct links to aid debugging (click details)
+  try {
+    document.querySelectorAll('.direct_plan, .direct_output').forEach(el => {
+      el.addEventListener('click', function (ev) {
+        try {
+          const a = ev.currentTarget || this;
+          const href = a.getAttribute && a.getAttribute('href');
+          const target = a.getAttribute && a.getAttribute('target');
+          console.log('[direct-link] click', { class: a.className, href, target, button: ev.button, clientX: ev.clientX, clientY: ev.clientY, defaultPrevented: ev.defaultPrevented });
+          // Print event path for deeper inspection in consoles that support it
+          try { console.log('[direct-link] event path:', ev.composedPath ? ev.composedPath() : (ev.path || '(no path)')); } catch (e) { }
+        } catch (e) { console.error('[direct-link] log handler error', e); }
+      }, true); // use capture to log early
+    });
+  } catch (e) { /* ignore if selectors not present */ }
+
   // 햄버거 메뉴 열기/닫기: 로드 시 닫힘 보장, 클릭 시 토글
   const hamburger = document.querySelector('.hamburger');
   const sideMenu = document.querySelector('.side_menu');
