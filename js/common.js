@@ -51,6 +51,60 @@ document.addEventListener("DOMContentLoaded", () => {
       console.debug('[preserve-href] aside anchor href preservation active');
     } catch (e) { }
   })();
+
+  // Stronger backup: keep an in-memory map of original hrefs for anchors inside aside
+  // keyed by aside list index + anchor class/text. If nodes are replaced, we use this
+  // map to restore the original HTML-provided href values immediately.
+  (function preserveAsideOriginalMap() {
+    try {
+      const asideEl = document.querySelector('aside');
+      if (!asideEl) return;
+      const map = Object.create(null);
+      const listItems = Array.from(asideEl.querySelectorAll('ul > li'));
+      listItems.forEach((li, idx) => {
+        try {
+          const anchors = Array.from(li.querySelectorAll('a'));
+          anchors.forEach(a => {
+            try {
+              const cls = (a.className || '').toString().trim();
+              const txt = (a.textContent || '').trim().slice(0, 40);
+              const key = `li${idx}::cls:${cls}::txt:${txt}`;
+              map[key] = a.getAttribute && a.getAttribute('href');
+            } catch (e) { }
+          });
+        } catch (e) { }
+      });
+      // expose for debugging
+      window._asideOriginalHrefMap = map;
+
+      const mo2 = new MutationObserver((muts) => {
+        try {
+          // on any relevant mutation, iterate current aside anchors and restore
+          // to original map where we have an entry.
+          const currentLis = Array.from(asideEl.querySelectorAll('ul > li'));
+          currentLis.forEach((li, idx) => {
+            try {
+              const anchors = Array.from(li.querySelectorAll('a'));
+              anchors.forEach(a => {
+                try {
+                  const cls = (a.className || '').toString().trim();
+                  const txt = (a.textContent || '').trim().slice(0, 40);
+                  const key = `li${idx}::cls:${cls}::txt:${txt}`;
+                  const want = window._asideOriginalHrefMap && window._asideOriginalHrefMap[key];
+                  if (want && a.getAttribute && a.getAttribute('href') !== want) {
+                    try { a.setAttribute('href', want); console.debug('[aside-original-restore] restored', key, want); } catch (e) { }
+                  }
+                } catch (e) { }
+              });
+            } catch (e) { }
+          });
+        } catch (e) { }
+      });
+      mo2.observe(asideEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+      window._asideOriginalHrefObserver = mo2;
+      console.debug('[aside-original-map] original href map stored and observer active');
+    } catch (e) { }
+  })();
   // global-ish aside reference used by several helpers and diagnostics
   const aside = document.querySelector('aside');
   // Diagnostic: log every click at capture phase to ensure events reach document
@@ -82,48 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) { }
   }, true);
 
-  // Helper: temporarily remove mailto hrefs and restore after ms milliseconds.
-  // This is a stronger defense that physically removes href attributes from
-  // mailto anchors while the aside opening animation completes, to block both
-  // native activation and programmatic activations that may bypass capture-phase handlers.
-  (function registerSuppressHelper() {
-    if (window.suppressMailto && typeof window.suppressMailto === 'function') return;
-    window._suppressMailUntil = window._suppressMailUntil || 0;
-    window.suppressMailto = function (ms) {
-      try {
-        ms = Number(ms) || 600;
-        const until = Date.now() + ms;
-        window._suppressMailUntil = until;
-        // store list of anchors we modify so we can restore exact values
-        const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
-        const stash = [];
-        anchors.forEach(a => {
-          try {
-            stash.push({ el: a, href: a.getAttribute('href') });
-            a.removeAttribute('href');
-            // ensure it no longer appears focusable
-            a.setAttribute('data-mailto-removed', '1');
-            try { a.blur && a.blur(); } catch (e) { }
-          } catch (e) { }
-        });
-        // schedule restore slightly after the suppression window to be safe
-        setTimeout(() => {
-          try {
-            stash.forEach(item => {
-              try {
-                if (item.el && item.el.getAttribute && item.href) {
-                  item.el.setAttribute('href', item.href);
-                }
-                try { item.el.removeAttribute('data-mailto-removed'); } catch (e) { }
-              } catch (e) { }
-            });
-          } catch (e) { }
-          // clear flag
-          try { window._suppressMailUntil = 0; } catch (e) { }
-        }, ms + 40);
-      } catch (e) { /* ignore */ }
-    };
-  })();
+  // NOTE: timing-based href removal (suppressMailto) removed to simplify behavior.
+  // We rely on the DOM-detach approach (disableMailtoWhileAsideOpen) below which
+  // is more robust and less race-prone across browsers.
 
   // Stronger: disable mailto anchors while aside is visible and restore when aside hides.
   (function disableMailtoWhileAsideOpen() {
@@ -244,129 +259,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) { }
   })();
 
-  // Extra defensive capture-phase handlers for pointerup/mouseup/auxclick
-  // to block mailto activations that may occur outside of the normal click
-  // flow or via different input events.
-  function blockMailtoIfSuppressed(ev) {
-    try {
-      const until = window._suppressMailUntil || 0;
-      if (Date.now() >= until) return;
-      // Try to find an anchor under the event target or at the pointer location
-      let a = ev.target && ev.target.closest ? ev.target.closest('a[href^="mailto:"]') : null;
-      if (!a && typeof ev.clientX === 'number' && typeof ev.clientY === 'number') {
-        try {
-          const el = document.elementFromPoint(ev.clientX, ev.clientY);
-          a = el && el.closest ? el.closest('a[href^="mailto:"]') : null;
-        } catch (e) { }
-      }
-      if (!a) return;
-      try { ev.preventDefault(); } catch (e) { }
-      try { ev.stopPropagation(); } catch (e) { }
-      try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch (e) { }
-      try { console.log('[suppress-mail] prevented', ev.type, 'on mailto'); } catch (e) { }
-    } catch (e) { }
-  }
-  try {
-    document.addEventListener('pointerup', blockMailtoIfSuppressed, true);
-    document.addEventListener('mouseup', blockMailtoIfSuppressed, true);
-    document.addEventListener('auxclick', blockMailtoIfSuppressed, true);
-  } catch (e) { }
+  // Removed pointerup/mouseup/auxclick defensive handlers; DOM-detach handles mailto safety.
 
-  // Stronger early blocker: intercept pointerdown in capture phase inside aside
-  // for the user-reported non-link text areas so activation never reaches native link handling.
-  try {
-    document.addEventListener('pointerdown', function (ev) {
-      try {
-        // normalize node
-        let node = ev.target;
-        while (node && node.nodeType !== 1) node = node.parentElement;
-        if (!node) return;
-        const selList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .p-icons', '.pop_bottom .date', '.pop_bottom .persent'];
-        let matched = null;
-        for (let i = 0; i < selList.length; i++) {
-          try { const f = node.closest ? node.closest(selList[i]) : null; if (f) { matched = f; break; } } catch (e) { }
-        }
-        if (!matched) return;
-        // only care when inside aside
-        if (!matched.closest || !matched.closest('aside')) return;
-        // allow dir_btn interactions
-        if (node.closest && node.closest('.dir_btn')) return;
-        // Stronger immediate defense: remove/disable mailto anchors now so native pointerup can't launch them
-        try {
-          if (typeof window._disableMailtoNow === 'function') {
-            try { console.debug('[pointerdown] calling _disableMailtoNow() to detach mailto anchors immediately'); } catch (e) { }
-            window._disableMailtoNow();
-          }
-        } catch (e) { }
-        try {
-          if (typeof window.suppressMailto === 'function') {
-            try { console.debug('[pointerdown] calling suppressMailto(900) to remove hrefs temporarily'); } catch (e) { }
-            window.suppressMailto(900);
-          }
-        } catch (e) { }
-        // prevent activation at earliest point
-        try { ev.preventDefault(); } catch (e) { }
-        try { ev.stopPropagation(); } catch (e) { }
-        try { console.log('[pointerdown-suppress] blocked pointerdown in aside on', matched.className || matched.tagName); } catch (e) { }
-      } catch (e) { }
-    }, true);
-  } catch (e) { }
+  // Removed pointerdown suppression — rely on DOM-detach of mailto anchors when aside opens.
 
-  // Prevent clicks inside specific aside text/image areas from triggering higher-level delegated handlers
-  // (e.g., mailto/link delegation). Use capture-phase listener so this runs before delegated handlers and stops propagation.
-  try {
-    document.addEventListener('click', function (e) {
-      try {
-        // expanded selectors to catch all user-reported clickable-feeling elements
-        const selectorList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .date', '.pop_bottom .persent', '.pop_bottom .program', '.pop_bottom .p-icons', '.pop_bottom .p-icons img'];
-        // Normalize the event target to an Element — clicks on text nodes should be treated as clicks on their nearest Element parent
-        let node = e.target;
-        // climb up until we find an Element node (nodeType === 1)
-        while (node && node.nodeType !== 1) {
-          node = node.parentElement;
-        }
-        if (!node) node = document.body;
-
-        // find the closest matching ancestor from the list using the normalized node
-        let matched = null;
-        for (let i = 0; i < selectorList.length; i++) {
-          const sel = selectorList[i];
-          try {
-            const found = node && node.closest ? node.closest(sel) : null;
-            if (found) { matched = found; break; }
-          } catch (ee) { /* ignore invalid selector errors */ }
-        }
-        if (!matched) return;
-        // only apply this defensive blocking for elements inside the aside to avoid side-effects
-        const inAside = !!(matched && matched.closest && matched.closest('aside'));
-        if (!inAside) return;
-        // If the click is inside .dir_btn, allow it to proceed so those anchors work (they are intended to open links)
-        try {
-          const insideDirBtn = !!(node && node.closest && node.closest('.dir_btn'));
-          // Debug: log contextual info when we would early-return or swallow clicks
-          try { console.log('[capture-debug] node:', node.tagName, 'class:', node.className || '(none)', 'matched:', matched && matched.tagName, 'matchedSel?', matched && (matched.className || matched.id || matched.getAttribute && matched.getAttribute('class'))); } catch (e) { }
-          if (insideDirBtn) {
-            // allow default behavior for dir_btn anchors; do not swallow the event
-            return;
-          }
-        } catch (ee) { }
-        // Prevent default navigation and stop propagation so mailto or delegated anchor handlers don't run
-        e.preventDefault();
-        e.stopPropagation();
-  // blur any mailto anchors or actionable anchors/images inside the matched node
-        try {
-          const mailA = matched.querySelector && matched.querySelector('a[href^="mailto:"]');
-          if (mailA) { try { mailA.blur && mailA.blur(); } catch (er) { } }
-        } catch (ee) { }
-        try {
-          // blur any focused image or anchor inside matched node
-          const focusable = matched.querySelector && (matched.querySelector('a') || matched.querySelector('img'));
-          if (focusable) { try { focusable.blur && focusable.blur(); } catch (er) { } }
-        } catch (ee) { }
-        // swallow the click; do not allow delegated handlers to treat this as an activation
-      } catch (err) { /* ignore per-click errors */ }
-    }, true);
-  } catch (e) { /* ignore if addEventListener not available */ }
+  // Removed capture-phase click swallowing for aside text — DOM-detach provides robust mailto protection.
 
   /* ==================================================
       0. 필수 DOM
@@ -817,11 +714,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Ensure .dir_btn anchors and .direct_plan/.direct_output open reliably in a new tab
+  // Ensure only .direct_output is handled here; do NOT intercept '.dir_btn a' so
+  // anchors defined in HTML navigate using their original href/target attributes.
   document.addEventListener('click', function (e) {
     try {
-  // Note: do NOT include '.direct_plan' here so anchors with real hrefs are not overridden.
-  const a = e.target && e.target.closest && e.target.closest('.dir_btn a, .direct_output');
+      // Only delegate for .direct_output (if any special handling needed). .dir_btn anchors
+      // should be left to the browser so their HTML href/target are authoritative.
+      const a = e.target && e.target.closest && e.target.closest('.direct_output');
       if (!a) return;
       // allow mailto in side_menu to function normally
       if (a.getAttribute && a.getAttribute('href') && a.getAttribute('href').startsWith('mailto:')) return;
