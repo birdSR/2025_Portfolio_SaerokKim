@@ -769,7 +769,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ensure .dir_btn anchors and .direct_plan/.direct_output open reliably in a new tab
   document.addEventListener('click', function (e) {
     try {
-      const a = e.target && e.target.closest && e.target.closest('.dir_btn a, .direct_plan, .direct_output');
+  // Note: do NOT include '.direct_plan' here so anchors with real hrefs are not overridden.
+  const a = e.target && e.target.closest && e.target.closest('.dir_btn a, .direct_output');
       if (!a) return;
       // allow mailto in side_menu to function normally
       if (a.getAttribute && a.getAttribute('href') && a.getAttribute('href').startsWith('mailto:')) return;
