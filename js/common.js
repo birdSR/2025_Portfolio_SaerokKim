@@ -21,20 +21,25 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         // expanded selectors to catch all user-reported clickable-feeling elements
         const selectorList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .date', '.pop_bottom .persent', '.pop_bottom .program', '.pop_bottom .p-icons', '.pop_bottom .p-icons img'];
-        // find the closest matching ancestor from the list
+        // Normalize the event target to an Element — clicks on text nodes should be treated as clicks on their parent element
+        let node = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement) || document.body;
+
+        // find the closest matching ancestor from the list using the normalized node
         let matched = null;
         for (let i = 0; i < selectorList.length; i++) {
           const sel = selectorList[i];
-          const found = e.target.closest && e.target.closest(sel);
-          if (found) { matched = found; break; }
+          try {
+            const found = node && node.closest ? node.closest(sel) : null;
+            if (found) { matched = found; break; }
+          } catch (ee) { /* ignore invalid selector errors */ }
         }
         if (!matched) return;
         // only apply this defensive blocking for elements inside the aside to avoid side-effects
-        const inAside = !!matched.closest && !!matched.closest('aside');
+        const inAside = !!(matched && matched.closest && matched.closest('aside'));
         if (!inAside) return;
         // If the click is inside .dir_btn, allow it to proceed so those anchors work (they are intended to open links)
         try {
-          if (e.target.closest && e.target.closest('.dir_btn')) {
+          if (node && node.closest && node.closest('.dir_btn')) {
             // allow default behavior for dir_btn anchors; do not swallow the event
             return;
           }
