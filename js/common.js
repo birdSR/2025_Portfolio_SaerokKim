@@ -92,6 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
           try {
             // don't touch mailto anchors that are inside the aside itself (unlikely but safe)
             if (a.closest && a.closest('aside')) return;
+            // preserve mailto anchors inside the side_menu (left menu) — user expects Contact me to work
+            if (a.closest && a.closest('.side_menu')) {
+              try { console.debug('[mailto-disable] skipping anchor inside .side_menu'); } catch (e) { }
+              return;
+            }
             const parent = a.parentNode;
             const next = a.nextSibling;
             // create placeholder span to preserve visual layout

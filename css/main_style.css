@@ -2748,6 +2748,11 @@ body.aside-open aside .dir_btn a {
   user-select: text !important;
 }
 
+/* allow the contact/mailto link in the side menu to remain clickable even while aside is open */
+body.aside-open .side_menu a[href^="mailto:"] {
+  pointer-events: auto !important;
+}
+
 .direct_plan {
   margin-right: 20px;
 }
