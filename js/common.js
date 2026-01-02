@@ -36,16 +36,41 @@ document.addEventListener("DOMContentLoaded", () => {
   function clearIllustSelection() {
     try {
       const asideEl = document.querySelector('aside');
+      // remove 'on' marker from any aside list items to ensure no item appears active
+      try {
+        const lis = document.querySelectorAll('aside ul > li');
+        lis.forEach(li => li.classList.remove('on'));
+      } catch (e) { }
+
       if (!asideEl) return;
-      const imgs = asideEl.querySelectorAll('.illust-track img');
+      // remove selection markers and any focus from all gallery images in document
+      const imgs = document.querySelectorAll('.illust-track img');
       imgs.forEach(img => {
         try {
           img.classList.remove('selected');
           img.removeAttribute('aria-selected');
           img.removeAttribute('data-selected');
-          if (document.activeElement === img && typeof img.blur === 'function') img.blur();
+          // remove any inline focus visuals
+          try { img.style.removeProperty('outline'); img.style.removeProperty('boxShadow'); } catch (e) { }
+          // remove cloned marker so future setup can recreate clones cleanly
+          try { delete img.dataset.cloned; } catch (e) { }
+          try { if (typeof img.blur === 'function') img.blur(); } catch (e) { }
         } catch (e) { /* ignore individual image errors */ }
       });
+
+      // reset track cloning if original snapshot exists
+      try {
+        const track = document.querySelector('.illust-track');
+        if (track && track.dataset && track.dataset.originalHtml) {
+          track.innerHTML = track.dataset.originalHtml;
+          try { delete track.dataset.loop; } catch (e) { }
+          // clear transforms/transitions
+          try { track.style.transform = ''; track.style.transition = ''; } catch (e) { }
+        }
+      } catch (e) { }
+
+      // if an image has focus anywhere, blur it
+      try { if (document.activeElement && document.activeElement.tagName === 'IMG') { document.activeElement.blur(); } } catch (e) { }
     } catch (e) { /* ignore */ }
   }
 
@@ -491,6 +516,8 @@ document.addEventListener("DOMContentLoaded", () => {
           aside.setAttribute('aria-hidden', 'false');
           // Inject gallery markup only once (safe to run multiple times)
           if (!targetLi.querySelector('.illust-gallery')) {
+            // save original markup so we can restore when overlay closes
+            try { if (!targetLi.dataset._orig) targetLi.dataset._orig = targetLi.innerHTML; } catch (e) { }
             targetLi.innerHTML = `
               <div class="illust-gallery-wrap">
                 <div class="illust-gallery" role="region" aria-label="Illustration gallery">
@@ -573,16 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!asideEl) return;
       // remove overlay-mode if present and clear any visual selection on images
       asideEl.classList.remove('overlay-mode');
-      try {
-        asideEl.querySelectorAll('.illust-track img').forEach(img => {
-          try {
-            img.classList.remove('selected');
-            img.removeAttribute('aria-selected');
-            img.removeAttribute('data-selected');
-            if (typeof img.blur === 'function') img.blur();
-          } catch (e) { /* ignore per-image errors */ }
-        });
-      } catch (e) { /* if illust-track not present, ignore */ }
+  try { clearIllustSelection(); } catch (e) { /* ignore */ }
       asideEl.style.display = "none";
     });
 
@@ -595,7 +613,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && asideEl.classList.contains('overlay-mode')) {
   asideEl.classList.remove('overlay-mode');
-  // clear any selected image state
   try { clearIllustSelection(); } catch (ee) { }
   asideEl.style.display = 'none';
         // restore any previous li content? currently original content persists in DOM
