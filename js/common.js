@@ -31,6 +31,156 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) { }
   }, true);
 
+  // Helper: temporarily remove mailto hrefs and restore after ms milliseconds.
+  // This is a stronger defense that physically removes href attributes from
+  // mailto anchors while the aside opening animation completes, to block both
+  // native activation and programmatic activations that may bypass capture-phase handlers.
+  (function registerSuppressHelper() {
+    if (window.suppressMailto && typeof window.suppressMailto === 'function') return;
+    window._suppressMailUntil = window._suppressMailUntil || 0;
+    window.suppressMailto = function (ms) {
+      try {
+        ms = Number(ms) || 600;
+        const until = Date.now() + ms;
+        window._suppressMailUntil = until;
+        // store list of anchors we modify so we can restore exact values
+        const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+        const stash = [];
+        anchors.forEach(a => {
+          try {
+            stash.push({ el: a, href: a.getAttribute('href') });
+            a.removeAttribute('href');
+            // ensure it no longer appears focusable
+            a.setAttribute('data-mailto-removed', '1');
+            try { a.blur && a.blur(); } catch (e) { }
+          } catch (e) { }
+        });
+        // schedule restore slightly after the suppression window to be safe
+        setTimeout(() => {
+          try {
+            stash.forEach(item => {
+              try {
+                if (item.el && item.el.getAttribute && item.href) {
+                  item.el.setAttribute('href', item.href);
+                }
+                try { item.el.removeAttribute('data-mailto-removed'); } catch (e) { }
+              } catch (e) { }
+            });
+          } catch (e) { }
+          // clear flag
+          try { window._suppressMailUntil = 0; } catch (e) { }
+        }, ms + 40);
+      } catch (e) { /* ignore */ }
+    };
+  })();
+
+  // Stronger: disable mailto anchors while aside is visible and restore when aside hides.
+  (function disableMailtoWhileAsideOpen() {
+    // stash of {el, href}
+    // More robust approach: detach mailto anchors from the DOM while aside is visible.
+    // We replace each anchor with a non-interactive placeholder <span> to preserve layout
+    // and re-insert the original anchor node on restore. This prevents native mailto
+    // activation even if events slip through.
+    window._mailtoStash = window._mailtoStash || [];
+    function disableAll() {
+      try {
+        // clear existing stash
+        window._mailtoStash = [];
+        const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+        anchors.forEach(a => {
+          try {
+            // don't touch mailto anchors that are inside the aside itself (unlikely but safe)
+            if (a.closest && a.closest('aside')) return;
+            const parent = a.parentNode;
+            const next = a.nextSibling;
+            // create placeholder span to preserve visual layout
+            const placeholder = document.createElement('span');
+            placeholder.setAttribute('aria-hidden', 'true');
+            placeholder.setAttribute('data-mailto-placeholder', '1');
+            // copy child nodes (shallow clone of children) to preserve visuals
+            try {
+              Array.from(a.childNodes).forEach(n => placeholder.appendChild(n.cloneNode(true)));
+            } catch (e) { /* ignore cloning errors */ }
+            // insert placeholder and remove original anchor
+            try { parent.insertBefore(placeholder, next); } catch (e) { /* fallback */ parent.appendChild(placeholder); }
+            try { parent.removeChild(a); } catch (e) { /* ignore */ }
+            // stash original anchor and its position so we can restore it
+            window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
+          } catch (e) { /* ignore per-anchor errors */ }
+        });
+      } catch (e) { }
+    }
+    function restoreAll() {
+      try {
+        // restore in reverse order to be safe with sibling pointers
+        const list = (window._mailtoStash || []).slice().reverse();
+        list.forEach(item => {
+          try {
+            if (!item || !item.el || !item.parent) return;
+            const parent = item.parent;
+            // If a placeholder is present at the same spot, remove it and insert original anchor
+            let placeholderFound = null;
+            try {
+              // look for placeholder spans among parent's children
+              const children = Array.from(parent.childNodes);
+              // if nextSibling still exists, the placeholder should be just before it
+              if (item.nextSibling && item.nextSibling.parentNode === parent) {
+                const idx = children.indexOf(item.nextSibling);
+                if (idx > 0) {
+                  const cand = children[idx - 1];
+                  if (cand && cand.nodeType === 1 && cand.getAttribute && cand.getAttribute('data-mailto-placeholder') === '1') {
+                    placeholderFound = cand;
+                  }
+                }
+              } else {
+                // fallback: find first placeholder in parent
+                placeholderFound = children.find(ch => ch.nodeType === 1 && ch.getAttribute && ch.getAttribute('data-mailto-placeholder') === '1') || null;
+              }
+            } catch (e) { }
+
+            if (placeholderFound && placeholderFound.parentNode === parent) {
+              parent.insertBefore(item.el, placeholderFound);
+              try { parent.removeChild(placeholderFound); } catch (e) { }
+            } else {
+              // if no placeholder, try to insert before nextSibling or append
+              if (item.nextSibling && item.nextSibling.parentNode === parent) {
+                parent.insertBefore(item.el, item.nextSibling);
+              } else {
+                parent.appendChild(item.el);
+              }
+            }
+          } catch (e) { }
+        });
+        window._mailtoStash = [];
+      } catch (e) { }
+    }
+
+    // expose helpers for manual invocation if needed
+    window._disableMailtoNow = disableAll;
+    window._restoreMailtoNow = restoreAll;
+
+    // Observe aside visibility to restore on close
+    try {
+      const asideEl = document.querySelector('aside');
+      if (asideEl && typeof MutationObserver === 'function') {
+        const mo = new MutationObserver(() => {
+          try {
+            const styleDisplay = asideEl.style && asideEl.style.display ? asideEl.style.display : getComputedStyle(asideEl).display;
+            const isVisible = (styleDisplay !== 'none');
+            if (isVisible) {
+              // when aside becomes visible, disable mailto
+              disableAll();
+            } else {
+              // when aside hidden, restore
+              restoreAll();
+            }
+          } catch (e) { }
+        });
+        mo.observe(asideEl, { attributes: true, attributeFilter: ['style', 'class'] });
+      }
+    } catch (e) { }
+  })();
+
   // Extra defensive capture-phase handlers for pointerup/mouseup/auxclick
   // to block mailto activations that may occur outside of the normal click
   // flow or via different input events.
@@ -57,6 +207,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('pointerup', blockMailtoIfSuppressed, true);
     document.addEventListener('mouseup', blockMailtoIfSuppressed, true);
     document.addEventListener('auxclick', blockMailtoIfSuppressed, true);
+  } catch (e) { }
+
+  // Stronger early blocker: intercept pointerdown in capture phase inside aside
+  // for the user-reported non-link text areas so activation never reaches native link handling.
+  try {
+    document.addEventListener('pointerdown', function (ev) {
+      try {
+        // normalize node
+        let node = ev.target;
+        while (node && node.nodeType !== 1) node = node.parentElement;
+        if (!node) return;
+        const selList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .p-icons', '.pop_bottom .date', '.pop_bottom .persent'];
+        let matched = null;
+        for (let i = 0; i < selList.length; i++) {
+          try { const f = node.closest ? node.closest(selList[i]) : null; if (f) { matched = f; break; } } catch (e) { }
+        }
+        if (!matched) return;
+        // only care when inside aside
+        if (!matched.closest || !matched.closest('aside')) return;
+        // allow dir_btn interactions
+        if (node.closest && node.closest('.dir_btn')) return;
+        // prevent activation at earliest point
+        try { ev.preventDefault(); } catch (e) { }
+        try { ev.stopPropagation(); } catch (e) { }
+        try { console.log('[pointerdown-suppress] blocked pointerdown in aside on', matched.className || matched.tagName); } catch (e) { }
+      } catch (e) { }
+    }, true);
   } catch (e) { }
 
   // Prevent clicks inside specific aside text/image areas from triggering higher-level delegated handlers
