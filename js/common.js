@@ -23,8 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         // expanded selectors to catch all user-reported clickable-feeling elements
         const selectorList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .date', '.pop_bottom .persent', '.pop_bottom .program', '.pop_bottom .p-icons', '.pop_bottom .p-icons img'];
-        // Normalize the event target to an Element — clicks on text nodes should be treated as clicks on their parent element
-        let node = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement) || document.body;
+        // Normalize the event target to an Element — clicks on text nodes should be treated as clicks on their nearest Element parent
+        let node = e.target;
+        // climb up until we find an Element node (nodeType === 1)
+        while (node && node.nodeType !== 1) {
+          node = node.parentElement;
+        }
+        if (!node) node = document.body;
 
         // find the closest matching ancestor from the list using the normalized node
         let matched = null;
@@ -41,7 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!inAside) return;
         // If the click is inside .dir_btn, allow it to proceed so those anchors work (they are intended to open links)
         try {
-          if (node && node.closest && node.closest('.dir_btn')) {
+          const insideDirBtn = !!(node && node.closest && node.closest('.dir_btn'));
+          // Debug: log contextual info when we would early-return or swallow clicks
+          try { console.log('[capture-debug] node:', node.tagName, 'class:', node.className || '(none)', 'matched:', matched && matched.tagName, 'matchedSel?', matched && (matched.className || matched.id || matched.getAttribute && matched.getAttribute('class'))); } catch (e) { }
+          if (insideDirBtn) {
             // allow default behavior for dir_btn anchors; do not swallow the event
             return;
           }
@@ -49,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Prevent default navigation and stop propagation so mailto or delegated anchor handlers don't run
         e.preventDefault();
         e.stopPropagation();
-        // blur any mailto anchors or actionable anchors/images inside the matched node
+  // blur any mailto anchors or actionable anchors/images inside the matched node
         try {
           const mailA = matched.querySelector && matched.querySelector('a[href^="mailto:"]');
           if (mailA) { try { mailA.blur && mailA.blur(); } catch (er) { } }
