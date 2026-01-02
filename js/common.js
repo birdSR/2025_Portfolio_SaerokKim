@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window._mailtoStash = window._mailtoStash || [];
     function disableAll() {
       try {
+  try { console.debug('[mailto-disable] running disableAll() — clearing previous stash, scanning for mailto anchors'); } catch (e) { }
         // clear existing stash
         window._mailtoStash = [];
         const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
@@ -104,14 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // insert placeholder and remove original anchor
             try { parent.insertBefore(placeholder, next); } catch (e) { /* fallback */ parent.appendChild(placeholder); }
             try { parent.removeChild(a); } catch (e) { /* ignore */ }
-            // stash original anchor and its position so we can restore it
-            window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
+      // stash original anchor and its position so we can restore it
+      window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
           } catch (e) { /* ignore per-anchor errors */ }
         });
+    try { console.debug('[mailto-disable] stash length after disableAll():', window._mailtoStash.length, window._mailtoStash.map(s=>({parent: s.parent && s.parent.tagName, nextSibling: s.nextSibling && (s.nextSibling.nodeType===3?"#text":s.nextSibling.tagName)}))); } catch (e) { }
       } catch (e) { }
     }
     function restoreAll() {
       try {
+    try { console.debug('[mailto-restore] running restoreAll() — stash size:', (window._mailtoStash || []).length); } catch (e) { }
         // restore in reverse order to be safe with sibling pointers
         const list = (window._mailtoStash || []).slice().reverse();
         list.forEach(item => {
@@ -152,12 +155,16 @@ document.addEventListener("DOMContentLoaded", () => {
           } catch (e) { }
         });
         window._mailtoStash = [];
+  try { console.debug('[mailto-restore] restoreAll complete; stash cleared'); } catch (e) { }
       } catch (e) { }
     }
 
     // expose helpers for manual invocation if needed
     window._disableMailtoNow = disableAll;
     window._restoreMailtoNow = restoreAll;
+  // Convenience wrappers that log when invoked from console
+  window.debug_disableMailtoNow = function() { try { console.debug('[debug] debug_disableMailtoNow called'); } catch(e){}; return disableAll(); };
+  window.debug_restoreMailtoNow = function() { try { console.debug('[debug] debug_restoreMailtoNow called'); } catch(e){}; return restoreAll(); };
 
     // Observe aside visibility to restore on close
     try {
@@ -820,8 +827,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
   aside.style.display = "block";
-  try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
-  try { document.body.classList.add('aside-open'); } catch (e) { }
+  try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing aside'); window._disableMailtoNow(); } } catch (e) { }
+  try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open'); } catch (e) { }
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
 
@@ -905,8 +912,9 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           // ensure aside visible and mark this li
           aside.style.display = 'block';
-          try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
-          try { document.body.classList.add('aside-open'); } catch (e) { }
+          try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing illust overlay'); window._disableMailtoNow(); } } catch (e) { }
+          try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
+          try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open (illust)'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           targetLi.classList.add('on');
           // initialize carousel immediately so clones/positioning are ready
@@ -978,7 +986,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { clearIllustSelection(); } catch (e) { /* ignore */ }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
   asideEl.style.display = "none";
-  try { document.body.classList.remove('aside-open'); } catch (e) { }
+  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (close-btn)'); } catch (e) { }
     });
 
   // Overlay gallery swipe + close handling for illust overlay
@@ -993,7 +1001,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { clearIllustSelection(); } catch (ee) { }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
   asideEl.style.display = 'none';
-  try { document.body.classList.remove('aside-open'); } catch (e) { }
+  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (Escape)'); } catch (e) { }
         // restore any previous li content? currently original content persists in DOM
       }
     });
@@ -1577,7 +1585,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { clearIllustSelection(); } catch (ee) { }
   try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
   asideEl.style.display = 'none';
-  try { document.body.classList.remove('aside-open'); } catch (e) { }
+  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (click-outside)'); } catch (e) { }
       }
     });
 
