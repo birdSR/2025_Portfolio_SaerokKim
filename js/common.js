@@ -766,6 +766,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Ensure .dir_btn anchors and .direct_plan/.direct_output open reliably in a new tab
+  document.addEventListener('click', function (e) {
+    try {
+      const a = e.target && e.target.closest && e.target.closest('.dir_btn a, .direct_plan, .direct_output');
+      if (!a) return;
+      // allow mailto in side_menu to function normally
+      if (a.getAttribute && a.getAttribute('href') && a.getAttribute('href').startsWith('mailto:')) return;
+      // If anchor has explicit target or is intended to open in new tab we ensure it does
+      const href = a.getAttribute('href');
+      if (!href || href === '#' || href.indexOf('index.html') !== -1) return;
+      // Prevent any SPA-like handlers from intercepting and open reliably
+      e.preventDefault();
+      e.stopPropagation();
+      try { window.open(href, '_blank', 'noopener,noreferrer'); } catch (err) { window.location.href = href; }
+    } catch (err) { /* ignore */ }
+  }, true);
+
   // keep UI in sync if audio state changes externally
   if (audio) {
     audio.addEventListener('play', () => { isPlaying = true; updateIcon(); });
