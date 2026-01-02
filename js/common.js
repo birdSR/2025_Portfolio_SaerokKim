@@ -60,17 +60,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // reset track cloning if original snapshot exists
       try {
-        const track = document.querySelector('.illust-track');
-        if (track && track.dataset && track.dataset.originalHtml) {
-          track.innerHTML = track.dataset.originalHtml;
-          try { delete track.dataset.loop; } catch (e) { }
-          // clear transforms/transitions
-          try { track.style.transform = ''; track.style.transition = ''; } catch (e) { }
+        // prefer restoring entire li original markup if saved
+        const illustLi = document.querySelector('aside ul > li.illustpop');
+        if (illustLi && illustLi.dataset && illustLi.dataset._orig) {
+          illustLi.innerHTML = illustLi.dataset._orig;
+          try { delete illustLi.dataset._orig; } catch (e) { }
+        } else {
+          const track = document.querySelector('.illust-track');
+          if (track && track.dataset && track.dataset.originalHtml) {
+            track.innerHTML = track.dataset.originalHtml;
+            try { delete track.dataset.loop; } catch (e) { }
+            try { track.style.transform = ''; track.style.transition = ''; } catch (e) { }
+          }
         }
       } catch (e) { }
 
-      // if an image has focus anywhere, blur it
-      try { if (document.activeElement && document.activeElement.tagName === 'IMG') { document.activeElement.blur(); } } catch (e) { }
+  // also remove any residual .selected classes anywhere in document
+  try { document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); } catch (e) { }
+  // if an image has focus anywhere, blur it
+  try { if (document.activeElement && document.activeElement.tagName === 'IMG') { document.activeElement.blur(); } } catch (e) { }
     } catch (e) { /* ignore */ }
   }
 
