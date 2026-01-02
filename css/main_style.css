@@ -2650,6 +2650,16 @@ aside ul > li .pop_bottom * {
   cursor: default !important;
 }
 
+/* Ensure non-interactive aside labels do not capture pointer events that may hit
+   overlapping footer anchors underneath. This sets pointer-events:none for
+   decorative text nodes while still allowing text selection via the parent .txt_t
+   which explicitly keeps pointer-events:auto above. We avoid applying this to
+   anchor elements or .dir_btn so intended links remain clickable. */
+aside ul > li .app-span,
+aside ul > li .app-span2 {
+  pointer-events: none !important;
+}
+
 /* Allow pointer cursor for actionable links inside dir_btn */
 aside ul > li .dir_btn a {
   cursor: pointer !important;
