@@ -2648,6 +2648,11 @@ aside ul > li .pop_bottom * {
   cursor: default !important;
 }
 
+/* Allow pointer cursor for actionable links inside dir_btn */
+aside ul > li .dir_btn a {
+  cursor: pointer !important;
+}
+
 .txt_t {
   color: #464646;
   text-align: left;
