@@ -2930,7 +2930,8 @@ body.aside-open .side_menu a[href^="mailto:"] {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%) translateY(6px);
-  z-index: 1200;
+  /* ensure caption appears above the aside overlay (z-index:2100) but below the close button (99999) */
+  z-index: 2200;
   pointer-events: none;
   /* background removed to keep caption text unobstructed */
   color: #fff;
