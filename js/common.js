@@ -240,6 +240,19 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!matched.closest || !matched.closest('aside')) return;
         // allow dir_btn interactions
         if (node.closest && node.closest('.dir_btn')) return;
+        // Stronger immediate defense: remove/disable mailto anchors now so native pointerup can't launch them
+        try {
+          if (typeof window._disableMailtoNow === 'function') {
+            try { console.debug('[pointerdown] calling _disableMailtoNow() to detach mailto anchors immediately'); } catch (e) { }
+            window._disableMailtoNow();
+          }
+        } catch (e) { }
+        try {
+          if (typeof window.suppressMailto === 'function') {
+            try { console.debug('[pointerdown] calling suppressMailto(900) to remove hrefs temporarily'); } catch (e) { }
+            window.suppressMailto(900);
+          }
+        } catch (e) { }
         // prevent activation at earliest point
         try { ev.preventDefault(); } catch (e) { }
         try { ev.stopPropagation(); } catch (e) { }
