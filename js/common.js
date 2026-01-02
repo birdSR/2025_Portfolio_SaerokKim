@@ -1,5 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log('[common.js] DOMContentLoaded fired');
+  // Debug helper: trace calls to event.preventDefault()
+  // Enable by adding ?tracePreventDefault=1 to the page URL or call window._enablePreventDefaultTracer(true)
+  (function preventDefaultTracer() {
+    try {
+      const orig = Event.prototype.preventDefault;
+      let enabled = false;
+      try { enabled = new URLSearchParams(location.search).get('tracePreventDefault') === '1'; } catch (e) { enabled = false; }
+      Event.prototype.preventDefault = function () {
+        try {
+          if (enabled) {
+            // Log concise info plus a stack for the caller
+            try {
+              console.groupCollapsed('[preventDefault tracer] eventType=', this && this.type, 'target=', this && this.target);
+              console.log('event:', this);
+              // Using Error().stack to capture the JS stack at time of call
+              console.log(new Error('preventDefault stack').stack);
+              console.groupEnd();
+            } catch (e) { console.log('[preventDefault tracer] logging error', e); }
+          }
+        } catch (e) { /* ignore */ }
+        return orig.apply(this, arguments);
+      };
+      window._enablePreventDefaultTracer = (v = true) => { enabled = !!v; console.log('[preventDefault tracer] enabled=', enabled); };
+      window._disablePreventDefaultTracer = () => { enabled = false; console.log('[preventDefault tracer] disabled'); };
+      console.debug('[preventDefault tracer] installed (enabled=', !!enabled, ')');
+    } catch (e) { /* ignore */ }
+  })();
   // Preserve original hrefs for anchors inside the aside so other scripts
   // cannot silently overwrite them. If an href attribute changes, restore it.
   (function preserveAsideAnchors() {
@@ -150,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window._mailtoStash = window._mailtoStash || [];
     function disableAll() {
       try {
-  try { console.debug('[mailto-disable] running disableAll() — clearing previous stash, scanning for mailto anchors'); } catch (e) { }
+        try { console.debug('[mailto-disable] running disableAll() — clearing previous stash, scanning for mailto anchors'); } catch (e) { }
         // clear existing stash
         window._mailtoStash = [];
         const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
@@ -176,16 +203,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // insert placeholder and remove original anchor
             try { parent.insertBefore(placeholder, next); } catch (e) { /* fallback */ parent.appendChild(placeholder); }
             try { parent.removeChild(a); } catch (e) { /* ignore */ }
-      // stash original anchor and its position so we can restore it
-      window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
+            // stash original anchor and its position so we can restore it
+            window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
           } catch (e) { /* ignore per-anchor errors */ }
         });
-    try { console.debug('[mailto-disable] stash length after disableAll():', window._mailtoStash.length, window._mailtoStash.map(s=>({parent: s.parent && s.parent.tagName, nextSibling: s.nextSibling && (s.nextSibling.nodeType===3?"#text":s.nextSibling.tagName)}))); } catch (e) { }
+        try { console.debug('[mailto-disable] stash length after disableAll():', window._mailtoStash.length, window._mailtoStash.map(s => ({ parent: s.parent && s.parent.tagName, nextSibling: s.nextSibling && (s.nextSibling.nodeType === 3 ? "#text" : s.nextSibling.tagName) }))); } catch (e) { }
       } catch (e) { }
     }
     function restoreAll() {
       try {
-    try { console.debug('[mailto-restore] running restoreAll() — stash size:', (window._mailtoStash || []).length); } catch (e) { }
+        try { console.debug('[mailto-restore] running restoreAll() — stash size:', (window._mailtoStash || []).length); } catch (e) { }
         // restore in reverse order to be safe with sibling pointers
         const list = (window._mailtoStash || []).slice().reverse();
         list.forEach(item => {
@@ -226,16 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
           } catch (e) { }
         });
         window._mailtoStash = [];
-  try { console.debug('[mailto-restore] restoreAll complete; stash cleared'); } catch (e) { }
+        try { console.debug('[mailto-restore] restoreAll complete; stash cleared'); } catch (e) { }
       } catch (e) { }
     }
 
     // expose helpers for manual invocation if needed
     window._disableMailtoNow = disableAll;
     window._restoreMailtoNow = restoreAll;
-  // Convenience wrappers that log when invoked from console
-  window.debug_disableMailtoNow = function() { try { console.debug('[debug] debug_disableMailtoNow called'); } catch(e){}; return disableAll(); };
-  window.debug_restoreMailtoNow = function() { try { console.debug('[debug] debug_restoreMailtoNow called'); } catch(e){}; return restoreAll(); };
+    // Convenience wrappers that log when invoked from console
+    window.debug_disableMailtoNow = function () { try { console.debug('[debug] debug_disableMailtoNow called'); } catch (e) { }; return disableAll(); };
+    window.debug_restoreMailtoNow = function () { try { console.debug('[debug] debug_restoreMailtoNow called'); } catch (e) { }; return restoreAll(); };
 
     // Observe aside visibility to restore on close
     try {
@@ -257,6 +284,41 @@ document.addEventListener("DOMContentLoaded", () => {
         mo.observe(asideEl, { attributes: true, attributeFilter: ['style', 'class'] });
       }
     } catch (e) { }
+  })();
+
+  // Capture-phase temporary blocker: prevent native mailto launch during aside open transition
+  (function attachCaptureBlockerHelpers() {
+    try {
+      let _handler = null;
+      window._attachMailtoCaptureBlocker = function (timeoutMs = 1400) {
+        try {
+          if (_handler) return;
+          _handler = function (ev) {
+            try {
+              const a = ev.target && ev.target.closest && ev.target.closest('a[href^="mailto:"]');
+              if (!a) return;
+              // allow mailto inside side_menu to function normally
+              if (a.closest && a.closest('.side_menu')) return;
+              try { ev.preventDefault(); ev.stopImmediatePropagation(); } catch (e) { }
+              try { console.debug('[mailto-capture-blocker] prevented mailto click on', a); } catch (e) { }
+            } catch (e) { /* ignore */ }
+          };
+          document.addEventListener('click', _handler, true);
+          if (typeof timeoutMs === 'number' && timeoutMs > 0) {
+            setTimeout(() => { try { window._removeMailtoCaptureBlocker(); } catch (e) { } }, timeoutMs);
+          }
+          console.debug('[mailto-capture-blocker] installed (timeoutMs=' + timeoutMs + ')');
+        } catch (e) { /* ignore */ }
+      };
+      window._removeMailtoCaptureBlocker = function () {
+        try {
+          if (!_handler) return;
+          try { document.removeEventListener('click', _handler, true); } catch (e) { }
+          _handler = null;
+          console.debug('[mailto-capture-blocker] removed');
+        } catch (e) { /* ignore */ }
+      };
+    } catch (e) { /* ignore */ }
   })();
 
   // Removed pointerup/mouseup/auxclick defensive handlers; DOM-detach handles mailto safety.
@@ -658,49 +720,14 @@ document.addEventListener("DOMContentLoaded", () => {
       - 목적: aside 내의 `.dir_btn a` 요소들만 새 탭으로 열리게 강제
       - 방식: 초기화 시 기존 요소에 속성 추가, 이후 동적 추가를 위해 MutationObserver 사용
   ==================================================*/
+  // enforceDirBtnNewTab disabled: preserve HTML-authoritative behavior for .dir_btn anchors.
+  // Previously this IIFE forced `.dir_btn a` to open in a new tab by adding target/rel.
+  // That behavior was changed today and the user requested the prior behavior back.
+  // To safely revert without removing code, keep a no-op IIFE here so it can be
+  // re-enabled easily in future if needed.
   (function enforceDirBtnNewTab() {
-    function setNewTabAttrs(a) {
-      try {
-        if (!a || a.tagName !== 'A') return;
-        // Only apply for links that are inside .dir_btn
-        if (!a.closest || !a.closest('.dir_btn')) return;
-        a.setAttribute('target', '_blank');
-        // security: noopener + noreferrer
-        const rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
-        ['noopener', 'noreferrer'].forEach(r => { if (!rel.includes(r)) rel.push(r); });
-        a.setAttribute('rel', rel.join(' '));
-      } catch (e) { /* ignore */ }
-    }
-
-    // Apply to existing anchors
-    try {
-      document.querySelectorAll('.dir_btn a').forEach(setNewTabAttrs);
-    } catch (e) { }
-
-    // Watch for dynamic additions inside aside to catch future anchors
-    try {
-      const aside = document.querySelector('aside');
-      if (aside && typeof MutationObserver === 'function') {
-        const mo = new MutationObserver(muts => {
-          for (const m of muts) {
-            if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
-              m.addedNodes.forEach(n => {
-                try {
-                  if (n.nodeType === Node.ELEMENT_NODE) {
-                    // if an element node contains .dir_btn anchors, patch them
-                    n.querySelectorAll && n.querySelectorAll('.dir_btn a').forEach(setNewTabAttrs);
-                    // if the added node itself is an anchor inside .dir_btn
-                    if (n.tagName === 'A' && n.closest && n.closest('.dir_btn')) setNewTabAttrs(n);
-                  }
-                } catch (e) { }
-              });
-            }
-            // attribute changes not needed here because anchors are usually added as new nodes
-          }
-        });
-        mo.observe(aside, { childList: true, subtree: true });
-      }
-    } catch (e) { }
+    // no-op: do not mutate .dir_btn anchor attributes so anchors follow their HTML href/target
+    return;
   })();
 
   // attach handler directly if button exists, otherwise delegate to document
@@ -812,10 +839,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log('[click] element not in project area and has no mapping — not opening aside:', el.className);
         return;
       }
-  aside.style.display = "block";
-  try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing aside'); window._disableMailtoNow(); } } catch (e) { }
-  try { window._suppressMailUntil = Date.now() + 1200; console.debug('[aside] set _suppressMailUntil to', window._suppressMailUntil); } catch (e) { }
-  try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open'); } catch (e) { }
+      try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing aside (moved)'); window._disableMailtoNow(); } } catch (e) { }
+      aside.style.display = "block";
+      try { window._suppressMailUntil = Date.now() + 1200; console.debug('[aside] set _suppressMailUntil to', window._suppressMailUntil); } catch (e) { }
+      try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open'); } catch (e) { }
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
 
@@ -898,8 +925,8 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
           }
           // ensure aside visible and mark this li
+          try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing illust overlay (moved)'); window._disableMailtoNow(); } } catch (e) { }
           aside.style.display = 'block';
-          try { if (typeof window._disableMailtoNow === 'function') { console.debug('[aside] calling _disableMailtoNow() before showing illust overlay'); window._disableMailtoNow(); } } catch (e) { }
           try { window._suppressMailUntil = Date.now() + 1200; console.debug('[aside] set _suppressMailUntil to', window._suppressMailUntil, '(illust)'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open (illust)'); } catch (e) { }
@@ -971,10 +998,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!asideEl) return;
       // remove overlay-mode if present and clear any visual selection on images
       asideEl.classList.remove('overlay-mode');
-  try { clearIllustSelection(); } catch (e) { /* ignore */ }
-  try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
-  asideEl.style.display = "none";
-  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (close-btn)'); } catch (e) { }
+      try { clearIllustSelection(); } catch (e) { /* ignore */ }
+      try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
+      asideEl.style.display = "none";
+      try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (close-btn)'); } catch (e) { }
     });
 
   // Overlay gallery swipe + close handling for illust overlay
@@ -985,11 +1012,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Close overlay when ESC pressed
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && asideEl.classList.contains('overlay-mode')) {
-  asideEl.classList.remove('overlay-mode');
-  try { clearIllustSelection(); } catch (ee) { }
-  try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
-  asideEl.style.display = 'none';
-  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (Escape)'); } catch (e) { }
+        asideEl.classList.remove('overlay-mode');
+        try { clearIllustSelection(); } catch (ee) { }
+        try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
+        asideEl.style.display = 'none';
+        try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (Escape)'); } catch (e) { }
         // restore any previous li content? currently original content persists in DOM
       }
     });
@@ -1560,20 +1587,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const closeBtn = asideEl.querySelector('.close-btn');
       if (closeBtn && (closeBtn === e.target || closeBtn.contains(e.target))) {
         stopAutoplay();
-  asideEl.classList.remove('overlay-mode');
-  try { clearIllustSelection(); } catch (ee) { }
-  try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
-  asideEl.style.display = 'none';
+        asideEl.classList.remove('overlay-mode');
+        try { clearIllustSelection(); } catch (ee) { }
+        try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
+        asideEl.style.display = 'none';
         return;
       }
       // if click outside the gallery content, close
       if (wrap && !wrap.contains(e.target) && carousel.allowClickClose) {
         stopAutoplay();
-  asideEl.classList.remove('overlay-mode');
-  try { clearIllustSelection(); } catch (ee) { }
-  try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
-  asideEl.style.display = 'none';
-  try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (click-outside)'); } catch (e) { }
+        asideEl.classList.remove('overlay-mode');
+        try { clearIllustSelection(); } catch (ee) { }
+        try { setTimeout(() => { try { clearIllustSelection(); } catch (e) { } }, 160); } catch (e) { }
+        asideEl.style.display = 'none';
+        try { document.body.classList.remove('aside-open'); console.debug('[aside] removed body.aside-open (click-outside)'); } catch (e) { }
       }
     });
 
@@ -1827,10 +1854,61 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log('[direct-link] click', { class: a.className, href, target, button: ev.button, clientX: ev.clientX, clientY: ev.clientY, defaultPrevented: ev.defaultPrevented });
           // Print event path for deeper inspection in consoles that support it
           try { console.log('[direct-link] event path:', ev.composedPath ? ev.composedPath() : (ev.path || '(no path)')); } catch (e) { }
+          // Also log a deferred snapshot after propagation to detect late preventDefault or focus changes
+          try {
+            setTimeout(() => {
+              try {
+                console.log('[direct-link] deferred state', { defaultPrevented_after: ev.defaultPrevented, activeElement: document.activeElement && (document.activeElement.tagName + (document.activeElement.className ? ' .' + document.activeElement.className : '')) });
+              } catch (e) { console.log('[direct-link] deferred log error', e); }
+            }, 0);
+          } catch (e) { }
         } catch (e) { console.error('[direct-link] log handler error', e); }
       }, true); // use capture to log early
     });
   } catch (e) { /* ignore if selectors not present */ }
+
+  // Capture-phase guard: prevent clicks on non-link aside text from triggering mailto
+  try {
+    document.addEventListener('click', function (ev) {
+      try {
+        // Only care when aside is visible
+        const aside = document.querySelector('aside');
+        if (!aside || aside.style.display === 'none' || aside.getAttribute('aria-hidden') === 'true') return;
+
+        // If the original click target is inside one of the non-link areas, block mailto activation.
+        const nonLinkSelectors = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom *'];
+        let node = ev.target;
+        let insideNonLink = false;
+        for (; node && node !== document; node = node.parentNode) {
+          if (node.matches && nonLinkSelectors.some(s => node.matches(s))) { insideNonLink = true; break; }
+          if (node === aside) break; // stop at aside boundary
+        }
+        if (!insideNonLink) return;
+
+        // If the click event's composedPath contains a mailto anchor, and that anchor is NOT
+        // one of the explicitly allowed anchors, prevent activation.
+        const path = ev.composedPath ? ev.composedPath() : (ev.path || []);
+        for (const el of path) {
+          if (!el || !el.getAttribute) continue;
+          const href = el.getAttribute && el.getAttribute('href');
+          if (href && href.startsWith && href.startsWith('mailto:')) {
+            // allow side menu contact mailto and explicitly allowed anchors
+            if (el.closest && el.closest('.side_menu')) {
+              return; // allow
+            }
+            if (el.classList && (el.classList.contains('dir_btn') || el.classList.contains('direct_plan') || el.classList.contains('direct_output') || el.closest && el.closest('.dir_btn'))) {
+              return; // allow
+            }
+            // Otherwise, block the native activation coming from clicks inside aside non-link areas
+            console.debug('[mailto-guard] blocking mailto activation from aside non-link click', { href });
+            ev.stopPropagation();
+            ev.preventDefault();
+            return;
+          }
+        }
+      } catch (err) { /* non-fatal guard */ }
+    }, true);
+  } catch (e) { /* ignore if document not available */ }
 
   // 햄버거 메뉴 열기/닫기: 로드 시 닫힘 보장, 클릭 시 토글
   const hamburger = document.querySelector('.hamburger');
