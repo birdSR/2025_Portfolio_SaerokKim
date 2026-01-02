@@ -14,6 +14,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, true); // use capture phase
 
+  // Prevent .txt_t clicks from triggering higher-level delegated handlers (e.g., mailto/link delegation)
+  // We use capture-phase listener so this runs before delegated handlers and stops propagation.
+  try {
+    document.addEventListener('click', function (e) {
+      try {
+        const txt = e.target.closest && e.target.closest('.txt_t');
+        if (!txt) return;
+        // Only affect aside items' .txt_t to avoid side-effects elsewhere
+        const inAside = !!txt.closest && !!txt.closest('aside');
+        if (!inAside) return;
+        // Prevent default navigation and stop propagation so mailto or delegated anchor handlers don't run
+        e.preventDefault();
+        e.stopPropagation();
+        // if there is an anchor inside the text we still don't want it to activate via click
+        const a = txt.querySelector && txt.querySelector('a[href^="mailto:"]');
+        if (a) {
+          try { a.blur && a.blur(); } catch (er) { }
+        }
+        // Optionally provide a small visual cue or do nothing; for now just swallow the click
+      } catch (err) { /* ignore per-click errors */ }
+    }, true);
+  } catch (e) { /* ignore if addEventListener not available */ }
+
   /* ==================================================
       0. 필수 DOM
   ================================================== */
