@@ -2639,6 +2639,15 @@ aside ul>li:nth-child(8) .app-span2 {
   position: relative;
 }
 
+/* Defensive: prevent pointer cursor on non-interactive aside text/image elements
+   so they don't look clickable and to reduce accidental activations. */
+aside ul > li .app-span,
+aside ul > li .app-span2,
+aside ul > li .pop_bottom,
+aside ul > li .pop_bottom * {
+  cursor: default !important;
+}
+
 .txt_t {
   color: #464646;
   text-align: left;

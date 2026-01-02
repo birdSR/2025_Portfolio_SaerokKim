@@ -14,25 +14,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, true); // use capture phase
 
-  // Prevent .txt_t clicks from triggering higher-level delegated handlers (e.g., mailto/link delegation)
-  // We use capture-phase listener so this runs before delegated handlers and stops propagation.
+  // Prevent clicks inside specific aside text/image areas from triggering higher-level delegated handlers
+  // (e.g., mailto/link delegation). Use capture-phase listener so this runs before delegated handlers and stops propagation.
   try {
     document.addEventListener('click', function (e) {
       try {
-        const txt = e.target.closest && e.target.closest('.txt_t');
-        if (!txt) return;
-        // Only affect aside items' .txt_t to avoid side-effects elsewhere
-        const inAside = !!txt.closest && !!txt.closest('aside');
+        // expanded selectors to catch all user-reported clickable-feeling elements
+        const selectorList = ['.txt_t', '.app-span', '.app-span2', '.pop_bottom', '.pop_bottom .date', '.pop_bottom .persent', '.pop_bottom .program', '.pop_bottom .p-icons', '.pop_bottom .p-icons img'];
+        // find the closest matching ancestor from the list
+        let matched = null;
+        for (let i = 0; i < selectorList.length; i++) {
+          const sel = selectorList[i];
+          const found = e.target.closest && e.target.closest(sel);
+          if (found) { matched = found; break; }
+        }
+        if (!matched) return;
+        // only apply this defensive blocking for elements inside the aside to avoid side-effects
+        const inAside = !!matched.closest && !!matched.closest('aside');
         if (!inAside) return;
         // Prevent default navigation and stop propagation so mailto or delegated anchor handlers don't run
         e.preventDefault();
         e.stopPropagation();
-        // if there is an anchor inside the text we still don't want it to activate via click
-        const a = txt.querySelector && txt.querySelector('a[href^="mailto:"]');
-        if (a) {
-          try { a.blur && a.blur(); } catch (er) { }
-        }
-        // Optionally provide a small visual cue or do nothing; for now just swallow the click
+        // blur any mailto anchors or actionable anchors/images inside the matched node
+        try {
+          const mailA = matched.querySelector && matched.querySelector('a[href^="mailto:"]');
+          if (mailA) { try { mailA.blur && mailA.blur(); } catch (er) { } }
+        } catch (ee) { }
+        try {
+          // blur any focused image or anchor inside matched node
+          const focusable = matched.querySelector && (matched.querySelector('a') || matched.querySelector('img'));
+          if (focusable) { try { focusable.blur && focusable.blur(); } catch (er) { } }
+        } catch (ee) { }
+        // swallow the click; do not allow delegated handlers to treat this as an activation
       } catch (err) { /* ignore per-click errors */ }
     }, true);
   } catch (e) { /* ignore if addEventListener not available */ }
