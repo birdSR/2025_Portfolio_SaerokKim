@@ -1,5 +1,56 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log('[common.js] DOMContentLoaded fired');
+  // Preserve original hrefs for anchors inside the aside so other scripts
+  // cannot silently overwrite them. If an href attribute changes, restore it.
+  (function preserveAsideAnchors() {
+    try {
+      const asideEl = document.querySelector('aside');
+      if (!asideEl) return;
+      // stash initial hrefs on data-preserved-href
+      function stashAnchors(root) {
+        try {
+          const list = Array.from((root || asideEl).querySelectorAll('a'));
+          list.forEach(a => {
+            try {
+              const h = a.getAttribute && a.getAttribute('href');
+              if (h != null) a.dataset.preservedHref = h;
+            } catch (e) { }
+          });
+        } catch (e) { }
+      }
+      stashAnchors(asideEl);
+
+      const mo = new MutationObserver((muts) => {
+        try {
+          muts.forEach(m => {
+            try {
+              if (m.type === 'attributes' && m.attributeName === 'href') {
+                const t = m.target;
+                if (t && t.dataset && t.dataset.preservedHref) {
+                  const want = t.dataset.preservedHref;
+                  const now = t.getAttribute && t.getAttribute('href');
+                  if (now !== want) {
+                    try { t.setAttribute('href', want); console.debug('[preserve-href] restored href', want, 'on', t); } catch (e) { }
+                  }
+                }
+              }
+              if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
+                Array.from(m.addedNodes).forEach(n => {
+                  try {
+                    if (n.nodeType === 1) stashAnchors(n);
+                  } catch (e) { }
+                });
+              }
+            } catch (e) { }
+          });
+        } catch (e) { }
+      });
+      mo.observe(asideEl, { attributes: true, attributeFilter: ['href'], subtree: true, childList: true });
+      // expose for debugging if needed
+      window._preserveAsideHrefObserver = mo;
+      console.debug('[preserve-href] aside anchor href preservation active');
+    } catch (e) { }
+  })();
   // global-ish aside reference used by several helpers and diagnostics
   const aside = document.querySelector('aside');
   // Diagnostic: log every click at capture phase to ensure events reach document
