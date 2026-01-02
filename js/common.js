@@ -31,6 +31,24 @@ document.addEventListener("DOMContentLoaded", () => {
       1. 가로 스크롤 너비 계산 (hasHorizontal인 경우)
   ================================================== */
   let totalWidth = 0;
+
+  // Helper: clear any selection markers from illust gallery images
+  function clearIllustSelection() {
+    try {
+      const asideEl = document.querySelector('aside');
+      if (!asideEl) return;
+      const imgs = asideEl.querySelectorAll('.illust-track img');
+      imgs.forEach(img => {
+        try {
+          img.classList.remove('selected');
+          img.removeAttribute('aria-selected');
+          img.removeAttribute('data-selected');
+          if (document.activeElement === img && typeof img.blur === 'function') img.blur();
+        } catch (e) { /* ignore individual image errors */ }
+      });
+    } catch (e) { /* ignore */ }
+  }
+
   if (hasHorizontal) {
     // Use bounding rect width to account for transforms/margins that offsetWidth misses
     panels.forEach(panel => {
@@ -551,7 +569,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector("aside .close-btn")
     ?.addEventListener("click", () => {
-      document.querySelector("aside").style.display = "none";
+      const asideEl = document.querySelector("aside");
+      if (!asideEl) return;
+      // remove overlay-mode if present and clear any visual selection on images
+      asideEl.classList.remove('overlay-mode');
+      try {
+        asideEl.querySelectorAll('.illust-track img').forEach(img => {
+          try {
+            img.classList.remove('selected');
+            img.removeAttribute('aria-selected');
+            img.removeAttribute('data-selected');
+            if (typeof img.blur === 'function') img.blur();
+          } catch (e) { /* ignore per-image errors */ }
+        });
+      } catch (e) { /* if illust-track not present, ignore */ }
+      asideEl.style.display = "none";
     });
 
   // Overlay gallery swipe + close handling for illust overlay
@@ -562,8 +594,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Close overlay when ESC pressed
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && asideEl.classList.contains('overlay-mode')) {
-        asideEl.classList.remove('overlay-mode');
-        asideEl.style.display = 'none';
+  asideEl.classList.remove('overlay-mode');
+  // clear any selected image state
+  try { clearIllustSelection(); } catch (ee) { }
+  asideEl.style.display = 'none';
         // restore any previous li content? currently original content persists in DOM
       }
     });
@@ -1112,6 +1146,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, true);
 
+    // Ensure individual images do not remain in a 'selected' or focused state after interaction
+    asideEl.addEventListener('click', (e) => {
+      try {
+        const img = e.target && e.target.closest && e.target.closest('img');
+        if (!img) return;
+        if (!img.closest || !img.closest('.illust-track')) return;
+        // remove any selection markers and blur focus
+        try { img.classList.remove('selected'); } catch (err) { }
+        try { img.removeAttribute('aria-selected'); } catch (err) { }
+        try { img.removeAttribute('data-selected'); } catch (err) { }
+        try { if (typeof img.blur === 'function') img.blur(); } catch (err) { }
+      } catch (err) { /* ignore */ }
+    }, false);
+
 
     // clicking outside gallery or close button should close overlay
     asideEl.addEventListener('click', (e) => {
@@ -1120,15 +1168,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const closeBtn = asideEl.querySelector('.close-btn');
       if (closeBtn && (closeBtn === e.target || closeBtn.contains(e.target))) {
         stopAutoplay();
-        asideEl.classList.remove('overlay-mode');
-        asideEl.style.display = 'none';
+  asideEl.classList.remove('overlay-mode');
+  try { clearIllustSelection(); } catch (ee) { }
+  asideEl.style.display = 'none';
         return;
       }
       // if click outside the gallery content, close
       if (wrap && !wrap.contains(e.target) && carousel.allowClickClose) {
         stopAutoplay();
-        asideEl.classList.remove('overlay-mode');
-        asideEl.style.display = 'none';
+  asideEl.classList.remove('overlay-mode');
+  try { clearIllustSelection(); } catch (ee) { }
+  asideEl.style.display = 'none';
       }
     });
 
@@ -1192,6 +1242,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stopAutoplay();
             // immediately disable interaction with images
             setImageState(false);
+            try { clearIllustSelection(); } catch (ee) { }
             // if an element inside aside currently has focus, blur it to avoid aria-hidden on focused
             try {
               const active = document.activeElement;
