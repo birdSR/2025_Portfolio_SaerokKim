@@ -698,7 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           // ensure aside visible and mark this li
           aside.style.display = 'block';
-          try { window._suppressMailUntil = Date.now() + 700; } catch (e) { }
+          try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           targetLi.classList.add('on');
           // initialize carousel immediately so clones/positioning are ready
           try { if (typeof setupCarousel === 'function') setupCarousel(); } catch (e) { /* setupCarousel defined later in scope; ignore if not available */ }
@@ -711,7 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // illust gallery selection/markup is fully cleared so images don't
           // remain visually selected when other project items open.
           try { clearIllustSelection(); } catch (e) { }
-          try { window._suppressMailUntil = Date.now() + 700; } catch (e) { }
+          try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           targetLi.classList.add('on');
           console.log('[click] targetLi found and .on added (array selection)');
         }
