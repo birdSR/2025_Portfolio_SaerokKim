@@ -819,7 +819,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log('[click] element not in project area and has no mapping — not opening aside:', el.className);
         return;
       }
-      aside.style.display = "block";
+  aside.style.display = "block";
+  try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
       // remove existing selection
       aside.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
 
@@ -903,6 +904,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           // ensure aside visible and mark this li
           aside.style.display = 'block';
+          try { if (typeof window._disableMailtoNow === 'function') window._disableMailtoNow(); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           targetLi.classList.add('on');
           // initialize carousel immediately so clones/positioning are ready
