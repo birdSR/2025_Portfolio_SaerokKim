@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, true); // use capture phase
 
+  // Global mailto suppressor: when aside is programmatically opened we set
+  // window._suppressMailUntil = Date.now() + ms to prevent accidental mailto activations
+  document.addEventListener('click', function (ev) {
+    try {
+      const a = ev.target && ev.target.closest ? ev.target.closest('a[href^="mailto:"]') : null;
+      if (!a) return;
+      const until = window._suppressMailUntil || 0;
+      if (Date.now() < until) {
+        try { ev.preventDefault(); } catch (e) { }
+        try { ev.stopPropagation(); } catch (e) { }
+        try { console.log('[suppress-mail] blocked mailto click because aside just opened'); } catch (e) { }
+      }
+    } catch (e) { }
+  }, true);
+
   // Prevent clicks inside specific aside text/image areas from triggering higher-level delegated handlers
   // (e.g., mailto/link delegation). Use capture-phase listener so this runs before delegated handlers and stops propagation.
   try {
@@ -683,6 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           // ensure aside visible and mark this li
           aside.style.display = 'block';
+          try { window._suppressMailUntil = Date.now() + 700; } catch (e) { }
           targetLi.classList.add('on');
           // initialize carousel immediately so clones/positioning are ready
           try { if (typeof setupCarousel === 'function') setupCarousel(); } catch (e) { /* setupCarousel defined later in scope; ignore if not available */ }
@@ -695,6 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // illust gallery selection/markup is fully cleared so images don't
           // remain visually selected when other project items open.
           try { clearIllustSelection(); } catch (e) { }
+          try { window._suppressMailUntil = Date.now() + 700; } catch (e) { }
           targetLi.classList.add('on');
           console.log('[click] targetLi found and .on added (array selection)');
         }
