@@ -31,6 +31,34 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) { }
   }, true);
 
+  // Extra defensive capture-phase handlers for pointerup/mouseup/auxclick
+  // to block mailto activations that may occur outside of the normal click
+  // flow or via different input events.
+  function blockMailtoIfSuppressed(ev) {
+    try {
+      const until = window._suppressMailUntil || 0;
+      if (Date.now() >= until) return;
+      // Try to find an anchor under the event target or at the pointer location
+      let a = ev.target && ev.target.closest ? ev.target.closest('a[href^="mailto:"]') : null;
+      if (!a && typeof ev.clientX === 'number' && typeof ev.clientY === 'number') {
+        try {
+          const el = document.elementFromPoint(ev.clientX, ev.clientY);
+          a = el && el.closest ? el.closest('a[href^="mailto:"]') : null;
+        } catch (e) { }
+      }
+      if (!a) return;
+      try { ev.preventDefault(); } catch (e) { }
+      try { ev.stopPropagation(); } catch (e) { }
+      try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch (e) { }
+      try { console.log('[suppress-mail] prevented', ev.type, 'on mailto'); } catch (e) { }
+    } catch (e) { }
+  }
+  try {
+    document.addEventListener('pointerup', blockMailtoIfSuppressed, true);
+    document.addEventListener('mouseup', blockMailtoIfSuppressed, true);
+    document.addEventListener('auxclick', blockMailtoIfSuppressed, true);
+  } catch (e) { }
+
   // Prevent clicks inside specific aside text/image areas from triggering higher-level delegated handlers
   // (e.g., mailto/link delegation). Use capture-phase listener so this runs before delegated handlers and stops propagation.
   try {
