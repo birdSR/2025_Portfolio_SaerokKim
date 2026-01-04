@@ -167,123 +167,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // We rely on the DOM-detach approach (disableMailtoWhileAsideOpen) below which
   // is more robust and less race-prone across browsers.
 
-  // Stronger: disable mailto anchors while aside is visible and restore when aside hides.
-  (function disableMailtoWhileAsideOpen() {
-    // stash of {el, href}
-    // More robust approach: detach mailto anchors from the DOM while aside is visible.
-    // We replace each anchor with a non-interactive placeholder <span> to preserve layout
-    // and re-insert the original anchor node on restore. This prevents native mailto
-    // activation even if events slip through.
+  // Simplified: do not detach mailto anchors from DOM (unsafe). Instead expose
+  // lightweight helpers that log action and keep no DOM side-effects. We rely
+  // on a capture-phase blocker to prevent unintended mailto activation while
+  // aside is open.
+  (function disableMailtoWhileAsideOpen_Noop() {
     window._mailtoStash = window._mailtoStash || [];
-    function disableAll() {
-      try {
-        try { console.debug('[mailto-disable] running disableAll() — clearing previous stash, scanning for mailto anchors'); } catch (e) { }
-        // clear existing stash
-        window._mailtoStash = [];
-        const anchors = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
-        anchors.forEach(a => {
-          try {
-            // don't touch mailto anchors that are inside the aside itself (unlikely but safe)
-            if (a.closest && a.closest('aside')) return;
-            // preserve mailto anchors inside the side_menu (left menu) — user expects Contact me to work
-            if (a.closest && a.closest('.side_menu')) {
-              try { console.debug('[mailto-disable] skipping anchor inside .side_menu'); } catch (e) { }
-              return;
-            }
-            const parent = a.parentNode;
-            const next = a.nextSibling;
-            // create placeholder span to preserve visual layout
-            const placeholder = document.createElement('span');
-            placeholder.setAttribute('aria-hidden', 'true');
-            placeholder.setAttribute('data-mailto-placeholder', '1');
-            // copy child nodes (shallow clone of children) to preserve visuals
-            try {
-              Array.from(a.childNodes).forEach(n => placeholder.appendChild(n.cloneNode(true)));
-            } catch (e) { /* ignore cloning errors */ }
-            // insert placeholder and remove original anchor
-            try { parent.insertBefore(placeholder, next); } catch (e) { /* fallback */ parent.appendChild(placeholder); }
-            try { parent.removeChild(a); } catch (e) { /* ignore */ }
-            // stash original anchor and its position so we can restore it
-            window._mailtoStash.push({ el: a, parent: parent, nextSibling: next });
-          } catch (e) { /* ignore per-anchor errors */ }
-        });
-        try { console.debug('[mailto-disable] stash length after disableAll():', window._mailtoStash.length, window._mailtoStash.map(s => ({ parent: s.parent && s.parent.tagName, nextSibling: s.nextSibling && (s.nextSibling.nodeType === 3 ? "#text" : s.nextSibling.tagName) }))); } catch (e) { }
-      } catch (e) { }
-    }
-    function restoreAll() {
-      try {
-        try { console.debug('[mailto-restore] running restoreAll() — stash size:', (window._mailtoStash || []).length); } catch (e) { }
-        // restore in reverse order to be safe with sibling pointers
-        const list = (window._mailtoStash || []).slice().reverse();
-        list.forEach(item => {
-          try {
-            if (!item || !item.el || !item.parent) return;
-            const parent = item.parent;
-            // If a placeholder is present at the same spot, remove it and insert original anchor
-            let placeholderFound = null;
-            try {
-              // look for placeholder spans among parent's children
-              const children = Array.from(parent.childNodes);
-              // if nextSibling still exists, the placeholder should be just before it
-              if (item.nextSibling && item.nextSibling.parentNode === parent) {
-                const idx = children.indexOf(item.nextSibling);
-                if (idx > 0) {
-                  const cand = children[idx - 1];
-                  if (cand && cand.nodeType === 1 && cand.getAttribute && cand.getAttribute('data-mailto-placeholder') === '1') {
-                    placeholderFound = cand;
-                  }
-                }
-              } else {
-                // fallback: find first placeholder in parent
-                placeholderFound = children.find(ch => ch.nodeType === 1 && ch.getAttribute && ch.getAttribute('data-mailto-placeholder') === '1') || null;
-              }
-            } catch (e) { }
-
-            if (placeholderFound && placeholderFound.parentNode === parent) {
-              parent.insertBefore(item.el, placeholderFound);
-              try { parent.removeChild(placeholderFound); } catch (e) { }
-            } else {
-              // if no placeholder, try to insert before nextSibling or append
-              if (item.nextSibling && item.nextSibling.parentNode === parent) {
-                parent.insertBefore(item.el, item.nextSibling);
-              } else {
-                parent.appendChild(item.el);
-              }
-            }
-          } catch (e) { }
-        });
-        window._mailtoStash = [];
-        try { console.debug('[mailto-restore] restoreAll complete; stash cleared'); } catch (e) { }
-      } catch (e) { }
-    }
-
-    // expose helpers for manual invocation if needed
-    window._disableMailtoNow = disableAll;
-    window._restoreMailtoNow = restoreAll;
-    // Convenience wrappers that log when invoked from console
-    window.debug_disableMailtoNow = function () { try { console.debug('[debug] debug_disableMailtoNow called'); } catch (e) { }; return disableAll(); };
-    window.debug_restoreMailtoNow = function () { try { console.debug('[debug] debug_restoreMailtoNow called'); } catch (e) { }; return restoreAll(); };
-
-    // Observe aside visibility to restore on close
-    try {
-      const asideEl = document.querySelector('aside');
-      if (asideEl && typeof MutationObserver === 'function') {
-        const mo = new MutationObserver(() => {
-          try {
-            const styleDisplay = asideEl.style && asideEl.style.display ? asideEl.style.display : getComputedStyle(asideEl).display;
-            const isVisible = (styleDisplay !== 'none');
-            if (isVisible) {
-              // when aside becomes visible, disable mailto
-              disableAll();
-            } else {
-              // when aside hidden, restore
-              restoreAll();
-            }
-          } catch (e) { }
-        });
-        mo.observe(asideEl, { attributes: true, attributeFilter: ['style', 'class'] });
-      }
-    } catch (e) { }
+    window._disableMailtoNow = function () { try { console.debug('[mailto] _disableMailtoNow called (noop)'); } catch (e) { } };
+    window._restoreMailtoNow = function () { try { console.debug('[mailto] _restoreMailtoNow called (noop)'); } catch (e) { } };
+    window.debug_disableMailtoNow = window._disableMailtoNow;
+    window.debug_restoreMailtoNow = window._restoreMailtoNow;
   })();
 
   // Capture-phase temporary blocker: prevent native mailto launch during aside open transition
@@ -777,7 +670,8 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ==================================================
       6. 클릭 요소 (aside / home 복귀)
   ================================================== */
-  document.querySelector(".about-me .enter_about_me")
+  // attach enter-about-me click using HTML class (hyphen) to match markup
+  document.querySelector(".about-me .enter_about-me")
     ?.addEventListener("click", () => { });
 
   const clickables = document.querySelectorAll(".click");
@@ -792,7 +686,8 @@ document.addEventListener("DOMContentLoaded", () => {
     'samsung_promo': 4,
     'vfun_login': 5,
     'lg_plal': 6,
-    'bn': 7
+    'bn': 7,
+    'illust': 8 // added mapping for illustration clickable (matches aside order)
   };
 
   // (no annotateAsideItems — data-project annotation removed per user request)
@@ -1910,37 +1805,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }, true);
   } catch (e) { /* ignore if document not available */ }
 
-  // Guard: prevent other JS from calling preventDefault on direct links
-  // If an event path contains an anchor matching '.direct_plan' or '.dir_btn a'
-  // and that anchor's href is NOT a mailto:, ignore preventDefault so the
-  // browser can follow the HTML-authored link. This preserves mailto behavior.
+  // Safer global capture: block mailto activation when aside is open unless
+  // the mailto is inside allowed regions (.side_menu, .dir_btn, .send_e-mail).
   try {
-    (function () {
-      if (Event.prototype._preventDefaultGuarded) return; // idempotent
-      const _origPrevent = Event.prototype.preventDefault;
-      Event.prototype.preventDefault = function () {
+    if (!window._mailtoSafeCaptureInstalled) {
+      document.addEventListener('click', function (ev) {
         try {
-          const ev = this;
-          const path = ev.composedPath ? ev.composedPath() : (ev.path || []);
-          for (const el of path) {
-            try {
-              if (!el || !el.getAttribute) continue;
-              if (el.matches && (el.matches('a.direct_plan') || el.matches('.dir_btn a'))) {
-                const href = el.getAttribute('href') || '';
-                if (!href.startsWith('mailto:')) {
-                  // Suppress preventDefault for authored direct links so navigation occurs
-                  console.debug('[preventDefault-guard] ignored preventDefault for', href, 'selector:', el.className || el);
-                  return; // don't call original preventDefault
-                }
-              }
-            } catch (e) { /* ignore per-element errors */ }
-          }
-        } catch (err) { /* ignore guard errors */ }
-        return _origPrevent.apply(this, arguments);
-      };
-      Event.prototype._preventDefaultGuarded = true;
-    })();
-  } catch (e) { /* non-fatal */ }
+          const asideEl = document.querySelector('aside');
+          if (!asideEl) return;
+          const styleDisplay = asideEl.style && asideEl.style.display ? asideEl.style.display : getComputedStyle(asideEl).display;
+          const asideVisible = (styleDisplay !== 'none') && asideEl.getAttribute('aria-hidden') !== 'true';
+          if (!asideVisible) return;
+
+          const mailA = ev.target && ev.target.closest ? ev.target.closest('a[href^="mailto:"]') : null;
+          if (!mailA) return; // not a mailto click
+          // allow side menu contact and dir_btn anchors
+          if (mailA.closest && (mailA.closest('.side_menu') || mailA.closest('.dir_btn') || mailA.closest('.send-e-mail'))) return;
+          // otherwise block
+          ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+          console.debug('[mailto-safe-capture] blocked mailto while aside open:', mailA.getAttribute('href'));
+        } catch (e) { /* ignore per-event errors */ }
+      }, true);
+      window._mailtoSafeCaptureInstalled = true;
+      console.debug('[mailto-safe-capture] installed');
+    }
+  } catch (e) { }
+
+  // Removed global Event.prototype.preventDefault override to avoid side-effects.
+  // Use a capture-phase mailto blocker below to prevent unintended mailto activations
+  // while aside is open and only when clicks originate from non-link areas.
 
   // 햄버거 메뉴 열기/닫기: 로드 시 닫힘 보장, 클릭 시 토글
   const hamburger = document.querySelector('.hamburger');
@@ -2424,40 +2317,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 햄버거 클릭 시 사이드 메뉴 오픈/클로즈 (심플 토글)
-  (function () {
-    var hamburger = document.querySelector('.hamburger');
-    var sideMenu = document.querySelector('.side_menu');
-    var closeBtn = document.querySelector('.side_menu .close_btn');
-    if (!hamburger || !sideMenu) return;
-
-    // 초기 상태: 닫힘
-    sideMenu.classList.remove('on');
-    sideMenu.classList.add('close');
-
-    hamburger.addEventListener('click', function (e) {
-      e.stopPropagation();
-      sideMenu.classList.add('on');
-      sideMenu.classList.remove('close');
-    });
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        sideMenu.classList.remove('on');
-        sideMenu.classList.add('close');
-      });
-    }
-
-    document.addEventListener('click', function (e) {
-      if (sideMenu.classList.contains('on') && !sideMenu.contains(e.target) && !hamburger.contains(e.target)) {
-        sideMenu.classList.remove('on');
-        sideMenu.classList.add('close');
-      }
-    });
-  })();
-
   // Duplicate home-toggle handler removed. Rely on existing openSubmenu/closeSubmenu helpers below.
+
 });
 
 // removed duplicate debug declarations that caused a SyntaxError
