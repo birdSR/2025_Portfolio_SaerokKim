@@ -432,10 +432,16 @@ header img {
 }
 
 /* Explicitly allow transforms/animations for clouds and apples */
-#target .m_cloud1, #target .m_cloud2, #target .m_cloud3,
-#target .apple_a, #target .apple_b, #target .apple_c {
-  transform: none; /* allow keyframes to set transform */
-  will-change: transform; /* hint for smoother animation */
+#target .m_cloud1,
+#target .m_cloud2,
+#target .m_cloud3,
+#target .apple_a,
+#target .apple_b,
+#target .apple_c {
+  transform: none;
+  /* allow keyframes to set transform */
+  will-change: transform;
+  /* hint for smoother animation */
 }
 
 .skill .apple_b {

@@ -1,3 +1,26 @@
+// Global runtime diagnostics: capture top-level errors and unhandled promise rejections
+// This helps collect stack traces and filenames when minified vendor bundles throw.
+(function globalRuntimeDiagnostics() {
+  try {
+    window.addEventListener('error', function (ev) {
+      try {
+        // ev.error may be null for resource errors; print available fields
+        console.error('[global-error] message=', ev && ev.message, 'filename=', ev && ev.filename, 'lineno=', ev && ev.lineno, 'colno=', ev && ev.colno, 'error=', ev && ev.error);
+        if (ev && ev.error && ev.error.stack) console.error('[global-error-stack]', ev.error.stack);
+      } catch (e) { /* ignore logging failures */ }
+    });
+
+    window.addEventListener('unhandledrejection', function (ev) {
+      try {
+        console.error('[unhandledrejection] reason=', ev && ev.reason);
+        if (ev && ev.reason && ev.reason.stack) console.error('[unhandledrejection-stack]', ev.reason.stack);
+      } catch (e) { /* ignore logging failures */ }
+    });
+    // small marker for when diagnostics are active
+    console.debug('[globalRuntimeDiagnostics] installed');
+  } catch (e) { /* ignore */ }
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log('[common.js] DOMContentLoaded fired');
   // Debug helper: trace calls to event.preventDefault()
@@ -675,6 +698,39 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => { });
 
   const clickables = document.querySelectorAll(".click");
+
+  // side_menu의 해시 링크를 가로스크롤(=lenis scroll)로 변환
+  try {
+    document.querySelectorAll('.side_menu a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        try {
+          const hash = a.getAttribute('href');
+          if (!hash || hash === '#') return;
+          const id = hash.slice(1);
+          const el = document.getElementById(id);
+          if (!el) return;
+          e.preventDefault();
+          const target = (typeof computeTargetScrollForElement === 'function') ? computeTargetScrollForElement(el) : null;
+          if (typeof adjustedScrollTo === 'function' && target != null) {
+            adjustedScrollTo(target, { duration: 1.0, _hashId: id });
+          } else if (typeof lenis !== 'undefined' && lenis && typeof lenis.scrollTo === 'function') {
+            const panelOffset = (typeof getPanelOffsetForElement === 'function') ? getPanelOffsetForElement(el) : 0;
+            try { lenis.scrollTo(panelOffset); } catch (e) { try { lenis.scrollTo(panelOffset); } catch (ee) { /* ignore */ } }
+          }
+
+          // 메뉴 닫기
+          const sideMenu = document.querySelector('.side_menu');
+          if (sideMenu && sideMenu.classList.contains('on')) {
+            sideMenu.classList.remove('on');
+            sideMenu.classList.add('close');
+            sideMenu.setAttribute('aria-hidden', 'true');
+            sideMenu.style.right = '-420px';
+            setTimeout(() => sideMenu.style.display = 'none', 600);
+          }
+        } catch (e) { /* ignore per-click errors */ }
+      });
+    });
+  } catch (e) { }
   // Define project-specific clickables in the same visual order as aside list
   // This ensures fallback indexing (index+1) matches aside nth-child order.
   const projectClickables = document.querySelectorAll('.uxuiobj .click, .promoobj .click, .bniobj .click');
@@ -715,14 +771,89 @@ document.addEventListener("DOMContentLoaded", () => {
         if (meta && targetLi) {
           const planA = targetLi.querySelector('a.direct_plan');
           const outA = targetLi.querySelector('a.direct_output');
-          if (planA && meta.plan) planA.setAttribute('href', meta.plan);
-          if (outA && meta.web) outA.setAttribute('href', meta.web);
+          // Prefer HTML-original hrefs preserved by the early stash helper.
+          // If preservedHref exists, restore it to the anchor. Otherwise only inject
+          // meta values when no href is present.
+          try {
+            if (planA) {
+              const preserved = planA.dataset && planA.dataset.preservedHref;
+              if (preserved != null) {
+                // always restore the original HTML href recorded at load
+                if (planA.getAttribute('href') !== preserved) {
+                  planA.setAttribute('href', preserved);
+                  console.debug('[openAsideById] restored preserved plan href for', id, preserved);
+                } else {
+                  console.debug('[openAsideById] plan href already matches preserved for', id);
+                }
+              } else if (meta && meta.plan) {
+                const cur = planA.getAttribute('href');
+                if (!cur || cur.trim() === '') {
+                  planA.setAttribute('href', meta.plan);
+                  console.debug('[openAsideById] injected plan href for', id, meta.plan);
+                } else {
+                  console.debug('[openAsideById] preserved existing plan href for', id, cur);
+                }
+              }
+            }
+            if (outA) {
+              const preserved2 = outA.dataset && outA.dataset.preservedHref;
+              if (preserved2 != null) {
+                if (outA.getAttribute('href') !== preserved2) {
+                  outA.setAttribute('href', preserved2);
+                  console.debug('[openAsideById] restored preserved web href for', id, preserved2);
+                } else {
+                  console.debug('[openAsideById] web href already matches preserved for', id);
+                }
+              } else if (meta && meta.web) {
+                const cur2 = outA.getAttribute('href');
+                if (!cur2 || cur2.trim() === '') {
+                  outA.setAttribute('href', meta.web);
+                  console.debug('[openAsideById] injected web href for', id, meta.web);
+                } else {
+                  console.debug('[openAsideById] preserved existing web href for', id, cur2);
+                }
+              }
+            }
+          } catch (e) { }
         }
       } catch (e) { }
       // show aside
       asideEl.style.display = 'block';
       try { document.body.classList.add('aside-open'); } catch (e) { }
       try { asideEl.setAttribute('aria-hidden', 'false'); } catch (e) { }
+      // Ensure aside interactive area receives pointer events and focus management.
+      try {
+        // Some browsers may keep pointer-events on children disabled by global rules; explicitly
+        // enable pointer-events on dir_btn anchors as a final step to guarantee clickability.
+        const links = targetLi ? Array.from(targetLi.querySelectorAll('.dir_btn a')) : [];
+        links.forEach(a => {
+          try {
+            a.style.pointerEvents = 'auto';
+            a.style.userSelect = 'text';
+          } catch (e) { }
+        });
+      } catch (e) { }
+
+      // Re-run a short deferred restore to handle cases where other observers temporarily
+      // modified hrefs during the aside display transition. This keeps HTML-authoritative
+      // hrefs present when the aside becomes visible.
+      try {
+        setTimeout(() => {
+          try {
+            if (targetLi) {
+              const planA2 = targetLi.querySelector('a.direct_plan');
+              const outA2 = targetLi.querySelector('a.direct_output');
+              if (planA2 && planA2.dataset && planA2.dataset.preservedHref) {
+                if (planA2.getAttribute('href') !== planA2.dataset.preservedHref) planA2.setAttribute('href', planA2.dataset.preservedHref);
+              }
+              if (outA2 && outA2.dataset && outA2.dataset.preservedHref) {
+                if (outA2.getAttribute('href') !== outA2.dataset.preservedHref) outA2.setAttribute('href', outA2.dataset.preservedHref);
+              }
+            }
+          } catch (e) { }
+        }, 50);
+      } catch (e) { }
+
       console.log('[openAsideById] opened aside for id=', id);
     } catch (e) { console.error('[openAsideById] error', e); }
   }
@@ -945,6 +1076,37 @@ document.addEventListener("DOMContentLoaded", () => {
       checks += 1; if (checks > 8) clearInterval(iv);
     }, 500);
   })();
+
+  // Click diagnostics for header, side menu, and dir_btn anchors.
+  // Install capture-phase listener that logs concise info when clicks involve these areas.
+  try {
+    document.addEventListener('click', function (ev) {
+      try {
+        const t = ev.target;
+        const interested = t && (t.closest && (t.closest('.site-header') || t.closest('.hamburger') || t.closest('.side_menu') || t.closest('.dir_btn')));
+        if (!interested) return;
+        const a = t.closest && t.closest('a') ? t.closest('a') : null;
+        const info = {
+          tag: t.tagName,
+          class: t.className,
+          href: a ? (a.getAttribute && a.getAttribute('href')) : null,
+          defaultPrevented: ev.defaultPrevented,
+          isTrusted: ev.isTrusted,
+        };
+        try { info.computedPointer = window.getComputedStyle(t).pointerEvents; } catch (e) { info.computedPointer = '(err)'; }
+        console.log('[click-diag] capture', info);
+        try {
+          // deferred snapshot after propagation to see if something changed
+          setTimeout(() => {
+            try {
+              console.log('[click-diag] deferred activeElement=', document.activeElement && (document.activeElement.tagName + (document.activeElement.className ? ' .' + document.activeElement.className : '')),
+                'defaultPrevented_after=', ev.defaultPrevented);
+            } catch (e) { }
+          }, 0);
+        } catch (e) { }
+      } catch (e) { /* ignore per-event errors */ }
+    }, true);
+  } catch (e) { }
 
   document.querySelector("aside .close-btn")
     ?.addEventListener("click", () => {
@@ -1820,6 +1982,38 @@ document.addEventListener("DOMContentLoaded", () => {
       }, true); // use capture to log early
     });
   } catch (e) { /* ignore if selectors not present */ }
+
+  // Capture-phase enforcement: ensure .dir_btn anchors always open their HTML-provided hrefs
+  try {
+    document.addEventListener('click', function (ev) {
+      try {
+        const a = ev.target && ev.target.closest ? ev.target.closest('a.direct_plan, a.direct_output, .dir_btn a') : null;
+        if (!a) return;
+        // prefer preserved HTML href if available, otherwise attribute href
+        const preserved = a.dataset && a.dataset.preservedHref ? a.dataset.preservedHref : null;
+        const attrHref = a.getAttribute && a.getAttribute('href');
+        const useHref = preserved || attrHref;
+        if (!useHref) return; // nothing to do
+        // allow mailto and same-page anchors to behave normally (mailto may be allowed elsewhere)
+        if (useHref.startsWith && useHref.startsWith('mailto:')) return;
+        if (useHref.startsWith && useHref.startsWith('#')) return; // let hash handlers run (side_menu mapping handles header links)
+
+        // If current browser href differs from preserved/attr, force navigation using the HTML value.
+        // Use anchor's target where possible; default to _blank to match user expectation.
+        const tgt = a.getAttribute && a.getAttribute('target') ? a.getAttribute('target') : '_blank';
+        try {
+          if (tgt === '_self' || tgt === '_parent' || tgt === '') {
+            // same-window navigation
+            ev.preventDefault(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            window.location.href = useHref;
+          } else {
+            ev.preventDefault(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            try { window.open(useHref, tgt, 'noopener,noreferrer'); } catch (err) { window.location.href = useHref; }
+          }
+        } catch (e) { /* ignore navigation errors */ }
+      } catch (e) { /* per-event ignore */ }
+    }, true);
+  } catch (e) { }
 
   // Capture-phase guard: prevent clicks on non-link aside text from triggering mailto
   try {

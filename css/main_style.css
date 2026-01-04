@@ -31,8 +31,8 @@ aside.overlay-mode .illust-track img:hover {
 /* End hover rules */
 
 /* Defensive: ensure no lingering visual 'selected' state remains when gallery is closed */
-aside ul > li:not(.illustpop) .illust-track img,
-aside ul > li:not(.illustpop) .illust-track img:hover,
+aside ul>li:not(.illustpop) .illust-track img,
+aside ul>li:not(.illustpop) .illust-track img:hover,
 aside:not(.overlay-mode) .illust-track img,
 aside:not(.overlay-mode) .illust-track img:hover {
   transform: none !important;
@@ -46,17 +46,18 @@ aside:not(.overlay-mode) .illust-track img:hover {
 /* Remove any large z-index or absolute positioned clone that could visually overlap content */
 aside .illust-gallery-wrap,
 aside .illust-track[data-loop],
-aside ul > li.illustpop.on {
+aside ul>li.illustpop.on {
   z-index: 0 !important;
 }
 
 /* When aside is not overlay-mode, ensure illustpop is visually hidden and inert */
-aside ul > li.illustpop {
+aside ul>li.illustpop {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
-aside.overlay-mode ul > li.illustpop {
+
+aside.overlay-mode ul>li.illustpop {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
@@ -2643,10 +2644,10 @@ aside ul>li:nth-child(8) .app-span2 {
 
 /* Defensive: prevent pointer cursor on non-interactive aside text/image elements
    so they don't look clickable and to reduce accidental activations. */
-aside ul > li .app-span,
-aside ul > li .app-span2,
-aside ul > li .pop_bottom,
-aside ul > li .pop_bottom * {
+aside ul>li .app-span,
+aside ul>li .app-span2,
+aside ul>li .pop_bottom,
+aside ul>li .pop_bottom * {
   cursor: default !important;
 }
 
@@ -2655,13 +2656,13 @@ aside ul > li .pop_bottom * {
    decorative text nodes while still allowing text selection via the parent .txt_t
    which explicitly keeps pointer-events:auto above. We avoid applying this to
    anchor elements or .dir_btn so intended links remain clickable. */
-aside ul > li .app-span,
-aside ul > li .app-span2 {
+aside ul>li .app-span,
+aside ul>li .app-span2 {
   pointer-events: none !important;
 }
 
 /* Allow pointer cursor for actionable links inside dir_btn */
-aside ul > li .dir_btn a {
+aside ul>li .dir_btn a {
   cursor: pointer !important;
 }
 
@@ -2679,9 +2680,10 @@ aside ul > li .dir_btn a {
 }
 
 /* Ensure aside text blocks don't show pointer or behave like links */
-aside ul > li .txt_t {
+aside ul>li .txt_t {
   cursor: default !important;
-  pointer-events: auto; /* allow text selection if desired */
+  pointer-events: auto;
+  /* allow text selection if desired */
 }
 
 aside ul>li:nth-child(2) .txt_t {
@@ -2729,10 +2731,13 @@ aside ul>li:nth-child(2) .dir_btn {
   display: flex;
 }
 
-/* When an aside is open, block pointer events for the main page content
-   so underlying interactive elements (footer mailto) cannot be activated
-   by accidental clicks. The aside remains interactive via higher z-index. */
-body.aside-open > *:not(aside) {
+/* When an aside is open, only disable the main interactive content (horizontal wrapper / main)
+   to prevent accidental activations underneath the aside. Keep header and side_menu interactive
+   so users can still use the menu while an aside is visible. */
+body.aside-open .horizontal-wrapper,
+body.aside-open main,
+body.aside-open .horizontal-scroll,
+body.aside-open .audio-player-fixed {
   pointer-events: none !important;
   user-select: none !important;
 }
@@ -2742,10 +2747,27 @@ body.aside-open aside {
   pointer-events: auto !important;
 }
 
+/* Make header and hamburger/side_menu appear above aside for interaction fidelity */
+body.aside-open .site-header,
+body.aside-open .hamburger,
+body.aside-open .side_menu {
+  z-index: 2200 !important;
+}
+
 /* keep .dir_btn anchors clickable inside aside even when global block is active */
 body.aside-open aside .dir_btn a {
   pointer-events: auto !important;
   user-select: text !important;
+}
+
+/* Extra high-specificity rule to ensure dir_btn anchors remain interactive across browsers
+   and even if parent elements have pointer-events disabled via global selectors. */
+body.aside-open aside ul>li .dir_btn a.direct_plan,
+body.aside-open aside ul>li .dir_btn a.direct_output {
+  pointer-events: auto !important;
+  -webkit-pointer-events: auto !important;
+  user-select: text !important;
+  cursor: pointer !important;
 }
 
 /* allow the contact/mailto link in the side menu to remain clickable even while aside is open */
