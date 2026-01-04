@@ -690,6 +690,43 @@ document.addEventListener("DOMContentLoaded", () => {
     'illust': 8 // added mapping for illustration clickable (matches aside order)
   };
 
+  // Project metadata keyed by data-id for robust matching (used to populate dir_btn links)
+  const projectsMeta = {
+    'studio-dragon': { id: 'studio-dragon', plan: 'https://buly.kr/AwgZjrN', web: 'https://birdSR.github.io/studio_dragon_saerokkim/' },
+    'breadlee': { id: 'breadlee', plan: 'https://buly.kr/58TZNRd', web: 'https://buly.kr/7FSf9FY' },
+    'museum-letters': { id: 'museum-letters', plan: 'https://buly.kr/Aar3mng', web: '' },
+    'samsung-promo': { id: 'samsung-promo', plan: 'https://buly.kr/CM0eHiA', web: '' },
+    'vfun-login': { id: 'vfun-login', plan: 'https://buly.kr/Aar3mng', web: '' },
+    'lg-plal': { id: 'lg-plal', plan: 'https://buly.kr/58TZNRd', web: '' },
+    'content-banner': { id: 'content-banner', plan: 'https://buly.kr/CM0eHiA', web: '' },
+    'illustration': { id: 'illustration', plan: '', web: '' }
+  };
+
+  function openAsideById(id, targetLi) {
+    try {
+      const asideEl = document.querySelector('aside');
+      if (!asideEl) return;
+      const meta = projectsMeta[id] || null;
+      // clear existing selection
+      asideEl.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
+      if (targetLi) targetLi.classList.add('on');
+      // update dir_btn anchors if present inside targetLi
+      try {
+        if (meta && targetLi) {
+          const planA = targetLi.querySelector('a.direct_plan');
+          const outA = targetLi.querySelector('a.direct_output');
+          if (planA && meta.plan) planA.setAttribute('href', meta.plan);
+          if (outA && meta.web) outA.setAttribute('href', meta.web);
+        }
+      } catch (e) { }
+      // show aside
+      asideEl.style.display = 'block';
+      try { document.body.classList.add('aside-open'); } catch (e) { }
+      try { asideEl.setAttribute('aria-hidden', 'false'); } catch (e) { }
+      console.log('[openAsideById] opened aside for id=', id);
+    } catch (e) { console.error('[openAsideById] error', e); }
+  }
+
   // (no annotateAsideItems — data-project annotation removed per user request)
 
   if (clickables.length > 0) {
@@ -703,8 +740,14 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener('pointerdown', (ev) => console.log('[pointerdown on .click]', el.className));
     el.addEventListener('mousedown', (ev) => console.log('[mousedown on .click]', el.className));
     el.addEventListener('touchstart', (ev) => console.log('[touchstart on .click]', el.className));
-    el.addEventListener("click", () => {
+    el.addEventListener("click", (ev) => {
       console.log('[click] element clicked:', el.className);
+      // If user clicked a real link inside the clickable area, let the link act normally
+      const clickedLink = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+      if (clickedLink) {
+        console.log('[click] clicked a real link inside clickable — letting link handle navigation', clickedLink.getAttribute('href'));
+        return; // allow normal link behavior (mailto or external)
+      }
       // data-target 속성이 있으면 해당 요소를 열기 (우선권)
       const targetSelector = el.getAttribute("data-target");
       if (targetSelector) {
@@ -747,26 +790,48 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (e) { /* inert may not be supported */ }
       aside.setAttribute('aria-hidden', 'false');
 
-      // determine target index by mapping (class-based) first
-      let targetIndex = null;
+      // Determine target by data-id on the clicked element's corresponding aside li
+      // Prefer explicit mapping via clickableToAsideIndex (compat), otherwise use data-id on aside li.
+      let targetLi = null;
+      // first, try class-based mapping to an aside index
       for (const cls in clickableToAsideIndex) {
         if (el.classList.contains(cls)) {
-          targetIndex = clickableToAsideIndex[cls];
-          console.log('[click] class-mapped target index for', cls, '=>', targetIndex);
+          const asideLis = Array.from(aside.querySelectorAll('ul > li'));
+          const idx = clickableToAsideIndex[cls] - 1;
+          if (idx >= 0 && idx < asideLis.length) {
+            targetLi = asideLis[idx];
+            console.log('[click] class-mapped target li for', cls, '=> index', idx);
+          }
           break;
         }
       }
 
-      // fallback: use positional index among project-specific clickables (matches aside order)
-      if (targetIndex === null) {
+      // If not found, try to find a data-id on a closest container or match by clickable's class
+      if (!targetLi) {
+        // Find a meaningful data-id from the clicked element (closest element with data-id or its ancestors)
+        let container = el;
+        let foundId = null;
+        while (container && container !== document.body) {
+          if (container.dataset && container.dataset.id) { foundId = container.dataset.id; break; }
+          container = container.parentElement;
+        }
+        // If the clickable element itself had a class that corresponds to a aside li data-id, try to map by naming
+        if (!foundId) {
+          // no-op: fallthrough to projectClickables positional fallback below
+        }
+        if (foundId) {
+          targetLi = aside.querySelector(`ul > li[data-id="${foundId}"]`);
+          console.log('[click] found targetLi by data-id from clickable container:', foundId, '=>', !!targetLi);
+        }
+      }
+
+      // positional fallback: try to match by index among projectClickables (best-effort)
+      if (!targetLi) {
         const projIndex = Array.prototype.indexOf.call(projectClickables, el);
-        console.log('[click] projIndex:', projIndex, 'global index:', index);
         if (projIndex !== -1) {
-          targetIndex = projIndex + 1;
-          console.log('[click] using project-specific fallback index =>', targetIndex);
-        } else {
-          targetIndex = index + 1; // last-resort: original global clickable order
-          console.log('[click] using global fallback index =>', targetIndex);
+          const asideLis = Array.from(aside.querySelectorAll('ul > li'));
+          targetLi = asideLis[projIndex];
+          console.log('[click] using project-specific fallback index =>', projIndex);
         }
       }
 
@@ -777,15 +842,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const title = li.querySelector('.tit')?.innerText?.trim() || li.querySelector('.app-span')?.innerText?.trim() || li.textContent.trim().slice(0, 40);
         console.log('[click] aside li', i + 1, 'snippet:', title ? title.replace(/\s+/g, ' ') : '(empty)');
       });
-
-      // Use array-based selection to avoid nth-child mismatch when whitespace/comments or text nodes exist
-      let targetLi = null;
-      if (Number.isInteger(targetIndex) && targetIndex >= 1 && targetIndex <= asideLis.length) {
-        targetLi = asideLis[targetIndex - 1];
-        console.log('[click] selecting aside by array index', targetIndex - 1);
-      } else {
-        console.log('[click] targetIndex out of range or invalid:', targetIndex);
-      }
 
       if (targetLi) {
         // Special case: illustpop should open as a full overlay gallery (different from boxed aside)
@@ -826,7 +882,9 @@ document.addEventListener("DOMContentLoaded", () => {
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
           try { document.body.classList.add('aside-open'); console.debug('[aside] added body.aside-open (illust)'); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
-          targetLi.classList.add('on');
+          // mark and populate via helper
+          const id = targetLi.dataset && targetLi.dataset.id ? targetLi.dataset.id : null;
+          openAsideById(id || null, targetLi);
           // initialize carousel immediately so clones/positioning are ready
           try { if (typeof setupCarousel === 'function') setupCarousel(); } catch (e) { /* setupCarousel defined later in scope; ignore if not available */ }
           // focus for accessibility
@@ -839,8 +897,9 @@ document.addEventListener("DOMContentLoaded", () => {
           // remain visually selected when other project items open.
           try { clearIllustSelection(); } catch (e) { }
           try { if (typeof window.suppressMailto === 'function') window.suppressMailto(900); } catch (e) { }
-          targetLi.classList.add('on');
-          console.log('[click] targetLi found and .on added (array selection)');
+          const id2 = targetLi.dataset && targetLi.dataset.id ? targetLi.dataset.id : null;
+          openAsideById(id2 || null, targetLi);
+          console.log('[click] targetLi found and opened via data-id', id2);
         }
       } else {
         console.log('[click] targetLi NOT found for index', targetIndex);
