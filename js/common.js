@@ -52,8 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
   // Preserve original hrefs for anchors inside the aside so other scripts
   // cannot silently overwrite them. If an href attribute changes, restore it.
+  // NOTE: Disabled due to conflicts where the observer restores incorrect hrefs.
+  // If needed, re-enable after resolving root cause.
   (function preserveAsideAnchors() {
     try {
+      return; // disabled
       const asideEl = document.querySelector('aside');
       if (!asideEl) return;
       // stash initial hrefs on data-preserved-href
@@ -105,21 +108,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // Stronger backup: keep an in-memory map of original hrefs for anchors inside aside
   // keyed by aside list index + anchor class/text. If nodes are replaced, we use this
   // map to restore the original HTML-provided href values immediately.
+  // NOTE: Disabled because index/data-id mapping can mismatch and overwrite correct hrefs.
   (function preserveAsideOriginalMap() {
     try {
+      return; // disabled
       const asideEl = document.querySelector('aside');
       if (!asideEl) return;
       const map = Object.create(null);
-      const listItems = Array.from(asideEl.querySelectorAll('ul > li'));
-      listItems.forEach((li, idx) => {
+  const listItems = Array.from(asideEl.querySelectorAll('ul > li'));
+  listItems.forEach((li, idx) => {
         try {
           const anchors = Array.from(li.querySelectorAll('a'));
           anchors.forEach(a => {
             try {
               const cls = (a.className || '').toString().trim();
               const txt = (a.textContent || '').trim().slice(0, 40);
-              const key = `li${idx}::cls:${cls}::txt:${txt}`;
-              map[key] = a.getAttribute && a.getAttribute('href');
+      // Prefer a stable key: use the li[data-id] when available to avoid
+      // index-based mismatches if nodes are reordered or replaced.
+      const lid = (li.dataset && li.dataset.id) ? li.dataset.id : `li${idx}`;
+      const key = `${lid}::cls:${cls}::txt:${txt}`;
+      map[key] = a.getAttribute && a.getAttribute('href');
             } catch (e) { }
           });
         } catch (e) { }
@@ -131,16 +139,19 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           // on any relevant mutation, iterate current aside anchors and restore
           // to original map where we have an entry.
-          const currentLis = Array.from(asideEl.querySelectorAll('ul > li'));
-          currentLis.forEach((li, idx) => {
+    const currentLis = Array.from(asideEl.querySelectorAll('ul > li'));
+    currentLis.forEach((li, idx) => {
             try {
               const anchors = Array.from(li.querySelectorAll('a'));
               anchors.forEach(a => {
                 try {
                   const cls = (a.className || '').toString().trim();
                   const txt = (a.textContent || '').trim().slice(0, 40);
-                  const key = `li${idx}::cls:${cls}::txt:${txt}`;
-                  const want = window._asideOriginalHrefMap && window._asideOriginalHrefMap[key];
+      // Use data-id when available to compute the same stable key used
+      // when the original map was created.
+      const lid = (li.dataset && li.dataset.id) ? li.dataset.id : `li${idx}`;
+      const key = `${lid}::cls:${cls}::txt:${txt}`;
+      const want = window._asideOriginalHrefMap && window._asideOriginalHrefMap[key];
                   if (want && a.getAttribute && a.getAttribute('href') !== want) {
                     try { a.setAttribute('href', want); console.debug('[aside-original-restore] restored', key, want); } catch (e) { }
                   }
@@ -767,92 +778,21 @@ document.addEventListener("DOMContentLoaded", () => {
       asideEl.querySelectorAll('ul li.on').forEach(li => li.classList.remove('on'));
       if (targetLi) targetLi.classList.add('on');
       // update dir_btn anchors if present inside targetLi
-      try {
-        if (meta && targetLi) {
-          const planA = targetLi.querySelector('a.direct_plan');
-          const outA = targetLi.querySelector('a.direct_output');
-          // Prefer HTML-original hrefs preserved by the early stash helper.
-          // If preservedHref exists, restore it to the anchor. Otherwise only inject
-          // meta values when no href is present.
-          try {
-            if (planA) {
-              const preserved = planA.dataset && planA.dataset.preservedHref;
-              if (preserved != null) {
-                // always restore the original HTML href recorded at load
-                if (planA.getAttribute('href') !== preserved) {
-                  planA.setAttribute('href', preserved);
-                  console.debug('[openAsideById] restored preserved plan href for', id, preserved);
-                } else {
-                  console.debug('[openAsideById] plan href already matches preserved for', id);
-                }
-              } else if (meta && meta.plan) {
-                const cur = planA.getAttribute('href');
-                if (!cur || cur.trim() === '') {
-                  planA.setAttribute('href', meta.plan);
-                  console.debug('[openAsideById] injected plan href for', id, meta.plan);
-                } else {
-                  console.debug('[openAsideById] preserved existing plan href for', id, cur);
-                }
-              }
-            }
-            if (outA) {
-              const preserved2 = outA.dataset && outA.dataset.preservedHref;
-              if (preserved2 != null) {
-                if (outA.getAttribute('href') !== preserved2) {
-                  outA.setAttribute('href', preserved2);
-                  console.debug('[openAsideById] restored preserved web href for', id, preserved2);
-                } else {
-                  console.debug('[openAsideById] web href already matches preserved for', id);
-                }
-              } else if (meta && meta.web) {
-                const cur2 = outA.getAttribute('href');
-                if (!cur2 || cur2.trim() === '') {
-                  outA.setAttribute('href', meta.web);
-                  console.debug('[openAsideById] injected web href for', id, meta.web);
-                } else {
-                  console.debug('[openAsideById] preserved existing web href for', id, cur2);
-                }
-              }
-            }
-          } catch (e) { }
-        }
-      } catch (e) { }
+  // Disable JS-side href mutation here. Let HTML-defined href and browser
+  // default behavior control anchor targets. This avoids JS overwriting
+  // hrefs and interfering with hover/focus styles.
+  // (If future behavior is required, reintroduce minimal, well-scoped updates.)
       // show aside
       asideEl.style.display = 'block';
       try { document.body.classList.add('aside-open'); } catch (e) { }
       try { asideEl.setAttribute('aria-hidden', 'false'); } catch (e) { }
       // Ensure aside interactive area receives pointer events and focus management.
-      try {
-        // Some browsers may keep pointer-events on children disabled by global rules; explicitly
-        // enable pointer-events on dir_btn anchors as a final step to guarantee clickability.
-        const links = targetLi ? Array.from(targetLi.querySelectorAll('.dir_btn a')) : [];
-        links.forEach(a => {
-          try {
-            a.style.pointerEvents = 'auto';
-            a.style.userSelect = 'text';
-          } catch (e) { }
-        });
-      } catch (e) { }
+  // Do not set inline styles here; preserve CSS hover/focus rules authored in stylesheet.
 
       // Re-run a short deferred restore to handle cases where other observers temporarily
       // modified hrefs during the aside display transition. This keeps HTML-authoritative
       // hrefs present when the aside becomes visible.
-      try {
-        setTimeout(() => {
-          try {
-            if (targetLi) {
-              const planA2 = targetLi.querySelector('a.direct_plan');
-              const outA2 = targetLi.querySelector('a.direct_output');
-              if (planA2 && planA2.dataset && planA2.dataset.preservedHref) {
-                if (planA2.getAttribute('href') !== planA2.dataset.preservedHref) planA2.setAttribute('href', planA2.dataset.preservedHref);
-              }
-              if (outA2 && outA2.dataset && outA2.dataset.preservedHref) {
-                if (outA2.getAttribute('href') !== outA2.dataset.preservedHref) outA2.setAttribute('href', outA2.dataset.preservedHref);
-              }
-            }
-          } catch (e) { }
-        }, 50);
-      } catch (e) { }
+  // No deferred JS restore.
 
       console.log('[openAsideById] opened aside for id=', id);
     } catch (e) { console.error('[openAsideById] error', e); }
@@ -1983,36 +1923,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   } catch (e) { /* ignore if selectors not present */ }
 
-  // Capture-phase enforcement: ensure .dir_btn anchors always open their HTML-provided hrefs
+  // Capture-phase enforcement: DISABLED to avoid forcing navigation and interfering with CSS hover.
   try {
-    document.addEventListener('click', function (ev) {
-      try {
-        const a = ev.target && ev.target.closest ? ev.target.closest('a.direct_plan, a.direct_output, .dir_btn a') : null;
-        if (!a) return;
-        // prefer preserved HTML href if available, otherwise attribute href
-        const preserved = a.dataset && a.dataset.preservedHref ? a.dataset.preservedHref : null;
-        const attrHref = a.getAttribute && a.getAttribute('href');
-        const useHref = preserved || attrHref;
-        if (!useHref) return; // nothing to do
-        // allow mailto and same-page anchors to behave normally (mailto may be allowed elsewhere)
-        if (useHref.startsWith && useHref.startsWith('mailto:')) return;
-        if (useHref.startsWith && useHref.startsWith('#')) return; // let hash handlers run (side_menu mapping handles header links)
-
-        // If current browser href differs from preserved/attr, force navigation using the HTML value.
-        // Use anchor's target where possible; default to _blank to match user expectation.
-        const tgt = a.getAttribute && a.getAttribute('target') ? a.getAttribute('target') : '_blank';
-        try {
-          if (tgt === '_self' || tgt === '_parent' || tgt === '') {
-            // same-window navigation
-            ev.preventDefault(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-            window.location.href = useHref;
-          } else {
-            ev.preventDefault(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
-            try { window.open(useHref, tgt, 'noopener,noreferrer'); } catch (err) { window.location.href = useHref; }
-          }
-        } catch (e) { /* ignore navigation errors */ }
-      } catch (e) { /* per-event ignore */ }
-    }, true);
+    // intentionally disabled: document.addEventListener('click', ...) -> no-op
+    // If needed, re-enable a conservative logger-only handler here.
+    return;
   } catch (e) { }
 
   // Capture-phase guard: prevent clicks on non-link aside text from triggering mailto
