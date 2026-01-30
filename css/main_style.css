@@ -19,7 +19,44 @@ aside.overlay-mode .illust-track img {
 /* Use !important so hover transform takes effect even if inline transform is set on the element */
 aside .illust-track img:hover,
 aside.overlay-mode .illust-track img:hover {
-  transform: scale(1.2) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Caption for current/hovered image */
+.illust-caption {
+  position: absolute;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: none;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
+  white-space: nowrap;
+}
+
+.illust-caption.visible {
+  opacity: 1;
+}
+
+.illust-caption .title {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 600;
+  display: block;
+}
+
+.illust-caption .year {
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
 }
 
 /* while user is actively dragging, disable hover scaling to avoid visual conflict */
@@ -61,6 +98,34 @@ aside.overlay-mode ul>li.illustpop {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
+}
+
+/* Gallery track: show one image per snap, hide native scrollbar */
+.illust-gallery .illust-track {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  will-change: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  /* default transition kept none; JS adds transitions when animating */
+  transition: none;
+}
+
+.illust-gallery .illust-track img {
+  scroll-snap-align: center;
+  display: inline-block;
+  margin-right: 80px;
+  will-change: transform;
+}
+
+/* hide scrollbar visuals */
+.illust-gallery .illust-track::-webkit-scrollbar {
+  height: 0;
+}
+
+.illust-gallery .illust-track {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 
@@ -2289,7 +2354,7 @@ aside.overlay-mode ul>li.illustpop {
   width: 100vw;
   height: 100vh;
   margin: 0;
-  overflow: hidden;
+  /* overflow: visible; */
   padding: 0;
   display: flex;
   align-items: center;
@@ -2299,23 +2364,111 @@ aside.overlay-mode ul>li.illustpop {
 .illust-gallery {
   width: 100vw;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   outline: none;
   display: block;
   justify-content: center;
   align-content: center;
 }
 
-.illust-track {
+/* caption that appears on image hover */
+.illust-gallery {
+  position: relative;
+  /* make captions positionable inside gallery */
+}
+
+/* .illust-caption {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: center bottom;
+  transform: translateY(6px);
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 60;
+  white-space: nowrap;
+} */
+
+.illust-caption.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* When gallery is opened as overlay, allow scaled images to overflow their container
+   so they don't get clipped. Also ensure images can layer above neighbors. */
+aside.overlay-mode .illust-gallery {
+  overflow: visible;
+}
+
+.illust-caption {
+  position: relative;
+  left: 0;
+  top: 300;
+  color: #fff;
+  background: transparent;
   display: flex;
-  gap: 0;
+  flex-direction: column;
+  /* remove black box */
+  padding: 0;
+  /* no box padding; text sits freely under image */
+  border-radius: 0;
+  font-size: 14px;
+  line-height: 1.1;
+  pointer-events: none;
+  transform-origin: center top;
+  transform: translateY(6px);
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 60;
+  white-space: normal;
+  /* allow wrapping / multi-line */
+  text-align: center;
+}
+
+.illust-caption.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Ensure captions appended inside the gallery are absolutely positioned
+   and centered relative to the image (JS sets left to image center). */
+.illust-gallery .illust-caption {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateX(-50%) translateY(6px);
+  z-index: 2200;
+  pointer-events: none;
+  white-space: normal;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.illust-gallery .illust-track {
+  /* track itself should allow children to overflow (so hover scale isn't clipped) */
+  overflow: visible;
+  /* keep layout as a horizontal flex container; scroll behavior is provided by the wrapper */
+  display: flex;
   align-items: center;
-  transition: transform 360ms cubic-bezier(.22, .9, .26, 1);
-  will-change: transform;
-  /* ensure track itself doesn't allow browser gestures and accepts pointer events */
-  touch-action: none;
-  pointer-events: auto;
-  user-select: none;
+}
+
+/* runtime wrapper created by JS: this is the actual scroll container */
+.illust-scroll-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .illust-track img {
@@ -2959,19 +3112,18 @@ body.aside-open .side_menu a[href^="mailto:"] {
 
 /* Caption for illust overlay (safely appended) */
 .illust-caption {
+  /* fallback/fallback: when caption is positioned fixed (older rules), keep it visually consistent */
   position: fixed;
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%) translateY(6px);
-  /* ensure caption appears above the aside overlay (z-index:2100) but below the close button (99999) */
   z-index: 2200;
   pointer-events: none;
-  /* background removed to keep caption text unobstructed */
   color: #fff;
   text-align: center;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 24px;
+  padding: 0;
+  border-radius: 0;
+  font-size: 14px;
   backdrop-filter: none;
   opacity: 0;
   transition: opacity 200ms ease, transform 200ms ease;
@@ -2985,13 +3137,17 @@ body.aside-open .side_menu a[href^="mailto:"] {
 .illust-caption .title {
   font-weight: 600;
   display: block;
-  line-height: 1;
-  margin-bottom: 4px;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  font-size: 18px;
+  /* as requested */
 }
 
 .illust-caption .year {
-  opacity: 0.85;
+  opacity: 0.95;
   font-weight: 400;
-  font-size: 18px;
+  /* as requested */
+  font-size: 14px;
+  /* as requested */
   display: block;
 }
