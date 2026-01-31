@@ -1145,6 +1145,7 @@ aside.overlay-mode .close-btn,
 
 .promo_page>.promoobj .samsung_promo:hover {
   animation: samsungPromoShrinkGrow 0.5s ease-in-out;
+  cursor: pointer;
 }
 
 /* samsung_promo hover shrink-grow animation */
@@ -1183,6 +1184,7 @@ aside.overlay-mode .close-btn,
 
 .promo_page>.promoobj .vfun_login:hover {
   transform: scale(1.04);
+  cursor: pointer;
 }
 
 .promo_page>.promoobj .vfun_login .funny_arm {
@@ -1219,6 +1221,7 @@ aside.overlay-mode .close-btn,
 
 .promo_page>.promoobj .lg_plal:hover .lg_plal_body {
   animation: lgPlalBodyRotate 2.2s infinite;
+  cursor: pointer;
 }
 
 /* lg_plal hover animation */
@@ -2181,26 +2184,31 @@ aside.overlay-mode .close-btn,
 .visual_design_page .bniobj .bn:hover .bn_phone {
   transform: scale(1.04);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  cursor: pointer;
 }
 
 .visual_design_page .bniobj .bn:hover .bn_cube_a {
   transform: translateY(-10px);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  cursor: pointer;
 }
 
 .visual_design_page .bniobj .bn:hover .bn_cube_b {
   transform: translateY(10px);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  cursor: pointer;
 }
 
 .visual_design_page .bniobj .bn .bn_heart {
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     transform-origin 0s;
+  cursor: pointer;
 }
 
 .visual_design_page .bniobj .bn:hover .bn_heart {
   transform-origin: bottom right;
   animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
+  cursor: pointer;
 }
 
 @keyframes bnHeartRotateLoop {
@@ -2216,6 +2224,7 @@ aside.overlay-mode .close-btn,
 .visual_design_page .bniobj .illust:hover .illust_sketchbook {
   transform: scale(1.04);
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
+  cursor: pointer;
 }
 
 /* transition 추가된 부분 */
