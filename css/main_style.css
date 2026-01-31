@@ -134,7 +134,7 @@ aside.overlay-mode ul>li.illustpop {
 
 html,
 body {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   min-width: 0;
   max-width: 9600px;
@@ -373,7 +373,7 @@ header {
 
 .panel {
   position: relative;
-  min-width: 100%;
+  min-width: 100vw;
   width: 1920px;
   height: 100vh;
   flex-shrink: 0;
