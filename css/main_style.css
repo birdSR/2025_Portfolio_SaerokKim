@@ -8,7 +8,7 @@
 /* Do not change width/height/border; ensure images accept pointer events and hover transform applies */
 aside .illust-track img,
 aside.overlay-mode .illust-track img {
-  transition: transform 260ms cubic-bezier(.22, .9, .26, 1);
+  transition: transform 260ms cubic-bezier(0.22, 0.9, 0.26, 1);
   transform-origin: center center;
   pointer-events: auto;
   /* ensure image itself accepts hover/click */
@@ -36,7 +36,9 @@ aside.overlay-mode .illust-track img:hover {
   flex-direction: column;
   gap: 4px;
   opacity: 0;
-  transition: opacity 220ms ease, transform 220ms ease;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
   white-space: nowrap;
 }
 
@@ -68,8 +70,8 @@ aside.overlay-mode .illust-track img:hover {
 /* End hover rules */
 
 /* Defensive: ensure no lingering visual 'selected' state remains when gallery is closed */
-aside ul>li:not(.illustpop) .illust-track img,
-aside ul>li:not(.illustpop) .illust-track img:hover,
+aside ul > li:not(.illustpop) .illust-track img,
+aside ul > li:not(.illustpop) .illust-track img:hover,
 aside:not(.overlay-mode) .illust-track img,
 aside:not(.overlay-mode) .illust-track img:hover {
   transform: none !important;
@@ -83,18 +85,18 @@ aside:not(.overlay-mode) .illust-track img:hover {
 /* Remove any large z-index or absolute positioned clone that could visually overlap content */
 aside .illust-gallery-wrap,
 aside .illust-track[data-loop],
-aside ul>li.illustpop.on {
+aside ul > li.illustpop.on {
   z-index: 0 !important;
 }
 
 /* When aside is not overlay-mode, ensure illustpop is visually hidden and inert */
-aside ul>li.illustpop {
+aside ul > li.illustpop {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 
-aside.overlay-mode ul>li.illustpop {
+aside.overlay-mode ul > li.illustpop {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
@@ -128,7 +130,6 @@ aside.overlay-mode ul>li.illustpop {
   scrollbar-width: none;
 }
 
-
 html,
 body {
   width: 100vw;
@@ -139,7 +140,11 @@ body {
   overflow-y: auto;
   /* overflow-x: hidden; */
   /* 세로 기준 사이트라 가로 바는 숨겨두기 */
-  font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Pretendard",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
   background: var(--pink, #ffd0e1);
 
@@ -259,8 +264,6 @@ header {
   transform: translateX(-50%);
 }
 
-
-
 .home_main::after {
   content: "Home";
   position: relative;
@@ -323,7 +326,6 @@ header {
 .scroll_ui .scroll_guide .mouse {
   transform: rotate(90deg);
 }
-
 
 .fixed-logo {
   position: fixed;
@@ -533,7 +535,7 @@ header {
 }
 
 /* main_page */
-.main_page>.sky .m_cloud1 {
+.main_page > .sky .m_cloud1 {
   position: absolute;
   top: 50px;
   left: 140px;
@@ -541,7 +543,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page>.sky .m_cloud2 {
+.main_page > .sky .m_cloud2 {
   position: absolute;
   top: 50px;
   left: 1478px;
@@ -549,7 +551,7 @@ header {
   /* z-index: 0; */
 }
 
-.main_page>.sky .m_cloud3 {
+.main_page > .sky .m_cloud3 {
   position: absolute;
   top: 50px;
   left: 1654px;
@@ -682,31 +684,31 @@ aside.overlay-mode .close-btn,
   left: 1584px;
 }
 
-.uxui_page>.uxuiobj .r_long_tree {
+.uxui_page > .uxuiobj .r_long_tree {
   position: absolute;
   top: 60px;
   left: 120px;
 }
 
-.uxui_page>.uxuiobj .regular_tree {
+.uxui_page > .uxuiobj .regular_tree {
   position: absolute;
   top: 170px;
   left: 540px;
 }
 
-.uxui_page>.uxuiobj .round_tree {
+.uxui_page > .uxuiobj .round_tree {
   position: absolute;
   bottom: -6px;
   left: 220px;
 }
 
-.uxui_page>.uxuiobj .wing_tree {
+.uxui_page > .uxuiobj .wing_tree {
   position: absolute;
   bottom: 82px;
   right: 200px;
 }
 
-.uxui_page>.uxuiobj .two_flower {
+.uxui_page > .uxuiobj .two_flower {
   position: absolute;
   bottom: 124px;
   right: 500px;
@@ -739,31 +741,31 @@ aside.overlay-mode .close-btn,
   }
 }
 
-.uxui_page>.uxuiobj .apple_a {
+.uxui_page > .uxuiobj .apple_a {
   position: absolute;
   top: 318px;
   left: 850px;
 }
 
-.uxui_page>.uxuiobj .apple_b {
+.uxui_page > .uxuiobj .apple_b {
   position: absolute;
   top: 450px;
   left: 124px;
 }
 
-.uxui_page>.uxuiobj .apple_c {
+.uxui_page > .uxuiobj .apple_c {
   position: absolute;
   bottom: 240px;
   right: 630px;
 }
 
-.uxui_page>.uxuiobj .f_tulip_p_a {
+.uxui_page > .uxuiobj .f_tulip_p_a {
   position: absolute;
   bottom: 240px;
   left: 80px;
 }
 
-.uxui_page>.uxuiobj .f_gen_y {
+.uxui_page > .uxuiobj .f_gen_y {
   position: absolute;
   top: 380px;
   left: 640px;
@@ -771,7 +773,7 @@ aside.overlay-mode .close-btn,
 
 /* .std_drg_web */
 
-.uxui_page>.uxuiobj .std_drg_web {
+.uxui_page > .uxuiobj .std_drg_web {
   position: absolute;
   top: 180px;
   left: 260px;
@@ -780,7 +782,7 @@ aside.overlay-mode .close-btn,
   height: 400px;
 }
 
-.uxui_page>.uxuiobj .std_drg_web .sd_video {
+.uxui_page > .uxuiobj .std_drg_web .sd_video {
   position: relative;
   position: absolute;
   top: 0px;
@@ -788,41 +790,41 @@ aside.overlay-mode .close-btn,
   z-index: 0;
 }
 
-.uxui_page>.uxuiobj .std_drg_web .sd_head {
+.uxui_page > .uxuiobj .std_drg_web .sd_head {
   position: absolute;
   top: 20px;
   right: 0px;
   z-index: 0;
 }
 
-.uxui_page>.uxuiobj .std_drg_web .sd_tail {
+.uxui_page > .uxuiobj .std_drg_web .sd_tail {
   position: absolute;
   top: 52px;
   left: 40px;
   z-index: 0;
 }
 
-.uxui_page>.uxuiobj .std_drg_web .sd_wing {
+.uxui_page > .uxuiobj .std_drg_web .sd_wing {
   position: absolute;
   top: 64px;
   left: 24px;
   z-index: 0;
 }
 
-.uxui_page>.uxuiobj .std_drg_web .sd_head,
-.uxui_page>.uxuiobj .std_drg_web .sd_tail,
-.uxui_page>.uxuiobj .std_drg_web .sd_wing {
+.uxui_page > .uxuiobj .std_drg_web .sd_head,
+.uxui_page > .uxuiobj .std_drg_web .sd_tail,
+.uxui_page > .uxuiobj .std_drg_web .sd_wing {
   opacity: 0;
   transform: translateY(12px) scale(0.98);
   z-index: 0;
 }
 
-.uxui_page>.uxuiobj .std_drg_web:hover .sd_video {
+.uxui_page > .uxuiobj .std_drg_web:hover .sd_video {
   transform: scale(0.985);
   z-index: 10;
 }
 
-.uxui_page>.uxuiobj .std_drg_web:hover .sd_head {
+.uxui_page > .uxuiobj .std_drg_web:hover .sd_head {
   animation: sd-head-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
@@ -845,7 +847,7 @@ aside.overlay-mode .close-btn,
   }
 }
 
-.uxui_page>.uxuiobj .std_drg_web:hover .sd_tail {
+.uxui_page > .uxuiobj .std_drg_web:hover .sd_tail {
   animation: sd-tail-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
@@ -868,7 +870,7 @@ aside.overlay-mode .close-btn,
   }
 }
 
-.uxui_page>.uxuiobj .std_drg_web:hover .sd_wing {
+.uxui_page > .uxuiobj .std_drg_web:hover .sd_wing {
   animation: sd-wing-Ani 2s ease-in-out forwards;
   opacity: 0;
   pointer-events: auto;
@@ -892,7 +894,7 @@ aside.overlay-mode .close-btn,
 }
 
 /* .braedlee_app */
-.uxui_page>.uxuiobj .braedlee_app {
+.uxui_page > .uxuiobj .braedlee_app {
   position: absolute;
   bottom: 160px;
   left: 730px;
@@ -903,23 +905,23 @@ aside.overlay-mode .close-btn,
   left: 200px;
 }
 
-.uxui_page>.uxuiobj .braedlee_app .bl_market {
+.uxui_page > .uxuiobj .braedlee_app .bl_market {
   position: relative;
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page>.uxuiobj .braedlee_app .bl_cha {
+.uxui_page > .uxuiobj .braedlee_app .bl_cha {
   position: absolute;
   bottom: -40px;
   left: -100px;
 }
 
 /* Hover animations for .braedlee_app */
-.uxui_page>.uxuiobj .braedlee_app:hover .bl_market {
+.uxui_page > .uxuiobj .braedlee_app:hover .bl_market {
   transform: scale(1.04);
 }
 
-.uxui_page>.uxuiobj .braedlee_app:hover .bl_cha {
+.uxui_page > .uxuiobj .braedlee_app:hover .bl_cha {
   animation: bl_chaWiggle 0.6s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite;
 }
 
@@ -946,7 +948,7 @@ aside.overlay-mode .close-btn,
 }
 
 /* gwm_web */
-.uxui_page>.uxuiobj .gwm_web {
+.uxui_page > .uxuiobj .gwm_web {
   position: absolute;
   top: 180px;
   right: 400px;
@@ -954,14 +956,14 @@ aside.overlay-mode .close-btn,
   transition: transform 300ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page>.uxuiobj .gwm_web .gwm_head {
+.uxui_page > .uxuiobj .gwm_web .gwm_head {
   display: flex;
   justify-content: center;
   position: relative;
   z-index: 5;
 }
 
-.uxui_page>.uxuiobj .gwm_web .gwm_stone {
+.uxui_page > .uxuiobj .gwm_web .gwm_stone {
   position: absolute;
   bottom: 0px;
   left: -70px;
@@ -969,7 +971,7 @@ aside.overlay-mode .close-btn,
   transition: transform 320ms cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.uxui_page>.uxuiobj .gwm_web .gwm_pramid {
+.uxui_page > .uxuiobj .gwm_web .gwm_pramid {
   position: absolute;
   bottom: 0px;
   right: -180px;
@@ -978,15 +980,15 @@ aside.overlay-mode .close-btn,
 }
 
 /* Hover animations for .gwm_web */
-.uxui_page>.uxuiobj .gwm_web:hover {
+.uxui_page > .uxuiobj .gwm_web:hover {
   transform: scale(0.96);
 }
 
-.uxui_page>.uxuiobj .gwm_web:hover .gwm_stone {
+.uxui_page > .uxuiobj .gwm_web:hover .gwm_stone {
   transform: translate(-10px, -10px);
 }
 
-.uxui_page>.uxuiobj .gwm_web:hover .gwm_pramid {
+.uxui_page > .uxuiobj .gwm_web:hover .gwm_pramid {
   transform: translate(10px, -10px);
 }
 
@@ -1003,109 +1005,103 @@ aside.overlay-mode .close-btn,
   left: 1458px;
 }
 
-.promo_page>.promoobj .triamgle_tree {
+.promo_page > .promoobj .triamgle_tree {
   position: absolute;
   top: 220px;
   left: 240px;
 }
 
-.promo_page>.promoobj .round_tree {
+.promo_page > .promoobj .round_tree {
   position: absolute;
   bottom: 300px;
   left: 600px;
 }
 
-.promo_page>.promoobj .wing_tree {
+.promo_page > .promoobj .wing_tree {
   position: absolute;
   bottom: 300px;
   right: 400px;
 }
 
-.promo_page>.promoobj .regular_tree {
+.promo_page > .promoobj .regular_tree {
   position: absolute;
   top: 180px;
   right: 240px;
 }
 
-.promo_page>.promoobj .two_flower {
+.promo_page > .promoobj .two_flower {
   position: absolute;
   bottom: 400px;
   left: 1000px;
 }
 
-.promo_page>.promoobj .apple_a {
+.promo_page > .promoobj .apple_a {
   position: absolute;
   bottom: 600px;
   right: 140px;
 }
 
-.promo_page>.promoobj .apple_b {
+.promo_page > .promoobj .apple_b {
   position: absolute;
   bottom: 300px;
   right: 200px;
 }
 
-.promo_page>.promoobj .apple_c {
+.promo_page > .promoobj .apple_c {
   position: absolute;
   bottom: 500px;
   right: 260px;
 }
 
-.promo_page>.promoobj .triangle_tree {
+.promo_page > .promoobj .triangle_tree {
   position: absolute;
   top: 100px;
   right: 540px;
 }
 
-.promo_page>.promoobj .triangle_tree {
-  position: absolute;
-  top: 100px;
-  right: 540px;
-}
-
-.promo_page>.promoobj .tree_y-b {
+.promo_page > .promoobj .tree_y-b {
   position: absolute;
   bottom: -50px;
   right: 200px;
 }
 
-.promo_page>.promoobj .duncul_r {
+.promo_page > .promoobj .duncul_r {
   position: absolute;
   bottom: -4px;
   left: 160px;
 }
 
-.promo_page>.promoobj .duncul_s {
+.promo_page > .promoobj .duncul_s {
   position: absolute;
   bottom: -4px;
   left: 390px;
 }
 
-.promo_page>.promoobj .duncul_xs {
+.promo_page > .promoobj .duncul_xs {
   position: absolute;
   bottom: 210px;
   right: 40px;
 }
 
-.promo_page>.promoobj .apple_3-a {
+.promo_page > .promoobj .apple_3-a {
   position: absolute;
   bottom: 80px;
   right: 670px;
 }
 
-.promo_page>.promoobj .apple_3-b {
+.promo_page > .promoobj .apple_3-b {
   position: absolute;
   top: 510px;
   right: 140px;
 }
 
-.promo_page>.promoobj .apple_3-c {
+.promo_page > .promoobj .apple_3-c {
   position: absolute;
   bottom: 48px;
   left: 400px;
 }
 
-.promo_page>.promoobj .bertterfly_b {
+.promo_page > .promoobj .bertterfly_b {
   position: absolute;
   top: 380px;
   right: 780px;
@@ -1113,7 +1109,7 @@ aside.overlay-mode .close-btn,
   transform-origin: center center;
 }
 
-.promo_page>.promoobj .f_gen_big_p {
+.promo_page > .promoobj .f_gen_big_p {
   position: absolute;
   bottom: 140px;
   left: 150px;
@@ -1122,20 +1118,20 @@ aside.overlay-mode .close-btn,
   /* 바닥 기준으로 쫀득 */
 }
 
-.promo_page>.promoobj .F_tulip_y {
+.promo_page > .promoobj .F_tulip_y {
   position: absolute;
   top: 470px;
   right: 580px;
 }
 
-.promo_page>.promoobj .F_gen_y {
+.promo_page > .promoobj .F_gen_y {
   position: absolute;
   top: 260px;
   left: 540px;
 }
 
 /* samsung_promo */
-.promo_page>.promoobj .samsung_promo {
+.promo_page > .promoobj .samsung_promo {
   /* border: 1px solid #ffffff; */
   position: absolute;
   top: 320px;
@@ -1143,7 +1139,7 @@ aside.overlay-mode .close-btn,
   transform-origin: center center;
 }
 
-.promo_page>.promoobj .samsung_promo:hover {
+.promo_page > .promoobj .samsung_promo:hover {
   animation: samsungPromoShrinkGrow 0.5s ease-in-out;
   cursor: pointer;
 }
@@ -1172,22 +1168,23 @@ aside.overlay-mode .close-btn,
 
 .promo_page .promoobj .vfun_login:hover .funny_arm,
 .promo_page .promoobj .vfun_login:hover .game_controller {
-  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
+  animation: funnyRotate 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
+    alternate;
 }
 
-.promo_page>.promoobj .vfun_login {
+.promo_page > .promoobj .vfun_login {
   position: absolute;
   top: 50%;
   left: 820px;
   transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2);
 }
 
-.promo_page>.promoobj .vfun_login:hover {
+.promo_page > .promoobj .vfun_login:hover {
   transform: scale(1.04);
   cursor: pointer;
 }
 
-.promo_page>.promoobj .vfun_login .funny_arm {
+.promo_page > .promoobj .vfun_login .funny_arm {
   position: relative;
   z-index: 1;
   /* funny_body 뒤, game_controller보다 뒤 */
@@ -1196,7 +1193,7 @@ aside.overlay-mode .close-btn,
   left: 82px;
 }
 
-.promo_page>.promoobj .vfun_login .game_controller {
+.promo_page > .promoobj .vfun_login .game_controller {
   position: relative;
   z-index: 3;
   transform-origin: right top;
@@ -1205,7 +1202,7 @@ aside.overlay-mode .close-btn,
 }
 
 /* lg_plal */
-.promo_page>.promoobj .lg_plal {
+.promo_page > .promoobj .lg_plal {
   position: absolute;
   top: 200px;
   right: 154px;
@@ -1213,13 +1210,13 @@ aside.overlay-mode .close-btn,
   height: 400px;
 }
 
-.promo_page>.promoobj .lg_plal .lg_plal_body {
+.promo_page > .promoobj .lg_plal .lg_plal_body {
   position: absolute;
   top: 80px;
   right: 80px;
 }
 
-.promo_page>.promoobj .lg_plal:hover .lg_plal_body {
+.promo_page > .promoobj .lg_plal:hover .lg_plal_body {
   animation: lgPlalBodyRotate 2.2s infinite;
   cursor: pointer;
 }
@@ -1247,23 +1244,23 @@ aside.overlay-mode .close-btn,
   }
 }
 
-.promo_page>.promoobj .lg_plal .twinkle_m {
+.promo_page > .promoobj .lg_plal .twinkle_m {
   position: absolute;
   top: 30px;
   right: 30px;
 }
 
-.promo_page>.promoobj .lg_plal:hover .twinkle_m {
+.promo_page > .promoobj .lg_plal:hover .twinkle_m {
   animation: twinkleBlink 0.9s linear infinite;
 }
 
-.promo_page>.promoobj .lg_plal .twinkle_s {
+.promo_page > .promoobj .lg_plal .twinkle_s {
   position: absolute;
   top: 270px;
   right: 240px;
 }
 
-.promo_page>.promoobj .lg_plal:hover .twinkle_s {
+.promo_page > .promoobj .lg_plal:hover .twinkle_s {
   animation: twinkleBlink 0.9s linear infinite;
   animation-delay: 0.45s;
 }
@@ -1650,7 +1647,8 @@ aside.overlay-mode .close-btn,
   bottom: 160px;
   right: 0;
   transform-origin: 50% 100%;
-  transition: transform 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2),
+  transition:
+    transform 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     opacity 0.7s cubic-bezier(0.4, 0.3, 0.2, 1.2);
   opacity: 0;
   z-index: 50;
@@ -2200,14 +2198,16 @@ aside.overlay-mode .close-btn,
 }
 
 .visual_design_page .bniobj .bn .bn_heart {
-  transition: transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2),
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0.7, 0.4, 1.2),
     transform-origin 0s;
   cursor: pointer;
 }
 
 .visual_design_page .bniobj .bn:hover .bn_heart {
   transform-origin: bottom right;
-  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite alternate;
+  animation: bnHeartRotateLoop 0.7s cubic-bezier(0.4, 0.7, 0.4, 1.2) infinite
+    alternate;
   cursor: pointer;
 }
 
@@ -2321,7 +2321,7 @@ aside.overlay-mode {
 
 /* backdrop blur layer: covers full viewport and blurs underlying page without blurring gallery itself */
 aside.overlay-mode::before {
-  content: '';
+  content: "";
   position: fixed;
   left: 0;
   top: 0;
@@ -2335,18 +2335,18 @@ aside.overlay-mode::before {
 }
 
 /* ensure gallery (illustpop) sits above the blur layer */
-aside.overlay-mode ul>li.illustpop {
+aside.overlay-mode ul > li.illustpop {
   z-index: 95 !important;
 }
 
 /* make aside ul li fill overlay, but keep transitions */
 /* In overlay mode hide all list items except the illustpop item to avoid overlap */
-aside.overlay-mode ul>li {
+aside.overlay-mode ul > li {
   display: none !important;
   pointer-events: none !important;
 }
 
-aside.overlay-mode ul>li.illustpop {
+aside.overlay-mode ul > li.illustpop {
   display: flex !important;
   position: relative;
   width: 100%;
@@ -2434,7 +2434,9 @@ aside.overlay-mode .illust-gallery {
   transform-origin: center top;
   transform: translateY(6px);
   opacity: 0;
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
   z-index: 60;
   white-space: normal;
   /* allow wrapping / multi-line */
@@ -2458,7 +2460,9 @@ aside.overlay-mode .illust-gallery {
   white-space: normal;
   text-align: center;
   opacity: 0;
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .illust-gallery .illust-track {
@@ -2493,7 +2497,6 @@ aside.overlay-mode .illust-gallery {
   border-radius: 40px;
   border: 4px solid #fff;
 }
-
 
 /* In overlay-mode we let JS handle horizontal pointer gestures. Disable browser touch-action to avoid interference. */
 .illust-gallery {
@@ -2704,7 +2707,6 @@ aside ul li:nth-child(8) .project_img .pj-img {
 
 .uxui-design-personal-project-span2 {
   font-family: "Pretendard-Regular", sans-serif;
-
 }
 
 .app {
@@ -2724,7 +2726,7 @@ aside ul li:nth-child(8) .project_img .pj-img {
 
 /* default .app-span2 style */
 .app-span2 {
-  color: #574DAA;
+  color: #574daa;
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
 }
@@ -2737,76 +2739,73 @@ aside ul li:nth-child(8) .project_img .pj-img {
   color: #574DAA;
 } */
 
-
 /* li1: 스튜디오 드래곤 -> app-span2 color */
-aside ul>li:nth-child(2) .app-span2 {
+aside ul > li:nth-child(2) .app-span2 {
   padding-top: 12px;
-  color: #574DAA;
+  color: #574daa;
 }
 
 /* li2: 브래드리 -> app-span2 color */
-aside ul>li:nth-child(3) .app-span2 {
-  color: #FF9191;
-
+aside ul > li:nth-child(3) .app-span2 {
+  color: #ff9191;
 }
 
 /* li3: 국립세계문자박물관 -> app-span2 color */
-aside ul>li:nth-child(4) .app-span2 {
-  color: #AD968D;
+aside ul > li:nth-child(4) .app-span2 {
+  color: #ad968d;
 }
 
 /* li4: 삼성전자 -> app-span bold black + color */
-aside ul>li:nth-child(5) .app-span {
+aside ul > li:nth-child(5) .app-span {
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
   color: #575697;
 }
 
-aside ul>li:nth-child(5) .app-span2 {
+aside ul > li:nth-child(5) .app-span2 {
   color: #000000;
   font-family: "Pretendard-Medium", sans-serif;
   font-weight: 500;
 }
 
 /* li5: VFUN -> app-span bold blue */
-aside ul>li:nth-child(6) .app-span {
+aside ul > li:nth-child(6) .app-span {
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
-  color: #5846CE;
+  color: #5846ce;
 }
 
-aside ul>li:nth-child(6) .app-span2 {
+aside ul > li:nth-child(6) .app-span2 {
   color: #000000;
   font-family: "Pretendard-Medium", sans-serif;
   font-weight: 500;
 }
 
 /* li6: LGPla.L -> app-span red bold */
-aside ul>li:nth-child(7) .app-span {
+aside ul > li:nth-child(7) .app-span {
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
   color: #a61b1b;
 }
 
-aside ul>li:nth-child(7) .app-span2 {
+aside ul > li:nth-child(7) .app-span2 {
   font-family: "Pretendard-Medium", sans-serif;
   font-weight: 500;
   color: #000000;
 }
 
 /* li7: 컨텐츠 배너 -> app-span green bold, app-span2 normal */
-aside ul>li:nth-child(8) .app-span {
+aside ul > li:nth-child(8) .app-span {
   font-family: "Pretendard-Black", sans-serif;
   font-weight: 900;
-  color: #4D6D53;
+  color: #4d6d53;
 }
 
-aside ul>li:nth-child(8) .app-span2 {
+aside ul > li:nth-child(8) .app-span2 {
   color: #000000;
   font-family: "Pretendard-Medium", sans-serif;
   font-weight: 500;
 }
-
 
 .txt {
   align-self: stretch;
@@ -2817,10 +2816,10 @@ aside ul>li:nth-child(8) .app-span2 {
 
 /* Defensive: prevent pointer cursor on non-interactive aside text/image elements
    so they don't look clickable and to reduce accidental activations. */
-aside ul>li .app-span,
-aside ul>li .app-span2,
-aside ul>li .pop_bottom,
-aside ul>li .pop_bottom * {
+aside ul > li .app-span,
+aside ul > li .app-span2,
+aside ul > li .pop_bottom,
+aside ul > li .pop_bottom * {
   cursor: default !important;
 }
 
@@ -2829,13 +2828,13 @@ aside ul>li .pop_bottom * {
    decorative text nodes while still allowing text selection via the parent .txt_t
    which explicitly keeps pointer-events:auto above. We avoid applying this to
    anchor elements or .dir_btn so intended links remain clickable. */
-aside ul>li .app-span,
-aside ul>li .app-span2 {
+aside ul > li .app-span,
+aside ul > li .app-span2 {
   pointer-events: none !important;
 }
 
 /* Allow pointer cursor for actionable links inside dir_btn */
-aside ul>li .dir_btn a {
+aside ul > li .dir_btn a {
   cursor: pointer !important;
 }
 
@@ -2853,13 +2852,13 @@ aside ul>li .dir_btn a {
 }
 
 /* Ensure aside text blocks don't show pointer or behave like links */
-aside ul>li .txt_t {
+aside ul > li .txt_t {
   cursor: default !important;
   pointer-events: auto;
   /* allow text selection if desired */
 }
 
-aside ul>li:nth-child(2) .txt_t {
+aside ul > li:nth-child(2) .txt_t {
   margin-top: -20px;
 }
 
@@ -2872,11 +2871,11 @@ aside ul>li:nth-child(2) .txt_t {
   position: relative;
 }
 
-aside ul>li:nth-child(2) .pop_bottom .s_tit {
+aside ul > li:nth-child(2) .pop_bottom .s_tit {
   padding-bottom: 18px;
 }
 
-aside ul>li:nth-child(2) .dir_btn {
+aside ul > li:nth-child(2) .dir_btn {
   margin-left: 0;
 }
 
@@ -2935,8 +2934,8 @@ body.aside-open aside .dir_btn a {
 
 /* Extra high-specificity rule to ensure dir_btn anchors remain interactive across browsers
    and even if parent elements have pointer-events disabled via global selectors. */
-body.aside-open aside ul>li .dir_btn a.direct_plan,
-body.aside-open aside ul>li .dir_btn a.direct_output {
+body.aside-open aside ul > li .dir_btn a.direct_plan,
+body.aside-open aside ul > li .dir_btn a.direct_output {
   pointer-events: auto !important;
   -webkit-pointer-events: auto !important;
   user-select: text !important;
@@ -3080,7 +3079,6 @@ body.aside-open .side_menu a[href^="mailto:"] {
   aspect-ratio: 1;
 }
 
-
 /* menu (moved to css/common.css) */
 /*
 .hamburger {
@@ -3110,7 +3108,9 @@ body.aside-open .side_menu a[href^="mailto:"] {
   display: block;
   margin: 0 auto;
   transform-origin: left;
-  transition: transform 1s, background 1s;
+  transition:
+    transform 1s,
+    background 1s;
 }
 
 .hamburger:hover span.bar:nth-child(2) {
@@ -3135,7 +3135,9 @@ body.aside-open .side_menu a[href^="mailto:"] {
   font-size: 14px;
   backdrop-filter: none;
   opacity: 0;
-  transition: opacity 200ms ease, transform 200ms ease;
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
 }
 
 .illust-caption.show {
