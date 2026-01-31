@@ -569,7 +569,7 @@ header {
 
 .main_page .long_tree {
   position: absolute;
-  top: 110px;
+  top: 8%;
   left: 80px;
   z-index: 30;
 }
@@ -633,7 +633,7 @@ aside.overlay-mode .close-btn,
 
 .main_page .snall_leaf {
   position: absolute;
-  top: 360px;
+  top: 36%;
   right: 580px;
 }
 
@@ -745,7 +745,7 @@ aside.overlay-mode .close-btn,
 
 .uxui_page>.uxuiobj .apple_a {
   position: absolute;
-  top: 340px;
+  top: 34%;
   left: 850px;
 }
 
