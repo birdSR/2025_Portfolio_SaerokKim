@@ -390,7 +390,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 640px;
+  bottom: 580px;
   background-image: url(../assets/png/main_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -406,7 +406,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 617px;
+  bottom: 557px;
   background-image: url(../assets/png/uxui_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -416,7 +416,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 616px;
+  bottom: 556px;
   background-image: url(../assets/png/promo_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -426,7 +426,7 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 589px;
+  bottom: 529px;
   background-image: url(../assets/png/bni_top_bg.png);
   background-repeat: no-repeat;
 }
@@ -436,14 +436,14 @@ header {
   height: 294px;
   position: absolute;
   left: 0;
-  bottom: 579px;
+  bottom: 519px;
   background-image: url(../assets/png/footer_top_bg.png);
   background-repeat: no-repeat;
 }
 
 .bottom {
   width: 100%;
-  height: 704px;
+  height: 640px;
   position: absolute;
   left: 0;
   bottom: 0;

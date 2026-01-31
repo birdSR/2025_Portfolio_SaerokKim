@@ -1,52 +1,69 @@
 @media (min-width: 1920px) and (min-height: 1200px) {
+  .bottom {
+    width: 100%;
+    height: 704px;
+  }
+
   .main_page .long_tree {
     top: 120px;
     left: 120px;
   }
+
   .main_page .s_leaf {
     top: 320px;
     left: 320px;
   }
+
   .main_page .wood {
     top: 520px;
     left: 420px;
   }
+
   .main_page .rabbit {
     top: 340px;
     left: 260px;
   }
+
   .main_page .watering_can {
     top: 800px;
     right: 700px;
   }
+
   .main_page .dotory_tree_a {
     top: 420px;
     right: 320px;
   }
+
   .main_page .snall_leaf {
     top: 320px;
     right: 600px;
   }
+
   .main_page .tree_y {
     bottom: 0;
     left: 200px;
   }
+
   .main_page .big_leaf {
     bottom: 0;
     right: 200px;
   }
+
   .main_page .f_tulip_p_a {
     top: 800px;
     left: 200px;
   }
+
   .main_page .F_tulip_p_b {
     top: 900px;
     right: 600px;
   }
+
   .main_page .f_gen_p {
     top: 300px;
     left: 500px;
   }
+
   .main_page .f_gen_y_b {
     top: 400px;
     right: 300px;
